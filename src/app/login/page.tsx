@@ -19,11 +19,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           {errorMessage}
         </p>
       )}
-      <a
-        href="/api/auth/strava/start"
-        className="flex min-h-12 w-full items-center justify-center rounded-lg bg-brand px-4 font-bold text-white active:bg-brand-dark"
-      >
-        Kết nối với Strava
+      <a href="/api/auth/strava/start" className="flex min-h-12 items-center justify-center">
+        <Image src="/strava/btn_strava.png" alt="Connect with Strava" width={193} height={48} priority />
       </a>
       <p className="text-sm text-muted">
         CLR đọc hồ sơ và hoạt động chạy của bạn trên Strava (kể cả hoạt động riêng tư) để thống kê và tính challenge.

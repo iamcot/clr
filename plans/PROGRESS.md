@@ -33,7 +33,7 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - `is_bcn()` chỉ true khi `role = 'bcn'` và `status = 'active'`; `is_treasurer()` tương tự với `treasurer`. Nếu thủ quỹ cũng phải có quyền BCN thì cần chỉnh.
 > - Thành viên tự sửa được `display_name, phone, city, birth_year, gender, share_private_in_totals`; cột quyền hạn do trigger `members_guard_privileged_columns` chặn (BCN và service role vượt qua). Thêm policy ghi `settings` cho BCN và key `zalo_group_url` (rỗng thì ẩn link ở `/pending`).
 > - Bước 6 của luồng (đưa vào hàng đợi kéo lịch sử) chưa có, làm ở task 3.4.
-> - **Nút Strava chính thức chưa có**: không tải được ảnh từ trang brand guideline nên `/login` đang dùng nút chữ tạm. Cần BCN/CoT tải "Connect with Strava" vào `public/strava/` rồi thay (Strava yêu cầu dùng đúng nút này).
+> - Nút "Connect with Strava" chính thức (`public/strava/btn_strava.png`, do CoT thêm) đã dùng ở `/login`.
 > - Ghi chú điều khoản Strava: không được hiển thị dữ liệu Strava của người này cho người khác (xem task 3.0 và `plans/strava-permission-email.md`). Task này chỉ lưu hồ sơ và token, chưa hiện số liệu của ai cho ai.
 
 ### 03 – Đồng bộ Strava
