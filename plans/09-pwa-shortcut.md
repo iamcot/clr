@@ -9,15 +9,15 @@ Có thể làm bất kỳ lúc nào sau 1.2.
 ## Task 9.1 – Manifest + icon
 
 Làm:
-- `src/app/manifest.ts` (Next sinh `manifest.webmanifest`): `name: 'CLR Running Club'`, `short_name: 'CLR'`, `display: 'standalone'`, `start_url: '/?source=pwa'`, `background_color: '#F4F5F7'`, `theme_color: '#16263F'`, `lang: 'vi'`.
-- Icon từ logo CLR: 192, 512, 512 maskable, `apple-touch-icon` 180. Đặt ở `public/icons/`.
+- `src/app/manifest.ts` (Next sinh `manifest.webmanifest`): `name: 'CLR Running Club'`, `short_name: 'CLR'`, `display: 'standalone'`, `start_url: '/?source=pwa'`, `background_color: '#F4F5F7'`, `theme_color: '#1E3A1A'`, `lang: 'vi'`.
+- Icon từ logo CLR (`plans/assets/clr-logo.jpg`; với icon nhỏ dùng phần vòng tròn trắng chữ CLR, bỏ viền lá vàng để còn đọc được ở 48px): 192, 512, 512 maskable, `apple-touch-icon` 180. Đặt ở `public/icons/`.
 - `shortcuts` trong manifest (nhấn giữ icon trên Android): "Challenge của tôi" → `/challenges`, "Nộp phạt" → `/fund`, "Thống kê" → `/me/stats`.
 - Meta `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, màn splash iOS (ảnh theo kích thước iPhone phổ biến, sinh bằng script một lần).
 
 Nghiệm thu:
 - [ ] Chrome DevTools → Application → Manifest: không cảnh báo, "Installable".
 - [ ] Android: cài được, nhấn giữ icon thấy 3 shortcut.
-- [ ] iPhone Safari → Chia sẻ → Thêm vào MH chính: icon đúng, mở toàn màn, thanh trạng thái màu navy.
+- [ ] iPhone Safari → Chia sẻ → Thêm vào MH chính: icon đúng, mở toàn màn, thanh trạng thái màu `deep` (xanh đậm).
 
 ---
 

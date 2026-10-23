@@ -26,14 +26,16 @@ Nghiệm thu:
 
 Làm:
 - `src/app/globals.css`: khai báo token Tailwind v4 bằng `@theme`:
-  - `--color-page: #F4F5F7`, `--color-navy: #16263F`, `--color-accent: #C2410C`, `--color-ink`, `--color-muted`, `--color-line`, `--color-success`, `--color-danger`.
+  - Đủ các token trong bảng màu ở `00-overview.md` (mục Giao diện): `--color-brand`, `--color-brand-dark`, `--color-deep`, `--color-lime`, `--color-gold`, `--color-page`, `--color-ink`, `--color-muted`, `--color-line`, `--color-danger`, `--color-success`.
+  - Logo: `public/brand/` (bản gốc ở `plans/assets/clr-logo.jpg`; dùng bản vector khi BCN gửi).
   - Font Be Vietnam Pro qua `next/font/google` (subset `vietnamese`, `latin`; weight 400/500/700/900).
 - `src/app/(app)/layout.tsx`: khung mobile (max-width ~480px giữa màn trên desktop), header gọn, **tab bar dưới** `components/AppTabs.tsx` với 5 tab từ `src/config/nav.ts` (mỗi tab có cờ `enabled` để ẩn tab chưa làm).
 - Trang chủ tạm, trang `/me` tạm.
 
 Nghiệm thu:
 - [ ] Trên điện thoại (hoặc DevTools 360px): tab bar dính đáy, không che nội dung, tôn trọng `safe-area-inset-bottom` trên iPhone.
-- [ ] Tab đang mở được tô màu accent.
+- [ ] Tab đang mở được tô màu `brand`.
+- [ ] Trang mẫu `/dev/theme` (chỉ có ở môi trường dev) hiện đủ các token màu, nút chính, thanh tiến độ, huy hiệu vàng để so với logo.
 - [ ] Đổi `enabled: false` cho tab Quỹ trong config thì tab biến mất.
 
 ---
@@ -73,4 +75,4 @@ Nghiệm thu:
 
 ## Câu hỏi cho BCN
 - Tên miền dùng là gì (ví dụ `clr.run`, `app.clr.vn`)? Ai đứng tên tài khoản Vercel, Supabase, Cloudflare, Strava app (nên là email chung của CLB, không phải cá nhân)?
-- Có logo CLR dạng vector (SVG) để làm icon app không?
+- Có logo CLR dạng vector (SVG/AI) không? Hiện chỉ có ảnh JPG 828px (đủ làm icon tạm, cần vector để nét khi in và làm icon maskable).

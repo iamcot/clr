@@ -20,7 +20,24 @@ Nguyên tắc: **tự động trước, nhập tay sau**. Cái gì lấy đượ
 
 Mockup: https://claude.ai/artifact/8ihK8LyVtwaMyoMBYoT9VR (6 màn điện thoại + trang admin). Mockup là tham khảo bố cục, không phải bản vẽ chính xác từng pixel.
 
-- Nền xám nhạt `#F4F5F7`, khối navy `#16263F`, accent cam `#C2410C`, font **Be Vietnam Pro**.
+- Theme lấy từ logo CLB (`plans/assets/clr-logo.jpg`), **màu chủ đạo xanh lá**. Mockup giữ bố cục, chỉ thay màu theo bảng dưới (không vẽ lại mockup).
+- Font **Be Vietnam Pro**.
+
+| Token | Mã | Lấy từ logo | Dùng cho |
+|---|---|---|---|
+| `brand` | `#45802E` | chữ C (xanh đậm) | Màu chủ đạo: nút chính (chữ trắng), tab đang chọn, link, icon nhấn. Tương phản trên trắng 4,8:1 |
+| `brand-dark` | `#2F6B22` | | Hover/nhấn của nút chính, chữ nhấn cỡ nhỏ trên nền sáng (6,5:1) |
+| `deep` | `#1E3A1A` | (đậm hơn chữ C) | Khối nền đậm thay cho navy cũ: header trang Tôi, thẻ tổng quan, thanh trạng thái PWA. Chữ trắng 12,5:1 |
+| `lime` | `#8BC83C` | chữ L (xanh nõn) | Thanh tiến độ, biểu đồ, điểm nhấn trên nền `deep` (6,2:1). **Không** dùng làm màu chữ trên nền trắng (2:1) |
+| `gold` | `#DBC426` | chữ R (vàng) | Bảng vàng, thưởng, top 3, huy hiệu, quay số. Chữ trên nền gold dùng `deep` (7,1:1) |
+| `page` | `#F4F5F7` | | Nền app (giữ như mockup) |
+| `ink` | `#1A1F1A` | chữ đen trong logo | Chữ chính |
+| `muted` | `#5F6B5F` | | Chữ phụ |
+| `line` | `#E2E6E0` | | Viền, đường kẻ |
+| `danger` | `#C2410C` | | Phạt, tiền nợ, lỗi (giữ màu cam cũ của mockup) |
+| `success` | `brand` | | Hoàn thành, đã nộp |
+
+Quy tắc: xanh là màu của hành động và tiến độ, vàng chỉ dành cho thành tích/thưởng (dùng tiết chế để vàng còn "quý"), cam chỉ dành cho tiền nợ và lỗi.
 - Tab bar dưới 5 mục: **Trang chủ / Challenge / Event / Quỹ / Tôi**. Tab nào chưa có tính năng (theo giai đoạn) thì ẩn.
 - Mobile-first, chạm tối thiểu 44px, hoạt động tốt ở màn 360px.
 
