@@ -5,6 +5,7 @@ import {
   createOAuthState,
   exchangeCode,
   refreshToken,
+  revokeAccess,
 } from '@/lib/strava/oauth'
 
 function jsonResponse(body: unknown, status = 200) {
@@ -104,5 +105,23 @@ describe('refreshToken', () => {
 
     expect(result.accessToken).toBe('at2')
     expect(result.refreshToken).toBe('rt2')
+  })
+})
+
+describe('revokeAccess', () => {
+  it('gọi oauth/revoke với Basic auth và token', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(new Response(null, { status: 200 }))
+
+    await revokeAccess(fetchFn, { clientId: '1', clientSecret: 's', token: 'at' })
+
+    const [url, init] = fetchFn.mock.calls[0]!
+    expect(url).toBe('https://www.strava.com/oauth/revoke')
+    expect(init.headers.Authorization).toBe(`Basic ${Buffer.from('1:s').toString('base64')}`)
+    expect((init.body as URLSearchParams).get('token')).toBe('at')
+  })
+
+  it('báo lỗi khi Strava từ chối', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(new Response(null, { status: 401 }))
+    await expect(revokeAccess(fetchFn, { clientId: '1', clientSecret: 's', token: 'at' })).rejects.toThrow()
   })
 })

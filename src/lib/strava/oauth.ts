@@ -5,7 +5,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const REQUESTED_SCOPE = 'read,activity:read_all'
 const REQUIRED_SCOPE = 'activity:read_all'
 
-const DEAUTHORIZE_URL = 'https://www.strava.com/oauth/deauthorize'
+const REVOKE_URL = 'https://www.strava.com/oauth/revoke'
 
 type FetchFn = typeof fetch
 
@@ -130,11 +130,15 @@ export async function refreshToken(
   return toTokenSet(payload)
 }
 
-export async function deauthorize(fetchFn: FetchFn, accessToken: string): Promise<void> {
-  const response = await fetchFn(DEAUTHORIZE_URL, {
+export async function revokeAccess(
+  fetchFn: FetchFn,
+  options: { clientId: string; clientSecret: string; token: string },
+): Promise<void> {
+  const credentials = Buffer.from(`${options.clientId}:${options.clientSecret}`).toString('base64')
+  const response = await fetchFn(REVOKE_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ access_token: accessToken }),
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Authorization: `Basic ${credentials}` },
+    body: new URLSearchParams({ token: options.token, token_type_hint: 'access_token' }),
   })
   if (!response.ok) throw new TokenRequestError(response.status)
 }
