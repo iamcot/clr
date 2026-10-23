@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "strava:subscribe": "node --env-file=.env.local scripts/stravaSubscribe.ts",
     "db:types": "supabase gen types typescript --local > src/lib/types/database.ts"
   },
   "dependencies": {

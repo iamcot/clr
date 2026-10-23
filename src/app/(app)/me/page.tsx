@@ -1,10 +1,16 @@
 import Link from 'next/link'
+import { requireActiveMember } from '@/lib/auth/currentMember'
+import { getBackfillStatusText } from '@/lib/strava/syncStatus'
 
-export default function MePage() {
+export default async function MePage() {
+  const member = await requireActiveMember()
+  const backfillStatus = await getBackfillStatusText(member.id)
+
   return (
     <section>
       <h1 className="text-2xl font-black">Tôi</h1>
       <p className="mt-2 text-muted">Hồ sơ cá nhân đang được xây dựng.</p>
+      {backfillStatus && <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">{backfillStatus}</p>}
       <Link href="/me/settings" className="mt-6 flex min-h-11 items-center font-bold text-brand-dark underline">
         Cài đặt hồ sơ
       </Link>

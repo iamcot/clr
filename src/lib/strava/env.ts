@@ -15,3 +15,11 @@ export function getTokenEncKey() {
 export function getStravaRedirectUri() {
   return `${getAppUrl()}/api/auth/strava/callback`
 }
+
+export function getWebhookVerifyToken() {
+  return requireEnv('STRAVA_WEBHOOK_VERIFY_TOKEN')
+}
+
+export function getCronSecret() {
+  return requireEnv('CRON_SECRET')
+}

@@ -1,0 +1,25 @@
+{
+  "id": 9876543210,
+  "name": "Chạy sáng Hồ Tây",
+  "sport_type": "Run",
+  "start_date": "2026-10-20T23:05:12Z",
+  "start_date_local": "2026-10-21T06:05:12Z",
+  "timezone": "(GMT+07:00) Asia/Saigon",
+  "distance": 10234.6,
+  "moving_time": 3010,
+  "elapsed_time": 3120,
+  "total_elevation_gain": 42.3,
+  "average_heartrate": 151.4,
+  "max_heartrate": 178,
+  "average_cadence": 84.2,
+  "manual": false,
+  "trainer": false,
+  "private": false,
+  "visibility": "everyone",
+  "map": { "summary_polyline": "abc123polyline" },
+  "start_latlng": [21.0545, 105.8227],
+  "best_efforts": [
+    { "name": "400m", "distance": 400, "elapsed_time": 98, "pr_rank": null },
+    { "name": "5K", "distance": 5000, "elapsed_time": 1450, "pr_rank": 2 }
+  ]
+}

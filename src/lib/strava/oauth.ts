@@ -5,7 +5,15 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const REQUESTED_SCOPE = 'read,activity:read_all'
 const REQUIRED_SCOPE = 'activity:read_all'
 
+const DEAUTHORIZE_URL = 'https://www.strava.com/oauth/deauthorize'
+
 type FetchFn = typeof fetch
+
+export class TokenRequestError extends Error {
+  constructor(readonly status: number) {
+    super(`Strava trả lỗi ${status} khi lấy token`)
+  }
+}
 
 export type StravaAthlete = {
   id: number
@@ -72,7 +80,7 @@ async function postToken(fetchFn: FetchFn, body: Record<string, string>): Promis
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  if (!response.ok) throw new Error(`Strava trả lỗi ${response.status} khi lấy token`)
+  if (!response.ok) throw new TokenRequestError(response.status)
   return (await response.json()) as Record<string, unknown>
 }
 
@@ -120,4 +128,13 @@ export async function refreshToken(
     grant_type: 'refresh_token',
   })
   return toTokenSet(payload)
+}
+
+export async function deauthorize(fetchFn: FetchFn, accessToken: string): Promise<void> {
+  const response = await fetchFn(DEAUTHORIZE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ access_token: accessToken }),
+  })
+  if (!response.ok) throw new TokenRequestError(response.status)
 }

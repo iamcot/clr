@@ -22,7 +22,7 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 ### 02 – Đăng nhập Strava
 - [x] 2.1 Bảng members + strava_tokens
 - [~] 2.2 OAuth start + callback ⚠️
-- [ ] 2.3 Thu hồi quyền
+- [~] 2.3 Thu hồi quyền
 - [x] 2.4 Hồ sơ lần đầu
 
 > Ghi chú task 2 (làm 2.1 + 2.2, chưa làm 2.3 và 2.4):
@@ -39,14 +39,26 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Ghi chú điều khoản Strava: không được hiển thị dữ liệu Strava của người này cho người khác (xem task 3.0 và `plans/strava-permission-email.md`). Task này chỉ lưu hồ sơ và token, chưa hiện số liệu của ai cho ai.
 
 ### 03 – Đồng bộ Strava
-- [ ] 3.0 Đọc điều khoản, chốt cách hiển thị ⚠️
-- [ ] 3.1 Bảng activities
-- [ ] 3.2 Client Strava + token + rate limit ⚠️
-- [ ] 3.3 Webhook ⚠️
-- [ ] 3.4 Kéo lịch sử ⚠️
-- [ ] 3.5 Luật hợp lệ
-- [ ] 3.6 Theo dõi đồng bộ cho BCN
+- [~] 3.0 Đọc điều khoản, chốt cách hiển thị ⚠️
+- [~] 3.1 Bảng activities
+- [~] 3.2 Client Strava + token + rate limit ⚠️
+- [~] 3.3 Webhook ⚠️
+- [~] 3.4 Kéo lịch sử ⚠️
+- [~] 3.5 Luật hợp lệ
+- [~] 3.6 Theo dõi đồng bộ cho BCN
 - [ ] Gửi đơn xin Strava duyệt app (việc của BCN, làm ngay khi 3.3 chạy được)
+
+> Ghi chú task 3 (làm 3.0 → 3.6 và 2.3 trong một phiên; chỉ chạy typecheck/lint/test/build, **chưa** test với DB và Strava thật nên các mục Nghiệm thu chưa tick):
+> - **3.0 điều khoản** (đọc `strava.com/legal/api` ngày 2026-10-23): mục 2 ghi dữ liệu Strava của một người "chỉ được hiển thị trong app cho chính người đó"; dữ liệu segment và leaderboard cũng là Strava Data; chia sẻ cho người khác cần "explicit consent" nhưng không mô tả cơ chế. Bản đồ, hạn xoá sau khi thu hồi quyền và logo "Powered by Strava" không có trong trang này (logo theo Brand Guidelines riêng). Vì vậy giữ phương án đã đề xuất: opt-in `members.share_stats_with_club` (tick ở `/me/settings`), bản đồ chỉ hiện cho chính chủ, cờ `settings.club_display_mode` quyết định hiển thị ở 06/07. **CoT vẫn cần chốt phương án A–E và gửi email xin phép Strava** (câu hỏi #9).
+> - Migration `0004_strava_sync.sql`: `activities` (cột `counts_for_club` sinh tự động = `passes_rules and not flagged_invalid`), `activity_best_efforts`, `strava_rate_state`, `strava_events`, `backfill_jobs`, view `activities_club` (không tên hoạt động, polyline, raw; chỉ người đã opt-in, bỏ hoạt động riêng tư) và `activities_review` (chỉ BCN, bỏ hoạt động riêng tư), hàm `set_activity_flag` (BCN đánh dấu, ghi `audit_logs`). `database.ts` vẫn viết tay.
+> - Token: không khoá dòng; làm mới xong ghi theo kiểu so sánh-và-ghi (`saveIfUnchanged`), thua cuộc đua thì đọc lại token mới. Refresh trả 400/401 thì coi như thu hồi: xoá token, dữ liệu và job như 2.3.
+> - Hạn mức: ngưỡng ở `src/config/strava.ts` (việc nền dùng tối đa 80% cửa sổ 15 phút và 70% hạn mức ngày, webhook dùng tới 100%). Cửa sổ căn theo UTC (15 phút tròn, nửa đêm UTC).
+> - Webhook `POST` chỉ ghi `strava_events` (trùng event thì bỏ qua) rồi xử lý ngay bằng `after()`; GitHub Actions (`.github/workflows/strava-cron.yml`, mỗi 5 phút và mỗi 15 phút) gọi `/api/cron/strava-events` và `/api/cron/backfill` làm lưới an toàn. Không dùng Vercel Cron vì gói miễn phí chỉ cho chạy theo ngày.
+> - Kéo lịch sử: job tự tạo cho thành viên `active` + đã kết nối (cron tạo nếu thiếu, nên không phụ thuộc task 4.2), mỗi lần chạy một trang 200 hoạt động cho mỗi job, bản tóm tắt không ghi đè hoạt động đã có. Sau đó lấy best efforts cho tối đa 20 hoạt động chạy chưa có chi tiết, mới nhất trước.
+> - 2.3: `/me/settings` có "Ngắt kết nối Strava" (gọi `oauth/deauthorize`, xoá token, hoạt động, job, rồi đăng xuất) và "Xoá toàn bộ dữ liệu Strava của tôi" (xoá hoạt động, dừng kéo lịch sử, vẫn nhận hoạt động mới). Webhook `athlete update authorized=false` làm như ngắt kết nối.
+> - 3.5: luật ở `src/config/activityRules.ts` (Run, TrailRun, VirtualRun; không nhập tay; pace nhanh nhất 2:50/km). Hoạt động không có quãng đường thì không tính. BCN chỉ **loại** thêm được hoạt động (cờ `flagged_invalid`), chưa có cách ép tính một hoạt động mà luật đã loại. Đổi luật xong chưa có nút tính lại `passes_rules` cho dữ liệu cũ.
+> - `/admin/*` mới có khung tối thiểu (`src/app/admin/layout.tsx`, chặn bằng `requireBcn`) để chứa `/admin/activities` và `/admin/sync`; task 4.1 sẽ thay bằng khung đầy đủ. Hook `onActivitiesChanged` ở `src/lib/strava/hooks.ts` đang rỗng, chờ task 6 và 7.
+> - Biến môi trường mới: `STRAVA_WEBHOOK_VERIFY_TOKEN`, `CRON_SECRET`; secret GitHub mới: `APP_URL`, `CRON_SECRET`. Script `npm run strava:subscribe -- create|list|delete <id>`.
 
 ### 04 – Thành viên
 - [ ] 4.1 Khung /admin
