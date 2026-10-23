@@ -34,4 +34,4 @@ Migration chỉ thêm file mới (`supabase/migrations/000N_*.sql`), không sử
 
 ## Triển khai
 
-Vercel: preview cho mỗi PR, production từ `main`. Biến môi trường khai báo theo `.env.example`, tách Preview và Production (Preview dùng project Supabase riêng).
+Vercel: preview cho mỗi PR, production từ `main`. Biến môi trường khai báo theo `.env.example` (URL công khai là `APP_URL`, không có tiền tố `NEXT_PUBLIC_`), tách Preview và Production (Preview dùng project Supabase riêng).

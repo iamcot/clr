@@ -20,10 +20,21 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Tên biến Supabase theo key mới: `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`.
 
 ### 02 – Đăng nhập Strava
-- [ ] 2.1 Bảng members + strava_tokens
-- [ ] 2.2 OAuth start + callback ⚠️
+- [x] 2.1 Bảng members + strava_tokens
+- [~] 2.2 OAuth start + callback ⚠️
 - [ ] 2.3 Thu hồi quyền
 - [ ] 2.4 Hồ sơ lần đầu
+
+> Ghi chú task 2 (làm 2.1 + 2.2, chưa làm 2.3 và 2.4):
+> - Chưa chạy được với Docker/Supabase thật và chưa test với Strava thật: mới chạy typecheck/lint/test/build. Các mục Nghiệm thu của 2.1/2.2 cần test tay sau khi có app Strava + project `clr-preview`. Cần chạy `supabase db push` migration `0002_members.sql` và `npm run db:types` (hiện `database.ts` vẫn viết tay).
+> - Biến `APP_URL` (server, không `NEXT_PUBLIC_`) thay `NEXT_PUBLIC_APP_URL`. Biến mới: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `TOKEN_ENC_KEY`.
+> - Next 16 đổi `middleware` thành `src/proxy.ts`. Proxy chỉ làm mới phiên và đẩy người chưa đăng nhập về `/login`; kiểm `status != active` làm ở layout `(app)` (`requireActiveMember`) để proxy không phải query DB mỗi request.
+> - Phiên: `admin.createUser` (lần đầu) + `generateLink` + `verifyOtp` (type `email`) đúng cách đã chọn trong plan. Đã tắt `enable_signup` trong `supabase/config.toml` (admin API vẫn tạo được user); production cần tắt tay trong Dashboard.
+> - `is_bcn()` chỉ true khi `role = 'bcn'` và `status = 'active'`; `is_treasurer()` tương tự với `treasurer`. Nếu thủ quỹ cũng phải có quyền BCN thì cần chỉnh.
+> - Thành viên tự sửa được `display_name, phone, city, birth_year, gender, share_private_in_totals`; cột quyền hạn do trigger `members_guard_privileged_columns` chặn (BCN và service role vượt qua). Thêm policy ghi `settings` cho BCN và key `zalo_group_url` (rỗng thì ẩn link ở `/pending`).
+> - Bước 6 của luồng (đưa vào hàng đợi kéo lịch sử) chưa có, làm ở task 3.4.
+> - Nút "Connect with Strava" chính thức (`public/strava/btn_strava.png`, do CoT thêm) đã dùng ở `/login`.
+> - Ghi chú điều khoản Strava: không được hiển thị dữ liệu Strava của người này cho người khác (xem task 3.0 và `plans/strava-permission-email.md`). Task này chỉ lưu hồ sơ và token, chưa hiện số liệu của ai cho ai.
 
 ### 03 – Đồng bộ Strava
 - [ ] 3.0 Đọc điều khoản, chốt cách hiển thị ⚠️
