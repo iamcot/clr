@@ -131,6 +131,7 @@ Gom từ mục "Câu hỏi cho BCN" của các file plan. Trả lời xong thì 
 | 6 | Luật challenge tháng hiện tại (gửi mẫu) | 07 | 7.2 | |
 | 7 | Mức phạt từng lỗi, có công khai danh sách nợ không | 08 | 8.1 | |
 | 8 | Ngân hàng của tài khoản quỹ, ai là thủ quỹ | 16 | 16.1 | |
+| 9 | Chọn cách hiển thị số liệu Strava cho người khác (A–E trong task 3.0), ai gửi email xin phép Strava | 03 | 6.4, 7.4 | |
 
 ---
 

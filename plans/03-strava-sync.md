@@ -20,6 +20,31 @@ Với 600 người, trung bình ~250–400 hoạt động/ngày → mỗi hoạt
 
 ## Task 3.0 – Đọc điều khoản và chốt cách hiển thị ⚠️
 
+### Vì sao "đồng bộ về DB mình rồi hiển thị" vẫn bị ràng buộc
+
+Điều khoản API áp lên **"Strava Data"**, tức mọi dữ liệu lấy qua API, **dù đã lưu ở đâu**. Lưu vào Postgres của mình không biến nó thành dữ liệu của mình. Nếu vi phạm, Strava có thể khoá app (mất đồng bộ cho cả 600 người) và không duyệt nâng giới hạn.
+
+Những gì đã biết (đọc 2026-10-23, cần đối chiếu lại bản gốc khi làm task):
+- Bản cập nhật API Agreement tháng 11/2024 ghi: *"Third-party apps are no longer able to display your Strava activity data on their surfaces to other users."* App bên thứ ba chỉ được hiện dữ liệu hoạt động Strava của một người **cho chính người đó**.
+- Điều khoản còn cấm xử lý hoặc công bố Strava Data, **kể cả dạng tổng hợp** (*"...including in an aggregated..."*), nên "chỉ hiện số tổng" cũng chưa chắc an toàn.
+- Strava nói ngoại lệ là các công cụ giúp người dùng hiểu dữ liệu của **chính họ**, và (theo tin báo chí) nền tảng huấn luyện viên được hiện dữ liệu cho HLV. Chưa thấy ngoại lệ nào cho CLB hay bảng xếp hạng.
+- Trường hợp Wandrer: Strava yêu cầu bảng xếp hạng công khai phải để người dùng **chủ động opt-in**, nhưng lại **từ chối** đề xuất chia sẻ bản đồ cho người khác kể cả khi có opt-in. Nghĩa là opt-in có thể chấp nhận cho số liệu xếp hạng, không chắc cho mọi thứ.
+- Nguồn: [Wandrer](https://news.wandrer.earth/2024/12/09/strava-wandrer-changes.html), [CityStrides forum](https://community.citystrides.com/t/new-strava-api-terms-dont-allow-sharing-activity-data-to-other-people/28433), [Velo](https://velo.outsideonline.com/news/strava-api-update-means-changes-to-the-fitness-app-ecosystem), bản gốc tại `strava.com/legal/api`.
+
+### Các phương án
+
+| # | Cách làm | Hiện được gì cho người khác | Rủi ro điều khoản | Công sức |
+|---|---|---|---|---|
+| A | **Opt-in từng người**: lúc kết nối, thành viên tick đồng ý công khai km/pace/thứ hạng trong CLB | Tên, km, %, thứ hạng của người đã opt-in | Trung bình (giống cách Strava chấp nhận cho leaderboard của Wandrer) | Thấp |
+| B | **Chỉ số tổng và trạng thái**: người khác chỉ thấy "Hoàn thành / Chưa", hạng, không thấy km/pace | Trạng thái, thứ hạng | Trung bình (điều khoản cấm cả dạng tổng hợp) | Thấp |
+| C | **Dựa vào Strava Club**: bảng xếp hạng tuần của Strava club CLR (Strava tự hiện), app chỉ link sang | Không gì trong app; người dùng xem trên Strava | Không | Rất thấp, nhưng mất challenge tuỳ biến |
+| D | **Tự khai**: app tính sẵn từ Strava cho riêng mình, cuối kỳ thành viên bấm "Nộp kết quả" (dữ liệu do người dùng tự gửi, không phải hiển thị thẳng Strava Data) | Kết quả đã nộp | Thấp đến trung bình (vùng xám) | Trung bình |
+| E | **Xin phép Strava bằng văn bản**: gửi email developers@strava.com mô tả app CLB, kèm cơ chế opt-in A | Theo câu trả lời | Không nếu được chấp thuận | Thấp, nhưng phải chờ |
+
+**Đề xuất:** làm **E ngay** (song song với đơn xin duyệt app), và xây app theo **A** với cờ cấu hình `settings.club_display_mode` = `full_opt_in` / `status_only` / `self_only` để đổi sang B hoặc chỉ-mình-thấy mà không phải sửa code nếu Strava không đồng ý. Bản đồ hoạt động **luôn** chỉ hiện cho chính chủ. Người dùng (CoT/BCN) chốt phương án trước khi làm 06.4 và 07.4.
+
+### Việc của task này
+
 Không code. Đọc bản hiện hành của Strava API Agreement + Brand Guidelines, trả lời và ghi vào `PROGRESS.md`:
 - App CLB có được hiện **tên + số km/pace** của thành viên A cho thành viên B (bảng xếp hạng challenge, xếp hạng level) không? Điều kiện gì (ví dụ cả hai đều đã kết nối app, A đồng ý)?
 - Có được hiện bản đồ (polyline) của A cho B không?
