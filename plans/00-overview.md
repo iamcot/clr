@@ -18,7 +18,11 @@ Nguyên tắc: **tự động trước, nhập tay sau**. Cái gì lấy đượ
 
 ## Giao diện
 
-Mockup: https://claude.ai/artifact/8ihK8LyVtwaMyoMBYoT9VR (6 màn điện thoại + trang admin). Mockup là tham khảo bố cục, không phải bản vẽ chính xác từng pixel.
+Mockup:
+- Trang chủ theo theme xanh (bản chốt màu): https://claude.ai/artifact/633iLUgEPjKHpd5Y4H4RwY
+- Bộ 6 màn điện thoại + trang admin (màu cũ navy/cam, chỉ tham khảo bố cục): https://claude.ai/artifact/8ihK8LyVtwaMyoMBYoT9VR
+
+Mockup là tham khảo bố cục, không phải bản vẽ chính xác từng pixel. Màu luôn theo bảng dưới.
 
 - Theme lấy từ logo CLB (`plans/assets/clr-logo.jpg`), **màu chủ đạo xanh lá**. Mockup giữ bố cục, chỉ thay màu theo bảng dưới (không vẽ lại mockup).
 - Font **Be Vietnam Pro**.

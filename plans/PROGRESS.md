@@ -146,5 +146,7 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 ```
 
 ### 2026-10-23 – CoT
+- Chốt plan. Theme xanh lấy từ logo CLB; mockup Trang chủ theme xanh làm chuẩn màu.
+  → Đã xử lý: thêm link mockup vào `plans/00-overview.md`, merge PR #1.
 - Coding style: viết code dễ đọc, theo single responsibility, ít comment inline.
   → Đã xử lý: ghi vào mục "Coding style" trong `CLAUDE.md`.
