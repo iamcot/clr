@@ -7,10 +7,17 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 ## MVP
 
 ### 01 – Khung dự án
-- [ ] 1.1 Khởi tạo Next.js
-- [ ] 1.2 Design token + layout khung
-- [ ] 1.3 Supabase
-- [ ] 1.4 Vercel + CI
+- [x] 1.1 Khởi tạo Next.js
+- [x] 1.2 Design token + layout khung
+- [~] 1.3 Supabase
+- [~] 1.4 Vercel + CI
+
+> Ghi chú task 1 (làm gộp 1.1 → 1.4 trong một phiên):
+> - Version đã ghim: next 16.4.2, react/react-dom 19.3.1, tailwindcss + @tailwindcss/postcss 4.3.3, typescript 5.9.3, eslint 9.39.5 + eslint-config-next 16.4.2, vitest 5.0.5, @supabase/ssr 0.12.7, @supabase/supabase-js 2.118.0, supabase CLI 2.122.0, server-only 0.0.1.
+> - Máy làm việc chỉ có Node 22 và không có Docker: đã chạy typecheck/lint/test/build, **chưa** chạy `supabase start` / `db reset` và chưa test kết nối thật. `src/lib/types/database.ts` đang viết tay, cần chạy `npm run db:types` sau khi có DB.
+> - Tab Challenge/Event/Quỹ để `enabled: false` vì chưa có trang; bật lại ở `src/config/nav.ts` khi làm tới.
+> - Còn thiếu để 1.3/1.4 xong hẳn: tạo project Supabase + Vercel, điền biến môi trường, kiểm tra PR thử có CI xanh và link preview.
+> - Tên biến Supabase theo key mới: `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`.
 
 ### 02 – Đăng nhập Strava
 - [ ] 2.1 Bảng members + strava_tokens
