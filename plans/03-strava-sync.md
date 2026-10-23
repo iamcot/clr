@@ -37,11 +37,13 @@ Những gì đã biết (đọc 2026-10-23, cần đối chiếu lại bản g�
 |---|---|---|---|---|
 | A | **Opt-in từng người**: lúc kết nối, thành viên tick đồng ý công khai km/pace/thứ hạng trong CLB | Tên, km, %, thứ hạng của người đã opt-in | Trung bình (giống cách Strava chấp nhận cho leaderboard của Wandrer) | Thấp |
 | B | **Chỉ số tổng và trạng thái**: người khác chỉ thấy "Hoàn thành / Chưa", hạng, không thấy km/pace | Trạng thái, thứ hạng | Trung bình (điều khoản cấm cả dạng tổng hợp) | Thấp |
+| B2 | **Chỉ % hoàn thành** (hướng CoT đang nghiêng tới): bảng xếp hạng challenge hiện tên + % chỉ tiêu (ví dụ 73%), không hiện km/pace; ai cũng biết mục tiêu nên % vẫn suy ngược ra được km | Tên, %, thứ hạng | Trung bình: % vẫn **tính ra từ Strava Data** và suy ngược được ra km, nên về bản chất vẫn là công bố dữ liệu dạng tổng hợp. Nhẹ hơn hiện km nhưng không phải vùng an toàn. Nên kèm opt-in như A | Thấp |
 | C | **Dựa vào Strava Club**: bảng xếp hạng tuần của Strava club CLR (Strava tự hiện), app chỉ link sang | Không gì trong app; người dùng xem trên Strava | Không | Rất thấp, nhưng mất challenge tuỳ biến |
 | D | **Tự khai**: app tính sẵn từ Strava cho riêng mình, cuối kỳ thành viên bấm "Nộp kết quả" (dữ liệu do người dùng tự gửi, không phải hiển thị thẳng Strava Data) | Kết quả đã nộp | Thấp đến trung bình (vùng xám) | Trung bình |
+| D2 | **Thành viên tự nhập km cho challenge**: không dùng API cho bảng xếp hạng. Mỗi buổi (hoặc cuối tuần) thành viên tự gõ km + đính kèm ảnh chụp màn hình từ đồng hồ/app; BCN duyệt ngẫu nhiên hoặc khi có khiếu nại. Strava vẫn dùng cho thống kê riêng của từng người | Mọi thứ đã tự nhập (đây là dữ liệu người dùng cung cấp, không phải Strava Data) | Thấp nhất | Cao cho thành viên (phải nhập tay), dễ gian lận, BCN phải kiểm |
 | E | **Xin phép Strava bằng văn bản**: gửi email developers@strava.com mô tả app CLB, kèm cơ chế opt-in A | Theo câu trả lời | Không nếu được chấp thuận | Thấp, nhưng phải chờ |
 
-**Đề xuất:** làm **E ngay** (song song với đơn xin duyệt app), và xây app theo **A** với cờ cấu hình `settings.club_display_mode` = `full_opt_in` / `status_only` / `self_only` để đổi sang B hoặc chỉ-mình-thấy mà không phải sửa code nếu Strava không đồng ý. Bản đồ hoạt động **luôn** chỉ hiện cho chính chủ. Người dùng (CoT/BCN) chốt phương án trước khi làm 06.4 và 07.4.
+**Đề xuất:** làm **E ngay** (song song với đơn xin duyệt app), và xây app theo **A** với cờ cấu hình `settings.club_display_mode` = `full_opt_in` / `percent_only` (B2) / `status_only` / `self_only` để đổi sang B2, B hoặc chỉ-mình-thấy mà không phải sửa code nếu Strava không đồng ý. Bản đồ hoạt động **luôn** chỉ hiện cho chính chủ. Nếu Strava từ chối cả opt-in thì phương án dự phòng cho challenge là D2 (tự nhập km), schema `challenge_entry_activities` để sẵn cột `source ('strava','manual')` cho trường hợp này. Người dùng (CoT/BCN) chốt phương án trước khi làm 06.4 và 07.4.
 
 ### Việc của task này
 
