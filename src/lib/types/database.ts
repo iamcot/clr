@@ -51,6 +51,7 @@ export type Database = {
           share_private_in_totals: boolean
           strava_connected: boolean
           joined_at: string | null
+          profile_onboarded_at: string | null
           created_at: string
           updated_at: string
         }
@@ -70,6 +71,7 @@ export type Database = {
           share_private_in_totals?: boolean
           strava_connected?: boolean
           joined_at?: string | null
+          profile_onboarded_at?: string | null
           created_at?: string
           updated_at?: string
         }
