@@ -34,6 +34,7 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Thành viên tự sửa được `display_name, phone, city, birth_year, gender, share_private_in_totals`; cột quyền hạn do trigger `members_guard_privileged_columns` chặn (BCN và service role vượt qua). Thêm policy ghi `settings` cho BCN và key `zalo_group_url` (rỗng thì ẩn link ở `/pending`).
 > - Bước 6 của luồng (đưa vào hàng đợi kéo lịch sử) chưa có, làm ở task 3.4.
 > - Nút "Connect with Strava" chính thức (`public/strava/btn_strava.png`, do CoT thêm) đã dùng ở `/login`.
+> - Migration production tự chạy khi merge vào `main` (`.github/workflows/migrate-production.yml`, cần 3 secret ghi trong README). Preview vẫn chạy tay.
 > - Task 2.4: thêm cột `members.profile_onboarded_at` (migration `0003`). Layout `(app)` chuyển người chưa có giá trị này sang `/welcome` (form tên, giới tính, năm sinh, SĐT); bấm Lưu hoặc "Để sau" đều ghi mốc nên form chỉ hiện một lần. Sửa lại ở `/me/settings` (trang này mới có form hồ sơ, 2.3 và 4.4 sẽ thêm phần còn lại). Luật kiểm tra đầu vào ở `src/lib/members/profileInput.ts`, ngưỡng ở `src/config/profile.ts`. Chưa test tay trên DB thật.
 > - Ghi chú điều khoản Strava: không được hiển thị dữ liệu Strava của người này cho người khác (xem task 3.0 và `plans/strava-permission-email.md`). Task này chỉ lưu hồ sơ và token, chưa hiện số liệu của ai cho ai.
 

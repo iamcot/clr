@@ -22,11 +22,13 @@ Sinh lại kiểu DB sau khi đổi schema: `npm run db:types`.
 
 ## Đưa migration lên production
 
-Chạy tay sau khi merge vào `main`:
+Tự động: khi merge vào `main` có file mới trong `supabase/migrations/`, workflow `Migrate production` chạy `supabase db push` lên project production. Cần 3 secret trong GitHub (Settings → Secrets and variables → Actions): `SUPABASE_ACCESS_TOKEN` (tạo ở supabase.com/dashboard/account/tokens), `SUPABASE_DB_PASSWORD` (mật khẩu database của project production), `SUPABASE_PROJECT_REF` (project ref của `clr`). Có thể chạy lại tay ở tab Actions.
+
+Preview (`clr-preview`) vẫn chạy tay:
 
 ```bash
 npx supabase login
-npx supabase link --project-ref <project-ref-production>
+npx supabase link --project-ref <project-ref-preview>
 npx supabase db push
 ```
 
