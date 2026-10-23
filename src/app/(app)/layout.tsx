@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
 import AppTabs from '@/components/AppTabs'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 
@@ -12,7 +13,8 @@ function AppHeader() {
 }
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  await requireActiveMember()
+  const member = await requireActiveMember()
+  if (!member.profile_onboarded_at) redirect('/welcome')
 
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
