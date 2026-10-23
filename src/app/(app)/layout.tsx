@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import AppTabs from '@/components/AppTabs'
+import { requireActiveMember } from '@/lib/auth/currentMember'
 
 function AppHeader() {
   return (
@@ -10,7 +11,9 @@ function AppHeader() {
   )
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  await requireActiveMember()
+
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
       <AppHeader />

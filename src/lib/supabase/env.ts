@@ -1,8 +1,4 @@
-function requireEnv(name: string): string {
-  const value = process.env[name]
-  if (!value) throw new Error(`Thiếu biến môi trường ${name}`)
-  return value
-}
+import { requireEnv } from '@/lib/env'
 
 export function getSupabaseUrl() {
   return requireEnv('NEXT_PUBLIC_SUPABASE_URL')

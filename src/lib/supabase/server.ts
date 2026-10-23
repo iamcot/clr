@@ -14,7 +14,7 @@ export async function createSupabaseServerClient() {
         try {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
         } catch {
-          // Server Component không ghi được cookie; phiên được làm mới ở proxy (task 2.2)
+          // Server Component không ghi được cookie; phiên được làm mới ở src/proxy.ts
         }
       },
     },
