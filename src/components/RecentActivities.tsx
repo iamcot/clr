@@ -1,30 +1,32 @@
+import RouteMap from '@/components/RouteMap'
 import { formatDateVi } from '@/lib/format/dateTime'
+import { formatKm, formatPace } from '@/lib/stats/format'
 import type { OwnActivity } from '@/lib/strava/recentActivities'
-
-function formatKm(distanceMeters: number): string {
-  return `${(distanceMeters / 1000).toFixed(2)} km`
-}
 
 function ActivityRow({ activity }: { activity: OwnActivity }) {
   return (
-    <li className="rounded-lg bg-white p-3">
-      <p className="font-bold">{activity.name || activity.sport_type}</p>
-      <p className="text-sm text-muted">
-        {formatDateVi(activity.start_date)} · {formatKm(activity.distance_m)}
-      </p>
-      {!activity.counts_for_club && (
-        <p className="text-sm text-danger">
-          {activity.flagged_invalid ? 'BCN đánh dấu không hợp lệ' : 'Không được tính cho CLB'}
+    <li className="flex gap-3 rounded-lg bg-white p-3">
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-bold">{activity.name || activity.sport_type}</p>
+        <p className="text-sm text-muted">
+          {formatDateVi(activity.start_date)} · {formatKm(activity.distance_m)} ·{' '}
+          {formatPace(activity.distance_m, activity.moving_time_s)}
         </p>
-      )}
-      <a
-        href={`https://www.strava.com/activities/${activity.id}`}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-1 inline-flex min-h-11 items-center text-sm font-bold text-brand-dark underline"
-      >
-        Xem trên Strava
-      </a>
+        {!activity.counts_for_club && (
+          <p className="text-sm text-danger">
+            {activity.flagged_invalid ? 'BCN đánh dấu không hợp lệ' : 'Không được tính cho CLB'}
+          </p>
+        )}
+        <a
+          href={`https://www.strava.com/activities/${activity.id}`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex min-h-11 items-center text-sm font-bold text-brand-dark underline"
+        >
+          View on Strava
+        </a>
+      </div>
+      <RouteMap polyline={activity.summary_polyline} />
     </li>
   )
 }
@@ -39,6 +41,7 @@ export default function RecentActivities({ activities }: { activities: OwnActivi
           <ActivityRow key={activity.id} activity={activity} />
         ))}
       </ul>
+      {activities.length > 0 && <p className="mt-2 text-xs text-muted">Powered by Strava</p>}
     </section>
   )
 }

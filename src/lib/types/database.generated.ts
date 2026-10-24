@@ -173,6 +173,78 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"pr_overrides": {
+                  Row: {
+                    "created_at": string,"distance_name": string,"member_id": string,"note": string | null,"race_result_id": string | null,"source": string,"time_s": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"distance_name": string,"member_id": string,"note"?: string | null,"race_result_id"?: string | null,"source"?: string,"time_s": number
+                  }
+                  Update: {
+                    "created_at"?: string,"distance_name"?: string,"member_id"?: string,"note"?: string | null,"race_result_id"?: string | null,"source"?: string,"time_s"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "pr_overrides_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "pr_overrides_race_result_fkey"
+      columns: ["race_result_id"]
+isOneToOne: false
+      referencedRelation: "race_results"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"races": {
+                  Row: {
+                    "city": string | null,"created_at": string,"created_by": string | null,"id": string,"name": string,"organizer": string | null,"race_date": string,"url": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "city"?: string | null,"created_at"?: string,"created_by"?: string | null,"id"?: string,"name": string,"organizer"?: string | null,"race_date": string,"url"?: string | null
+                  }
+                  Update: {
+                    "city"?: string | null,"created_at"?: string,"created_by"?: string | null,"id"?: string,"name"?: string,"organizer"?: string | null,"race_date"?: string,"url"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "races_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"race_results": {
+                  Row: {
+                    "activity_id": number | null,"bib": string | null,"certificate_url": string | null,"chip_time_s": number,"created_at": string,"distance_label": string,"distance_m": number,"gun_time_s": number | null,"id": string,"member_id": string,"race_id": string,"rank_age_group": number | null,"rank_overall": number | null,"verified_at": string | null,"verified_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_id"?: number | null,"bib"?: string | null,"certificate_url"?: string | null,"chip_time_s": number,"created_at"?: string,"distance_label": string,"distance_m": number,"gun_time_s"?: number | null,"id"?: string,"member_id": string,"race_id": string,"rank_age_group"?: number | null,"rank_overall"?: number | null,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Update: {
+                    "activity_id"?: number | null,"bib"?: string | null,"certificate_url"?: string | null,"chip_time_s"?: number,"created_at"?: string,"distance_label"?: string,"distance_m"?: number,"gun_time_s"?: number | null,"id"?: string,"member_id"?: string,"race_id"?: string,"rank_age_group"?: number | null,"rank_overall"?: number | null,"verified_at"?: string | null,"verified_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "race_results_race_id_fkey"
+      columns: ["race_id"]
+isOneToOne: false
+      referencedRelation: "races"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "race_results_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"settings": {
                   Row: {
                     "key": string,"updated_at": string,"value": NonNullable<Json>
@@ -284,6 +356,30 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"member_prs": {
+                  Row: {
+                    "activity_id": number | null,"distance_name": string | null,"elapsed_time_s": number | null,"member_id": string | null,"start_date": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"member_prs_club": {
+                  Row: {
+                    "distance_name": string | null,"elapsed_time_s": number | null,"member_id": string | null,"start_date": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"race_results_review": {
+                  Row: {
+                    "bib": string | null,"certificate_url": string | null,"chip_time_s": number | null,"display_name": string | null,"distance_label": string | null,"distance_m": number | null,"id": string | null,"member_id": string | null,"race_date": string | null,"race_name": string | null,"rank_overall": number | null,"verified_at": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"members_public": {
                   Row: {
                     "avatar_url": string | null,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"member_type": string | null
@@ -303,6 +399,9 @@ isOneToOne: false
           Functions: {
             "admin_review_members":
 { Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
+                           },
+"admin_verify_race_result":
+{ Args: { "p_result_id": string,"p_verified": boolean }; Returns: undefined
                            },
 "admin_update_member":
 { Args: { "p_member_id": string,"p_member_type": string,"p_role": string,"p_status": string }; Returns: undefined

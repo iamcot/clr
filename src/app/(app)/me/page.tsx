@@ -1,21 +1,49 @@
 import Link from 'next/link'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import PersonalRecordsCard from '@/components/PersonalRecordsCard'
+import ProfileHeader from '@/components/ProfileHeader'
+import QuickStats from '@/components/QuickStats'
+import RaceResultsList from '@/components/RaceResultsList'
 import RecentActivities from '@/components/RecentActivities'
+import { RECENT_RACES_ON_PROFILE } from '@/config/prDistances'
+import { requireActiveMember } from '@/lib/auth/currentMember'
+import { countFollowers } from '@/lib/members/followerCount'
+import { addActivitySuggestions, loadRaceResults } from '@/lib/races/loadRaces'
+import { loadOwnPersonalRecords } from '@/lib/records/loadPersonalRecords'
 import { loadOwnRecentActivities } from '@/lib/strava/recentActivities'
 import { getBackfillStatusText } from '@/lib/strava/syncStatus'
+import { loadOwnMonthAndYearSummary } from '@/lib/strava/yearSummary'
 
 export default async function MePage() {
   const member = await requireActiveMember()
-  const [backfillStatus, activities] = await Promise.all([
+  const [backfillStatus, activities, summary, records, races, followerCount] = await Promise.all([
     getBackfillStatusText(member.id),
     loadOwnRecentActivities(member.id),
+    loadOwnMonthAndYearSummary(member.id),
+    loadOwnPersonalRecords(member.id),
+    loadRaceResults(member.id, RECENT_RACES_ON_PROFILE),
+    countFollowers(member.id),
   ])
+  const racesWithSuggestions = await addActivitySuggestions(member.id, races)
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Tôi</h1>
-      <p className="mt-2 text-muted">Hồ sơ cá nhân đang được xây dựng.</p>
+      <ProfileHeader
+        displayName={member.display_name}
+        avatarUrl={member.avatar_url}
+        memberType={member.member_type}
+        memberCode={member.member_code}
+        followerCount={followerCount}
+      />
       {backfillStatus && <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">{backfillStatus}</p>}
+      <QuickStats month={summary.month} year={summary.year} />
+      <PersonalRecordsCard records={records} editable />
+      <div className="mt-6">
+        <h2 className="text-lg font-black">Giải đã chạy</h2>
+        <RaceResultsList results={racesWithSuggestions} editable />
+        <Link href="/me/races" className="flex min-h-11 items-center font-bold text-brand-dark underline">
+          Xem tất cả và thêm giải
+        </Link>
+      </div>
       <RecentActivities activities={activities} />
       <Link href="/me/settings" className="mt-6 flex min-h-11 items-center font-bold text-brand-dark underline">
         Cài đặt hồ sơ

@@ -79,10 +79,18 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - 4.4: `/me/settings` thêm tick cộng hoạt động riêng tư vào tổng (`share_private_in_totals`) và khối mã thành viên, loại, ngày vào. CoT đã trả lời câu hỏi BCN: BCN tự nhấn nút đổi loại (đã có ở trang chi tiết), không cần tự đề xuất; chưa chia nhóm/đội.
 
 ### 05 – Hồ sơ, PR, thành tích giải
-- [ ] 5.1 PR tự động
-- [ ] 5.2 Thành tích các giải
-- [ ] 5.3 Trang "Tôi"
-- [ ] 5.4 Hồ sơ công khai
+- [~] 5.1 PR tự động
+- [~] 5.2 Thành tích các giải
+- [~] 5.3 Trang "Tôi"
+- [~] 5.4 Hồ sơ công khai
+
+> Ghi chú task 5 (làm 5.1 → 5.4 trong một phiên; đã chạy typecheck/lint/test và thử migration `0006` cùng RLS bằng Postgres 16 cục bộ với auth giả, **chưa** test tay trên app và Strava thật nên Nghiệm thu chưa tick):
+> - Migration `0006_profile_pr.sql`: hàm `is_active_member()`, bảng `pr_overrides`, `races`, `race_results`, view `member_prs` (PR Strava của chính mình, `security_invoker`), `member_prs_club` (chỉ người đã bật chia sẻ, bỏ hoạt động riêng tư), `race_results_review` và hàm `admin_verify_race_result` (BCN xác minh, ghi `audit_logs`). Sửa kết quả giải sau khi BCN xác minh thì mất dấu xác minh (trigger). `database.generated.ts` sửa tay theo migration vì máy làm việc không có Docker; chạy `npm run db:types` để sinh lại.
+> - PR lấy tên best effort Strava không phân biệt hoa thường (`src/config/prDistances.ts`); chỉ tính hoạt động `counts_for_club`. Override (thời gian chip, nguồn `race`) được ưu tiên; nút "Dùng PR Strava" gỡ override. Chưa có form nhập override thủ công ngoài đường "Dùng làm PR" từ kết quả giải.
+> - Kết quả giải và PR override là dữ liệu nhập tay nên thành viên khác xem được (hồ sơ công khai, `/members/[id]`). PR từ Strava của người khác chỉ hiện khi `club_display_mode = 'full_opt_in'` **và** người đó bật chia sẻ. Hồ sơ công khai chưa có số km/pace tổng (chờ task 6).
+> - Giấy chứng nhận hiện chỉ nhận link (chờ upload R2 ở task 11.4). Giải dùng chung: gõ trùng tên (không phân biệt hoa thường) và ngày thì dùng lại giải đã có; gõ tên có gợi ý qua `datalist`.
+> - `/me`: km tháng/năm, số buổi, pace tháng tính trực tiếp từ `activities` (task 6 sẽ thay bằng bảng tổng hợp). Level hiện "chưa có"; khối Challenge/tiền phạt chưa làm vì task 7, 8 chưa có. Bản đồ nhỏ vẽ SVG từ `summary_polyline`, chỉ hiện cho chính chủ. Có "Powered by Strava" dạng chữ và link "View on Strava"; logo chính thức chưa thêm.
+> - `/admin/races` để BCN xác minh kết quả giải.
 
 ### 06 – Thống kê, level
 - [ ] 6.1 Bảng tổng hợp
@@ -176,6 +184,8 @@ Gom từ mục "Câu hỏi cho BCN" của các file plan. Trả lời xong thì 
 | 7 | Mức phạt từng lỗi, có công khai danh sách nợ không | 08 | 8.1 | |
 | 8 | Ngân hàng của tài khoản quỹ, ai là thủ quỹ | 16 | 16.1 | |
 | 9 | Chọn cách hiển thị số liệu Strava cho người khác (A–E trong task 3.0), ai gửi email xin phép Strava | 03 | 6.4, 7.4 | |
+| 10 | Ngoài 5 cự ly PR (1K, 5K, 10K, 21K, 42K) có cần 3K, 15K, ultra? | 05 | 5.1 | |
+| 11 | PR cho bảng vàng dùng thời gian Strava hay thời gian chip chính thức? | 05 | 12.1 | |
 
 ---
 
