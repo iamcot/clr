@@ -8,7 +8,7 @@ import { countUnreadPosts } from '@/lib/posts/loadPost'
 
 function AppHeader() {
   return (
-    <header className="flex items-center gap-2 bg-deep px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-white">
+    <header className="flex items-center gap-2 border-b border-line bg-white px-4 pb-2 pt-[calc(0.5rem+env(safe-area-inset-top))] text-deep">
       <Image src="/brand/clr-logo.jpg" alt="Logo CLR" width={32} height={32} className="rounded-full" />
       <span className="text-lg font-black tracking-wide">CLR</span>
     </header>
