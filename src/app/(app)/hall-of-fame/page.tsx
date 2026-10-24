@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import ClubRecordsView from '@/components/ClubRecordsView'
-import { HONOR_KIND_LABELS, type HonorKind } from '@/config/hallOfFame'
+import { AGE_GROUPS, HONOR_KIND_LABELS, type HonorKind } from '@/config/hallOfFame'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { loadHonors, type HonorView } from '@/lib/hallOfFame/loadHonors'
@@ -17,7 +17,7 @@ const TABS: { tab: Tab; label: string }[] = [
   { tab: 'milestone', label: HONOR_KIND_LABELS.milestone },
 ]
 
-type SearchParams = { tab?: string; year?: string }
+type SearchParams = { tab?: string; year?: string; age?: string }
 
 function parseTab(value: string | undefined): Tab {
   return TABS.find((item) => item.tab === value)?.tab ?? 'records'
@@ -27,9 +27,10 @@ function yearOf(honor: HonorView): string {
   return honor.date.slice(0, 4)
 }
 
-function buildHref(tab: Tab, year: string | undefined): string {
+function buildHref(tab: Tab, year: string | undefined, age?: string): string {
   const query = new URLSearchParams({ tab })
   if (year) query.set('year', year)
+  if (age) query.set('age', age)
   return `/hall-of-fame?${query.toString()}`
 }
 
@@ -44,11 +45,12 @@ export default async function HallOfFamePage({ searchParams }: { searchParams: P
   const params = await searchParams
   const tab = parseTab(params.tab)
   const year = params.year
+  const ageGroupKey = AGE_GROUPS.find((group) => group.key === params.age)?.key ?? null
 
   const honors = tab === 'records' ? [] : (await loadHonors({ approvedOnly: true })).filter((honor) => honor.kind === tab)
   const years = [...new Set(honors.map(yearOf))].sort().reverse()
   const visibleHonors = year ? honors.filter((honor) => yearOf(honor) === year) : honors
-  const records = tab === 'records' ? buildClubRecords(await loadVerifiedRecordResults(await createSupabaseServerClient())) : []
+  const records = tab === 'records' ? buildClubRecords(await loadVerifiedRecordResults(await createSupabaseServerClient()), ageGroupKey) : []
 
   return (
     <section>
@@ -60,7 +62,25 @@ export default async function HallOfFamePage({ searchParams }: { searchParams: P
           </Link>
         ))}
       </div>
-      {tab === 'records' && <ClubRecordsView tables={records} />}
+      {tab === 'records' && (
+        <>
+          <div className="mt-3 flex gap-2 overflow-x-auto">
+            <Link href={buildHref('records', undefined)} className={`${tabClass(!ageGroupKey)} shrink-0 px-4`}>
+              Mọi lứa tuổi
+            </Link>
+            {AGE_GROUPS.map((group) => (
+              <Link
+                key={group.key}
+                href={buildHref('records', undefined, group.key)}
+                className={`${tabClass(ageGroupKey === group.key)} shrink-0 px-4`}
+              >
+                {group.label}
+              </Link>
+            ))}
+          </div>
+          <ClubRecordsView tables={records} />
+        </>
+      )}
       {tab !== 'records' && (
         <>
           {years.length > 1 && (

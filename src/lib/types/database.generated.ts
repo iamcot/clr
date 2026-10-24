@@ -876,6 +876,14 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"record_member_info": {
+                  Row: {
+                    "birth_year": number | null,"id": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Functions: {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildClubRecords, classifyDistance, isNewClubRecord, type RecordResult } from '@/lib/hallOfFame/records'
+import { ageGroupOf, buildClubRecords, classifyDistance, isNewClubRecord, type RecordResult } from '@/lib/hallOfFame/records'
 
 function result(overrides: Partial<RecordResult>): RecordResult {
   return {
@@ -8,6 +8,7 @@ function result(overrides: Partial<RecordResult>): RecordResult {
     displayName: 'An',
     avatarUrl: null,
     gender: 'M',
+    birthYear: 1990,
     distanceMeters: 21097,
     chipTimeSeconds: 6000,
     raceName: 'Giải A',
@@ -76,5 +77,29 @@ describe('isNewClubRecord', () => {
 
   it('kết quả đầu tiên của nhóm là kỷ lục', () => {
     expect(isNewClubRecord([existing], 'old')).toBe(true)
+  })
+})
+
+describe('ageGroupOf', () => {
+  it('tính tuổi theo năm của giải', () => {
+    expect(ageGroupOf(2000, '2026-03-01')).toBe('u30')
+    expect(ageGroupOf(1996, '2026-03-01')).toBe('30s')
+    expect(ageGroupOf(1986, '2026-03-01')).toBe('40s')
+    expect(ageGroupOf(1976, '2026-03-01')).toBe('50p')
+  })
+
+  it('thiếu năm sinh thì không thuộc nhóm nào', () => {
+    expect(ageGroupOf(null, '2026-03-01')).toBeNull()
+  })
+})
+
+describe('buildClubRecords theo nhóm tuổi', () => {
+  it('chỉ giữ người thuộc nhóm tuổi được chọn', () => {
+    const results = [
+      result({ id: 'young', memberId: 'young', birthYear: 2000, chipTimeSeconds: 6000 }),
+      result({ id: 'senior', memberId: 'senior', birthYear: 1970, chipTimeSeconds: 6600 }),
+    ]
+    const table = buildClubRecords(results, '50p').find((item) => item.distanceKey === 'HM' && item.genderKey === 'M')
+    expect(table?.entries.map((entry) => entry.memberId)).toEqual(['senior'])
   })
 })

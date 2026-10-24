@@ -19,6 +19,21 @@ export const RECORD_GENDERS = [
   { key: 'F', label: 'Nữ' },
 ] as const
 
+export type AgeGroup = {
+  key: string
+  label: string
+  minAge: number
+  maxAge: number
+}
+
+// Tuổi tính theo năm của giải trừ năm sinh; khoảng đóng hai đầu
+export const AGE_GROUPS: readonly AgeGroup[] = [
+  { key: 'u30', label: 'Dưới 30', minAge: 0, maxAge: 29 },
+  { key: '30s', label: '30-39', minAge: 30, maxAge: 39 },
+  { key: '40s', label: '40-49', minAge: 40, maxAge: 49 },
+  { key: '50p', label: 'Trên 50', minAge: 50, maxAge: Infinity },
+]
+
 export const RECORD_TOP_N = 10
 
 // Mốc tổng km tích luỹ trong CLB

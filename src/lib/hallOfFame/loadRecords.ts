@@ -23,6 +23,8 @@ export async function loadVerifiedRecordResults(supabase: Client): Promise<Recor
       rows.map((row) => row.member_id),
     )
   const memberById = new Map((members ?? []).map((member) => [member.id, member]))
+  const { data: infos } = await supabase.from('record_member_info').select('id, birth_year')
+  const birthYearById = new Map((infos ?? []).map((info) => [info.id, info.birth_year]))
 
   return rows.flatMap((row) => {
     const member = memberById.get(row.member_id)
@@ -34,6 +36,7 @@ export async function loadVerifiedRecordResults(supabase: Client): Promise<Recor
         displayName: member.display_name ?? 'Thành viên',
         avatarUrl: member.avatar_url,
         gender: member.gender,
+        birthYear: birthYearById.get(row.member_id) ?? null,
         distanceMeters: row.distance_m,
         chipTimeSeconds: row.chip_time_s,
         raceName: row.races.name,
