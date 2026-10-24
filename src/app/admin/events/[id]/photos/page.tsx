@@ -19,7 +19,7 @@ export default async function AdminEventPhotosPage({ params }: { params: Promise
 
   return (
     <section>
-      <Link href={`/admin/events/${id}`} className="text-sm text-muted underline">
+      <Link href={`/admin/events/${id}`} className="text-sm text-muted">
         ← {event.title}
       </Link>
       <h1 className="mt-2 mb-4 text-2xl font-black">Quản lý ảnh ({photos.length})</h1>

@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRealtimeRefresh } from '@/components/useRealtimeRefresh'
-import { REEL_ANIMATION_MS, REEL_ITEM_HEIGHT_PX, REEL_NAME_COUNT, type DrawStatus } from '@/config/draw'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { DRAW_POLL_INTERVAL_MS, REEL_ANIMATION_MS, REEL_ITEM_HEIGHT_PX, REEL_NAME_COUNT, type DrawStatus } from '@/config/draw'
 import type { DrawDetail } from '@/lib/draw/loadDraw'
+import { estimateClockOffset, pickBetterOffset } from '@/lib/draw/clockOffset'
 import { buildReelNames, easeOutCubic, reelProgress } from '@/lib/draw/reel'
 
 type DrawResultView = DrawDetail['results'][number]
@@ -19,17 +20,60 @@ type DrawLiveProps = {
 
 const FRAME_INTERVAL_MS = 50
 
-// Đồng hồ đã bù chênh lệch với server để mọi máy dừng hiệu ứng cùng lúc
-function useServerClock(serverNowMs: number): number {
-  const [offsetMs] = useState(() => serverNowMs - Date.now())
-  const [now, setNow] = useState(serverNowMs)
+type Snapshot = { status: DrawStatus; results: DrawResultView[] }
+type ClockEstimate = { offsetMs: number; roundTripMs: number }
+
+// Hỏi trạng thái định kỳ khi đang quay; mỗi lần hỏi cũng cập nhật độ lệch đồng hồ với server
+// nên mọi máy dừng hiệu ứng cùng lúc (không phụ thuộc Realtime)
+function useLiveDraw(drawId: string, initial: DrawLiveProps) {
+  const router = useRouter()
+  const [snapshot, setSnapshot] = useState<Snapshot>({ status: initial.status, results: initial.results })
+  const [now, setNow] = useState(initial.serverNowMs)
+  const clock = useRef<ClockEstimate | null>(null)
+  const knownStatus = useRef(initial.status)
+  const polling = snapshot.status === 'live'
+
   useEffect(() => {
-    const tick = () => setNow(Date.now() + offsetMs)
+    // Trước lần hỏi đầu tiên, dùng mốc thời gian lúc server dựng trang
+    clock.current ??= { offsetMs: initial.serverNowMs - Date.now(), roundTripMs: Infinity }
+    const tick = () => setNow(Date.now() + (clock.current?.offsetMs ?? 0))
     tick()
     const timer = setInterval(tick, FRAME_INTERVAL_MS)
     return () => clearInterval(timer)
-  }, [offsetMs])
-  return now
+  }, [initial.serverNowMs])
+
+  useEffect(() => {
+    let cancelled = false
+    async function poll() {
+      const sentAt = Date.now()
+      const response = await fetch(`/api/draws/${drawId}/state`, { cache: 'no-store' }).catch(() => null)
+      if (cancelled || !response?.ok) return
+      const state = (await response.json()) as { status: DrawStatus; results: DrawResultView[]; serverNowMs: number }
+      const receivedAt = Date.now()
+      clock.current = pickBetterOffset(clock.current, {
+        offsetMs: estimateClockOffset(state.serverNowMs, sentAt, receivedAt),
+        roundTripMs: receivedAt - sentAt,
+      })
+      setSnapshot({ status: state.status, results: state.results })
+      if (state.status !== knownStatus.current) {
+        knownStatus.current = state.status
+        router.refresh()
+      }
+    }
+    void poll()
+    if (!polling) {
+      return () => {
+        cancelled = true
+      }
+    }
+    const timer = setInterval(() => void poll(), DRAW_POLL_INTERVAL_MS)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [drawId, polling, router])
+
+  return { snapshot, now }
 }
 
 function Reel({ result, names, now }: { result: DrawResultView; names: string[]; now: number }) {
@@ -61,10 +105,10 @@ function Reel({ result, names, now }: { result: DrawResultView; names: string[];
   )
 }
 
-export default function DrawLive({ drawId, status, prizes, participantNames, results, serverNowMs }: DrawLiveProps) {
-  useRealtimeRefresh('draw_results', `draw_id=eq.${drawId}`)
-  useRealtimeRefresh('draws', `id=eq.${drawId}`)
-  const now = useServerClock(serverNowMs)
+export default function DrawLive(props: DrawLiveProps) {
+  const { drawId, prizes, participantNames } = props
+  const { snapshot, now } = useLiveDraw(drawId, props)
+  const { status, results } = snapshot
 
   const revealed = results.filter((result) => result.revealAt <= now)
   const spinning = results.find((result) => result.revealAt > now)

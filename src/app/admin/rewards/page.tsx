@@ -20,7 +20,7 @@ export default async function AdminRewardsPage() {
 
   return (
     <section>
-      <Link href="/admin/penalties" className="text-sm text-muted underline">
+      <Link href="/admin/penalties" className="text-sm text-muted">
         ← Thưởng phạt
       </Link>
       <h1 className="mt-2 text-2xl font-black">Thưởng</h1>

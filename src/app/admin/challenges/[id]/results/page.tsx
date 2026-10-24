@@ -25,7 +25,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
 
   return (
     <section>
-      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted underline">
+      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted">
         ← {challenge.title}
       </Link>
       <h1 className="mt-2 text-2xl font-black">Kết quả và chốt</h1>

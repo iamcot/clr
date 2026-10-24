@@ -77,3 +77,35 @@ export async function loadDrawDetail(drawId: string): Promise<DrawDetail | null>
     serverNowMs: Date.now(),
   }
 }
+
+export type DrawState = {
+  status: DrawStatus
+  results: DrawDetail['results']
+  serverNowMs: number
+}
+
+// Phần nhỏ nhất người xem cần để chạy hiệu ứng: trạng thái và các kết quả đã công bố
+export async function loadDrawState(drawId: string): Promise<DrawState | null> {
+  const supabase = await createSupabaseServerClient()
+  const [draw, prizes, results] = await Promise.all([
+    supabase.from('draws').select('status').eq('id', drawId).maybeSingle(),
+    supabase.from('draw_prizes').select('id, name').eq('draw_id', drawId),
+    supabase.from('draw_results').select('draw_order, prize_id, member_id, reveal_at').eq('draw_id', drawId).order('draw_order'),
+  ])
+  if (!draw.data) return null
+  const resultRows = results.data ?? []
+  const names = await loadMemberNames([...new Set(resultRows.map((row) => row.member_id))])
+  const prizeName = new Map((prizes.data ?? []).map((prize) => [prize.id, prize.name]))
+  return {
+    status: draw.data.status as DrawStatus,
+    results: resultRows.map((row) => ({
+      order: row.draw_order,
+      prizeId: row.prize_id,
+      prizeName: prizeName.get(row.prize_id) ?? '',
+      memberId: row.member_id,
+      memberName: names.get(row.member_id) ?? 'Thành viên',
+      revealAt: Date.parse(row.reveal_at),
+    })),
+    serverNowMs: Date.now(),
+  }
+}
