@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import AppTabs from '@/components/AppTabs'
+import OfflineBanner from '@/components/OfflineBanner'
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 
 function AppHeader() {
@@ -19,8 +21,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
       <AppHeader />
+      <OfflineBanner />
       <main className="px-4 pt-4 pb-24">{children}</main>
       <AppTabs />
+      <ServiceWorkerRegister />
     </div>
   )
 }

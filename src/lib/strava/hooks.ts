@@ -1,13 +1,20 @@
 import 'server-only'
+import { recomputeChallengesForMember } from '@/lib/challenges/recompute'
 import { refreshMemberStatsAndLevel } from '@/lib/stats/refreshStats'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
-// Điểm móc sau khi hoạt động của thành viên thay đổi; task 7 (challenge) sẽ thêm việc vào đây.
-// Lỗi tổng hợp không làm hỏng đồng bộ: job đêm sẽ tính lại.
-export async function onActivitiesChanged(memberId: string): Promise<void> {
+async function runSafely(label: string, memberId: string, task: () => Promise<void>) {
   try {
-    await refreshMemberStatsAndLevel(createSupabaseServiceClient(), memberId)
+    await task()
   } catch (error) {
-    console.error('Không cập nhật được thống kê sau khi hoạt động đổi', memberId, error)
+    console.error(`Không cập nhật được ${label} sau khi hoạt động đổi`, memberId, error)
   }
+}
+
+// Điểm móc sau khi hoạt động của thành viên thay đổi. Lỗi ở đây không làm hỏng đồng bộ:
+// job đêm (thống kê) và job chốt kỳ (challenge) sẽ tính lại.
+export async function onActivitiesChanged(memberId: string): Promise<void> {
+  const db = createSupabaseServiceClient()
+  await runSafely('thống kê', memberId, () => refreshMemberStatsAndLevel(db, memberId))
+  await runSafely('challenge', memberId, () => recomputeChallengesForMember(db, memberId))
 }

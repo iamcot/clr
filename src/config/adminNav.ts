@@ -17,8 +17,8 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/races', label: 'Kết quả giải', description: 'Xác minh thành tích các giải', enabled: true },
   { href: '/admin/stats', label: 'Thống kê & level', description: 'Tính lại thống kê và level', enabled: true },
   { href: '/admin/sync', label: 'Đồng bộ', description: 'Hạn mức Strava, hàng đợi, event lỗi', enabled: true },
-  { href: '/admin/challenges', label: 'Challenge', description: 'Tạo và theo dõi challenge', enabled: false },
-  { href: '/admin/penalties', label: 'Thưởng phạt', description: 'Thưởng và phạt thành viên', enabled: false },
+  { href: '/admin/challenges', label: 'Challenge', description: 'Tạo và theo dõi challenge', enabled: true },
+  { href: '/admin/penalties', label: 'Thưởng phạt', description: 'Thưởng và phạt thành viên', enabled: true },
   { href: '/admin/events', label: 'Event', description: 'Quản lý event và album', enabled: false },
   { href: '/admin/fund', label: 'Quỹ', description: 'Sổ quỹ và đối soát', enabled: false },
 ]

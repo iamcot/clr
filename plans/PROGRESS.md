@@ -110,23 +110,52 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Rate limit Strava: app đã nâng lên 10 VĐV. Code không giả định giới hạn 1 VĐV; hạn mức thật đọc từ header phản hồi của Strava và lưu ở `strava_rate_state` (các con số trong `DEFAULT_RATE_LIMITS` chỉ dùng trước khi có header đầu tiên), xem ở `/admin/sync`. Đã sửa ghi chú trong `plans/03-strava-sync.md`.
 
 ### 07 – Challenge
-- [ ] 7.1 Schema
-- [ ] 7.2 Tính kết quả ⚠️
-- [ ] 7.3 Admin tạo và quản lý
-- [ ] 7.4 Màn cho thành viên
-- [ ] 7.5 Chốt kỳ
-- [ ] 7.6 Phân loại, sắp xếp, tổng hợp
+- [~] 7.1 Schema
+- [~] 7.2 Tính kết quả ⚠️
+- [~] 7.3 Admin tạo và quản lý
+- [~] 7.4 Màn cho thành viên
+- [~] 7.5 Chốt kỳ
+- [~] 7.6 Phân loại, sắp xếp, tổng hợp
+
+> Ghi chú task 7 (làm cùng 8, 9 trong một PR; đã chạy typecheck/lint/test/build và thử migration `0008` bằng Postgres 16 cục bộ với auth giả: công bố, tự ghi danh, tham gia, RLS, xếp hạng, chuyển trạng thái; **chưa** test tay trên app và Strava thật nên Nghiệm thu chưa tick):
+> - Migration `0008_challenges.sql`: `challenges`, `challenge_categories`, `challenge_entries`, `challenge_entry_activities`, hàm `join_challenge`, `publish_challenge`, `pick_challenge_category`, `rank_challenge` (xếp hạng bằng `rank()` theo hạng mục), `advance_challenge_statuses`, trigger tự ghi danh khi thành viên được lên chính thức, bật Realtime cho `challenge_entries`. `database.generated.ts` sửa tay.
+> - Điểm tính bằng hàm thuần `src/lib/challenges/score.ts` (có test): lọc buổi theo km tối thiểu, pace, môn, khung giờ, trần km mỗi ngày, rồi cộng theo loại mục tiêu. Mốc kỳ tính theo giờ Việt Nam. Hoạt động riêng tư chỉ tính khi thành viên bật `share_private_in_totals`. Tính lại khi hoạt động đổi (hook `onActivitiesChanged`) và khi BCN bấm "Tính lại tất cả".
+> - Chuyển trạng thái chạy bằng GitHub Actions (job `challenges`, mỗi 15 phút, `GET /api/cron/challenges`), không dùng `pg_cron`. Qua `ends_at` + ân hạn thì sang `finalizing` và tính lại lần cuối. Chưa chốt thì chưa có phạt.
+> - Người khác chỉ thấy bảng xếp hạng của những người đã bật chia sẻ khi `club_display_mode = full_opt_in` (cùng luật 3.0 với level). Chế độ khác thì thành viên chỉ thấy dòng của mình. Bảng xếp hạng tự làm mới khi có thay đổi (Realtime kích hoạt `router.refresh()` sau 1,5 giây), chưa test trên 2 điện thoại.
+> - Giả định đã dùng cho câu hỏi #6 (chưa có luật thật từ BCN): ân hạn 48 giờ (`settings.challenge_grace_hours`); mục tiêu, km tối thiểu, pace do BCN nhập khi tạo challenge, form có sẵn mức phạt mẫu theo plan; không có challenge theo đội; mặc định chỉ tính Run/TrailRun/VirtualRun. BCN gửi luật tháng gần nhất thì tạo thành challenge mẫu ("Đặt làm challenge mẫu") để nhân bản sang tháng sau.
+> - "Chốt kết quả" ở `/admin/challenges/[id]/results`: xem trước thưởng phạt, chốt rồi sinh khoản (chốt lại không nhân đôi nhờ unique), tính lại level. Xuất CSV kết quả (mỗi lần ghi audit). `/admin/challenges/summary`: số kỳ tham gia, hoàn thành, chuỗi tháng liên tiếp, lọc năm và loại thành viên, sắp xếp; chỉ tính challenge đã chốt. Điểm CLB nay cộng challenge hoàn thành đã chốt trong cửa sổ level.
+> - Chưa làm: tạo bài thông báo kết quả (chờ task 10).
 
 ### 08 – Thưởng phạt
-- [ ] 8.1 Schema
-- [ ] 8.2 Sinh tự động từ challenge
-- [ ] 8.3 Admin thưởng phạt
-- [ ] 8.4 Màn cho thành viên
+- [~] 8.1 Schema
+- [~] 8.2 Sinh tự động từ challenge
+- [~] 8.3 Admin thưởng phạt
+- [~] 8.4 Màn cho thành viên
+
+> Ghi chú task 8 (đã thử migration `0009` bằng Postgres 16 cục bộ: thành viên không tự đánh dấu đã nộp được, sửa tiền khoản đã nộp bị chặn, BCN đánh dấu nhiều khoản một lần, tổng minh bạch đúng; **chưa** test tay trên app):
+> - Migration `0009_penalties_rewards.sql`: `penalty_types` (seed 5 loại), `penalties`, `rewards`, hàm `mark_penalties_paid`, `waive_penalties`, `unmark_penalty_paid`, `penalty_totals`, `can_manage_fund`. Đổi trạng thái sang đã nộp chỉ qua hàm kiểm `can_manage_fund()` (BCN hoặc thủ quỹ) và ghi `audit_logs`. Thành viên không có policy sửa nên không tự sửa được khoản của mình.
+> - Mức phạt mặc định theo `src/config/penalties.ts` (số tạm: không đạt 100.000đ, dưới 50% 200.000đ, vắng event 50.000đ, vi phạm quy chế 100.000đ); BCN sửa mức theo từng challenge khi tạo. Không có phạt luỹ tiến (chờ BCN trả lời câu hỏi #7).
+> - Công khai: theo quyết định tạm của plan, mọi thành viên xem được tổng phạt theo người trong tháng (không kèm lý do); BCN tắt được bằng tick ở `/admin/penalties` > "Tài khoản nhận phạt" (`settings.penalty_totals_public`). Thông tin tài khoản quỹ lưu ở `settings` (đọc được cả khi chưa đăng nhập vì `settings` đang cho đọc công khai); BCN nhập ở cùng chỗ.
+> - `/admin/penalties`: lọc tháng/trạng thái/loại/tên, tổng đã thu/còn nợ/đã miễn, thêm phạt tay cho nhiều người, chọn nhiều khoản rồi "Đã nộp" (tiền mặt/chuyển khoản/VietQR, mã giao dịch) hoặc "Miễn" (bắt buộc lý do), huỷ trạng thái nộp (bắt buộc lý do, có log), xuất CSV. `/admin/rewards` đánh dấu đã trao. Trang `/admin` hiện chỉ cho `role = bcn`; thủ quỹ đã có quyền ở DB nhưng chưa có cổng vào `/admin`.
+> - `/fund` (tab Quỹ): số nợ lớn, hướng dẫn nộp (số tài khoản, nội dung `CLR0123 PHAT T11`, nút sao chép có đường lùi cho iOS), danh sách khoản phạt và thưởng của mình, bảng tổng phạt tháng. Chưa test sao chép trên iPhone/Android thật.
 
 ### 09 – PWA
-- [ ] 9.1 Manifest + icon + shortcut
-- [ ] 9.2 Service worker
-- [ ] 9.3 Hướng dẫn cài
+- [~] 9.1 Manifest + icon + shortcut
+- [~] 9.2 Service worker
+- [~] 9.3 Hướng dẫn cài
+
+> Ghi chú task 9 (đã build thành công và `/manifest.webmanifest` được sinh; **chưa** thử cài trên Android/iPhone thật nên Nghiệm thu chưa tick):
+> - Icon sinh bằng `node scripts/generateIcons.mjs` (dùng `sharp` có sẵn qua Next, không thêm dependency) từ phần vòng tròn trắng của logo: 192, 512, 512 maskable, apple-touch 180 và 6 ảnh splash iOS. Manifest ở `src/app/manifest.ts` kèm 3 shortcut. Meta iOS (`appleWebApp`, `startupImage`) ở `src/app/layout.tsx`. Thanh trạng thái iOS để `black-translucent` (nền header xanh đậm `deep`).
+> - `public/sw.js` viết tay: cache-first cho `/_next/static`, icon, logo; network-first cho trang (điều hướng) có đường lùi về bản đã lưu hoặc trang chủ; không cache `/login` và `/api`. Phiên bản SW theo `?v=<commit sha>` (biến `NEXT_PUBLIC_BUILD_ID` trong `next.config.ts`), bản mới hiện thẻ "Có bản mới – Tải lại". Chỉ đăng ký ở production.
+> - Giới hạn: chỉ trang tải đầy đủ (mở app, F5) được lưu; chuyển trang trong app khi offline chưa chạy vì đó là request RSC. Dải "Đang ngoại tuyến – số liệu lúc HH:mm" lấy giờ từ header do SW gắn vào bản lưu. Trang cá nhân bị cache (quyết định tạm của plan); cache bị xoá khi mở trang `/login` (sau đăng xuất hoặc hết phiên).
+> - Thẻ cài ở trang chủ: Android bắt `beforeinstallprompt`; iPhone Safari hiện hướng dẫn 2 bước bằng chữ (chưa có hình); trình duyệt Zalo/Facebook hiện thẻ "Mở bằng Safari/Chrome" + nút sao chép link. Tắt thẻ nhớ 30 ngày bằng `localStorage`, không hiện khi đã chạy standalone.
+
+### 18 – Hoạt động nhập tay (đề xuất 2026-10-24, làm sau task 9)
+- [ ] 18.1 Schema
+- [ ] 18.2 Màn thành viên
+- [ ] 18.3 Màn BCN duyệt
+
+---
 
 ## V2
 

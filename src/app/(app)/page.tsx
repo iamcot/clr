@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import InstallPrompt from '@/components/InstallPrompt'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadFriendFeed } from '@/lib/members/friendFeed'
@@ -9,6 +10,7 @@ export default async function HomePage() {
 
   return (
     <section>
+      <InstallPrompt />
       <h1 className="text-2xl font-black">CLR</h1>
       <p className="mt-2 text-muted">Trang chủ đang được xây dựng.</p>
       <Link href="/members" className="mt-4 flex min-h-11 items-center font-bold text-brand-dark underline">
