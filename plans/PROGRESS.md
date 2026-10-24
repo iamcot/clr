@@ -196,9 +196,9 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 - [ ] 12.3 Trang bảng vàng
 
 ### 13 – Quay số
-- [ ] 13.1 Schema + thuật toán
-- [ ] 13.2 Màn quay trực tiếp
-- [ ] 13.3 Kết quả và trao thưởng
+- [x] 13.1 Schema + thuật toán
+- [x] 13.2 Màn quay trực tiếp
+- [x] 13.3 Kết quả và trao thưởng
 
 ### 14 – Thông báo đẩy
 - [ ] 14.1 Đăng ký nhận
@@ -293,3 +293,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Dữ liệu giả: `supabase/seed_demo.sql` (chạy tay trong SQL Editor, cũng bật `club_display_mode = full_opt_in`), gỡ bằng `supabase/seed_demo_cleanup.sql`.
 > - Tải ảnh lên cho ô ảnh bìa (event, bài viết, challenge), giấy chứng nhận và ảnh danh hiệu: `ImageField` + `POST /api/uploads/image`. Ảnh bìa chỉ BCN tải được, giấy chứng nhận thành viên tự tải; file lưu ở `covers/` và `certificates/` với tên ngẫu nhiên.
 > - Backfill: `maxDuration` tăng lên 300 giây, workflow thêm `--max-time 300`; dòng báo đồng bộ lịch sử hiện ở thẻ trang chủ kèm lời nhắc có thể mất vài phút.
+
+> Ghi chú task 13 (chưa chạy migration 0016 trên DB thật, chưa test 3 điện thoại, nên Nghiệm thu thủ công chưa tick; test đơn vị cho thuật toán, phân bố 10.000 lần quay và đồng hồ hiệu ứng đã qua):
+> - Migration `0016_draws.sql`: `draws`, `draw_secrets` (seed bí mật, không policy nào nên chỉ service role đọc), `draw_prizes`, `draw_participants`, `draw_results` (có `reveal_at`), RLS chỉ cho đọc; mọi thao tác ghi qua server action của BCN bằng service role. `rewards.source_type` thêm giá trị `draw`. Bảng `draws` và `draw_results` thêm vào publication realtime.
+> - Thuật toán `src/lib/draw/pick.ts` (PRNG mulberry32, hạt giống là 4 byte đầu của sha256(seed), sắp đầu vào theo memberId nên tái lập được); `seed.ts` dùng chung cho server và trang verify. Mỗi người trúng tối đa một giải (`ONE_PRIZE_PER_MEMBER`), `weight` đã hỗ trợ nhưng chưa có ô sửa trọng số (câu hỏi BCN về nhiều phiếu chưa được trả lời, mặc định 1).
+> - Đồng bộ: thay vì broadcast channel, dùng `postgres_changes` trên `draw_results` (hook `useRealtimeRefresh` có sẵn). Server ghi kết quả kèm `reveal_at = bây giờ + 7 giây`; client dựng hiệu ứng cuộn tên theo đồng hồ đã bù chênh lệch với server, chạy 5 giây cuối trước `reveal_at` nên mọi máy dừng cùng lúc. Người vào trễ hoặc tải lại thấy các giải đã qua `reveal_at`, giải đang quay thì chạy tiếp hiệu ứng. Người trúng giải đang quay có thể lộ sớm qua payload realtime (chấp nhận).
+> - Luồng BCN: `/admin/draws/new` tạo (nguồn challenge hoàn thành, event đã điểm danh hoặc chọn tay) → `/admin/draws/[id]` bỏ/thêm người → Chốt (sinh seed, công bố `seed_commit`) → Bắt đầu → Quay giải tiếp theo → Kết thúc (lộ `seed_reveal`, ghi `rewards`, đăng bài kết quả `draw:<id>`). Huỷ cần lý do, hiện công khai. Thành viên xem ở `/draws`, kiểm tra ở `/draws/[id]/verify`.
+> - Chưa có quy tắc loại người đang nợ phạt (câu hỏi BCN); BCN tự bỏ tay ở bước chuẩn bị. Chưa gửi thông báo đẩy khi bắt đầu quay (chờ task 14).

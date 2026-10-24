@@ -16,6 +16,7 @@ export const FLASH_TOASTS = {
   post_saved: { kind: 'success', text: 'Đã lưu bài viết' },
   post_deleted: { kind: 'success', text: 'Đã xoá bài viết' },
   event_saved: { kind: 'success', text: 'Đã lưu event' },
+  draw_created: { kind: 'success', text: 'Đã tạo đợt quay số' },
   activities_linked: { kind: 'success', text: 'Đã quét và gắn hoạt động cho người tham gia' },
   checkin_done: { kind: 'success', text: 'Điểm danh thành công' },
   checkin_already: { kind: 'success', text: 'Bạn đã điểm danh rồi' },

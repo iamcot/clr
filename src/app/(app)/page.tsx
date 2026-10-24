@@ -32,7 +32,7 @@ export default async function HomePage() {
       </h1>
       <HomeSummaryCard summary={summary} />
       {summary.unpaidAmount > 0 && <UnpaidFundBanner amount={summary.unpaidAmount} reason={summary.unpaidReason} />}
-      <div className="mt-2 flex gap-4">
+      <div className="mt-2 flex flex-wrap gap-x-4">
         <Link href="/members" className="flex min-h-11 items-center font-bold text-brand-dark underline">
           Danh bạ thành viên
         </Link>
@@ -41,6 +41,9 @@ export default async function HomePage() {
         </Link>
         <Link href="/hall-of-fame" className="flex min-h-11 items-center font-bold text-brand-dark underline">
           Bảng vàng
+        </Link>
+        <Link href="/draws" className="flex min-h-11 items-center font-bold text-brand-dark underline">
+          Quay số
         </Link>
       </div>
       {pinned.length > 0 && (
