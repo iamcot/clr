@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
+import { useBusyIndicator } from '@/components/BusyProvider'
 import { useToast } from '@/components/ToastProvider'
 import { PR_DISTANCES } from '@/config/prDistances'
 import { CUSTOM_DISTANCE_VALUE } from '@/lib/races/raceInput'
@@ -27,6 +28,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 export default function RaceResultForm({ defaults, raceNameSuggestions }: RaceResultFormProps) {
   const [state, formAction, pending] = useActionState(saveRaceResult, EMPTY_RACE_FORM_STATE)
   const toast = useToast()
+  useBusyIndicator(pending)
   const value = (field: string) => state.values[field] ?? defaults[field] ?? ''
   const [distance, setDistance] = useState(value('distance'))
 

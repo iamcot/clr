@@ -155,7 +155,7 @@ Làm:
   - pace trung bình chậm hơn ngưỡng nhanh nhất (ví dụ không nhanh hơn 2:50/km, chống đạp xe ghi thành chạy),
   - không bị BCN `flagged_invalid`.
 - Lưu kết quả vào cột tính sẵn `activities.counts_for_club bool` (cập nhật khi upsert và khi đổi config bằng hàm SQL chạy lại).
-- `/admin/activities`: danh sách hoạt động bị luật loại + nút đánh dấu hợp lệ/không hợp lệ, ghi `audit_logs`.
+- `/admin/activities`: danh sách hoạt động bị loại + nút đánh dấu hợp lệ/không hợp lệ, ghi `audit_logs`.
 
 Nghiệm thu:
 - [ ] Test các ca: chạy máy (`VirtualRun`) tính; đạp xe không tính; nhập tay không tính; pace 2:30/km không tính.
