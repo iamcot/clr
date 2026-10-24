@@ -189,6 +189,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
   → Đã xử lý: sửa plans/07-challenges.md task 7.2 (...)
 ```
 
+### 2026-10-24 – CoT (lần 2)
+- Chuyển trang chậm, không biết web đang chạy; toast nên ở cạnh dưới trên bottom bar; hoạt động có ở /admin/activities nhưng không thấy ở trang cá nhân.
+  → Đã xử lý: thanh tiến trình trên cùng khi bấm link nội bộ (`NavigationProgress`), `loading.tsx` skeleton cho `(app)` và `/admin`; toast chuyển xuống cạnh dưới, nằm trên bottom bar. Nguyên nhân hoạt động không hiện: trang `/me` chưa có phần danh sách hoạt động nào (đó là việc của task 5.3), không phải do RLS hay `counts_for_club`/`club_display_mode` (policy `activities_select_own` cho chủ sở hữu thấy tất cả). Thêm khối "Hoạt động gần đây" tối thiểu vào `/me` (20 hoạt động, hiện cả hoạt động bị loại kèm lý do); task 5.3 sẽ mở rộng.
+
 ### 2026-10-24 – CoT
 - `/admin` ra 404; các action (cập nhật hồ sơ...) bấm xong không có thông báo.
   → Đã xử lý: 404 do chưa có `src/app/admin/page.tsx` (task 3 chỉ có `/admin/activities` và `/admin/sync`; không phải do kiểm tra quyền, `requireBcn` chuyển người không phải BCN về `/`). Thêm trang `/admin` và link "Trang quản trị BCN" ở `/me` cho BCN. Thêm toast dùng chung (`ToastProvider`, `ActionForm`, cookie `clr_flash` cho action có redirect) và gắn vào form hồ sơ, tuỳ chọn chia sẻ, xoá dữ liệu/ngắt kết nối Strava, các action admin.
