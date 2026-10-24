@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import Avatar from '@/components/Avatar'
-import FollowButton from '@/components/FollowButton'
 import { MEMBER_DIRECTORY_PAGE_SIZE, MEMBER_TYPE_LABELS } from '@/config/members'
-import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
+import { getViewer } from '@/lib/auth/viewer'
 import type { MemberType } from '@/lib/types/database'
 import { toLikePattern } from '@/lib/members/memberFilter'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -24,18 +23,10 @@ async function loadDirectory(search: string, isMember: boolean) {
   )
 }
 
-async function loadFollowingIds(memberId: string | undefined): Promise<Set<string>> {
-  if (!memberId) return new Set()
-  const supabase = await createSupabaseServerClient()
-  const { data } = await supabase.from('follows').select('followee_id').eq('follower_id', memberId)
-  return new Set((data ?? []).map((row) => row.followee_id))
-}
-
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const viewer = await getViewer()
-  const me = activeMemberOf(viewer)
   const search = ((await searchParams).q ?? '').trim().slice(0, SEARCH_MAX_LENGTH)
-  const [members, followingIds] = await Promise.all([loadDirectory(search, me !== null), loadFollowingIds(me?.id)])
+  const members = await loadDirectory(search, viewer.kind === 'member')
 
   return (
     <section>
@@ -61,14 +52,6 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
                 {member.member_type && <span className="text-sm text-muted">{MEMBER_TYPE_LABELS[member.member_type]}</span>}
               </span>
             </Link>
-            {member.id !== me?.id && (
-              <FollowButton
-                memberId={member.id}
-                following={followingIds.has(member.id)}
-                viewerKind={viewer.kind}
-                next="/members"
-              />
-            )}
           </li>
         ))}
       </ul>

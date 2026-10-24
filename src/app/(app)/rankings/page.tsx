@@ -7,7 +7,7 @@ import { RANKING_PAGE_SIZE } from '@/config/levels'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { formatKm } from '@/lib/stats/format'
 import { levelName } from '@/lib/stats/level'
-import { loadClubRankingRows, loadLevelRankingRows } from '@/lib/stats/loadRankings'
+import { loadClubRankingRows } from '@/lib/stats/loadRankings'
 import { buildRankingPage, type RankedRow, type RankingMetric } from '@/lib/stats/ranking'
 import { canShowOthersActivities } from '@/lib/settings/clubDisplayMode'
 import { loadClubDisplayMode } from '@/lib/settings/loadClubDisplayMode'
@@ -69,14 +69,13 @@ function RankingLine({ row, metric, highlight }: { row: RankedRow; metric: Ranki
 export default async function RankingsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const viewer = await getViewer()
   const member = activeMemberOf(viewer)
-  const tabs = member ? TABS : TABS.filter((tab) => tab.metric === 'level')
   const params = await searchParams
-  const metric = member ? parseMetric(params.tab) : 'level'
+  const metric = parseMetric(params.tab)
   const page = Math.max(1, Number(params.page) || 1)
   const enabled = canShowOthersActivities(await loadClubDisplayMode())
   const result = enabled
     ? buildRankingPage(
-        member ? await loadClubRankingRows() : await loadLevelRankingRows(),
+        await loadClubRankingRows(!member),
         metric,
         { gender: params.gender || null, memberType: params.type || null },
         member?.id ?? '',
@@ -90,7 +89,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
     <section>
       <h1 className="text-2xl font-black">Xếp hạng CLB</h1>
       <div className="mt-3 flex gap-2">
-        {tabs.map((tab) => (
+        {TABS.map((tab) => (
           <Link
             key={tab.metric}
             href={buildHref({ ...base, tab: tab.metric })}
@@ -125,9 +124,6 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
           Lọc
         </button>
       </form>
-      {!member && (
-        <p className="mt-3 text-sm text-muted">Số km của từng người chỉ hiện với thành viên đã được duyệt.</p>
-      )}
       {!result && (
         <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">
           Bảng xếp hạng chưa mở vì CLB đang chờ Strava đồng ý cho hiển thị số liệu giữa các thành viên. Số liệu của bạn

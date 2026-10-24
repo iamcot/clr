@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
-      <AppHeader viewer={viewer} />
+      <AppHeader />
       <OfflineBanner />
       <main className="px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">{children}</main>
       <AppTabs homeBadge={unreadPosts} />
