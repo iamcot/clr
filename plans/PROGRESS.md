@@ -93,10 +93,21 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - `/admin/races` để BCN xác minh kết quả giải.
 
 ### 06 – Thống kê, level
-- [ ] 6.1 Bảng tổng hợp
-- [ ] 6.2 Level ⚠️
-- [ ] 6.3 Màn thống kê cá nhân
-- [ ] 6.4 Xếp hạng CLB
+- [~] 6.1 Bảng tổng hợp
+- [~] 6.2 Level ⚠️
+- [~] 6.3 Màn thống kê cá nhân
+- [~] 6.4 Xếp hạng CLB
+
+> Ghi chú task 6 (làm 6.1 → 6.4 trong một phiên; đã chạy typecheck/lint/test/build và thử migration `0007` bằng Postgres 16 cục bộ với auth giả, **chưa** test tay trên app thật nên Nghiệm thu chưa tick):
+> - Migration `0007_stats_level.sql`: bảng `member_stats_period` (tuần/tháng/năm/all, tuần bắt đầu thứ Hai giờ VN, kỳ `all` dùng `period_start = 1970-01-01`), hàm `refresh_member_stats(id)` và `refresh_all_member_stats()` (chỉ service role gọi), cột `members.level`, `club_points`, `level_updated_at` (thêm vào nhóm cột bị trigger chặn, thành viên không tự sửa được), view `club_rankings`. Cuối migration có `refresh_all_member_stats()` để điền sẵn bảng tổng hợp cho dữ liệu đang có. `database.generated.ts` sửa tay, chạy `npm run db:types` khi có Docker.
+> - Cập nhật tổng hợp: hook `onActivitiesChanged` gọi tính lại thống kê + level của người đó (lỗi chỉ log, không làm hỏng đồng bộ); `set_activity_flag` và đổi tuỳ chọn `share_private_in_totals` tính lại ngay trong DB; ngắt kết nối/xoá dữ liệu Strava xoá thống kê và đặt level về 1. Job đêm `GET /api/cron/stats` (GitHub Actions 19:00 UTC = 02:00 VN, thêm vào `strava-cron.yml`, dùng secret có sẵn) tính lại cho mọi người. Không dùng `pg_cron` để level tính được bằng TypeScript.
+> - Hoạt động riêng tư (`private` hoặc `only_me`) chỉ tính vào tổng khi `share_private_in_totals`. Chỉ tính `counts_for_club`.
+> - **Level** (số tạm theo plan, sửa ở `src/config/levels.ts`): tính trên 12 tháng lịch gần nhất (tháng hiện tại và 11 tháng trước), nên có thể tụt khi nghỉ lâu. Level 4 cần PR half-marathon, level 5 cần PR marathon (PR Strava hoặc PR ghi đè). Điểm CLB = km×1 + ngày chạy×2 + challenge hoàn thành×50; challenge chưa có nên đang là 0 (task 7 nối vào `recomputeLevels`). Chưa có thông báo khi lên level (chờ task 10/14); mới ghi `level_updated_at`. Đổi số trong `levels.ts` xong bấm nút ở `/admin/stats` để áp dụng ngay.
+> - Level là dữ liệu suy ra từ Strava nên theo luật 3.0: người khác chỉ thấy khi người đó bật chia sẻ **và** `club_display_mode = full_opt_in`.
+> - `/me/stats`: tab tuần/tháng/năm, số buổi, km, thời gian, pace, độ cao, buổi dài nhất, ngày chạy, chuỗi ngày dài nhất, so với kỳ trước, biểu đồ cột SVG (chạm cột hiện số). Khối Challenge và phạt hiện "—" chờ task 7, 8. `/me` giờ đọc km tháng/năm từ bảng tổng hợp và hiện level.
+> - `/rankings`: tab Tháng này / Năm nay / Level, lọc giới tính và loại thành viên, 50 dòng mỗi trang ("Xem thêm"), dòng của mình ghim cuối nếu ngoài trang. Chỉ có người đã bật chia sẻ; chế độ khác `full_opt_in` thì trang báo chưa mở. Chưa đo tải 600 dòng seed. Ranking đọc cả `club_rankings` (tối đa vài trăm dòng) rồi xếp ở server; nếu CLB vượt 1.000 người cần phân trang ở DB.
+> - Hồ sơ công khai `/members/[id]` hiện level, km tháng/năm của người đã chia sẻ (cùng điều kiện trên). Link "Bảng xếp hạng" nằm ở trang chủ, chưa thêm tab vì tab bar cố định 5 mục.
+> - Rate limit Strava: app đã nâng lên 10 VĐV. Code không giả định giới hạn 1 VĐV; hạn mức thật đọc từ header phản hồi của Strava và lưu ở `strava_rate_state` (các con số trong `DEFAULT_RATE_LIMITS` chỉ dùng trước khi có header đầu tiên), xem ở `/admin/sync`. Đã sửa ghi chú trong `plans/03-strava-sync.md`.
 
 ### 07 – Challenge
 - [ ] 7.1 Schema
