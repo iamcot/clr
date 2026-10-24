@@ -435,6 +435,127 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"draws": {
+                  Row: {
+                    "cancel_reason": string | null,"created_at": string,"created_by": string | null,"finished_at": string | null,"id": string,"seed_commit": string | null,"seed_reveal": string | null,"source_id": string | null,"source_type": string,"started_at": string | null,"status": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type": string,"started_at"?: string | null,"status"?: string,"title": string
+                  }
+                  Update: {
+                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type"?: string,"started_at"?: string | null,"status"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "draws_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"draw_secrets": {
+                  Row: {
+                    "draw_id": string,"seed": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "draw_id": string,"seed": string
+                  }
+                  Update: {
+                    "draw_id"?: string,"seed"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "draw_secrets_draw_id_fkey"
+      columns: ["draw_id"]
+isOneToOne: false
+      referencedRelation: "draws"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"draw_prizes": {
+                  Row: {
+                    "draw_id": string,"id": string,"name": string,"quantity": number,"sort": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "draw_id": string,"id"?: string,"name": string,"quantity": number,"sort"?: number
+                  }
+                  Update: {
+                    "draw_id"?: string,"id"?: string,"name"?: string,"quantity"?: number,"sort"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "draw_prizes_draw_id_fkey"
+      columns: ["draw_id"]
+isOneToOne: false
+      referencedRelation: "draws"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"draw_participants": {
+                  Row: {
+                    "draw_id": string,"member_id": string,"weight": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "draw_id": string,"member_id": string,"weight"?: number
+                  }
+                  Update: {
+                    "draw_id"?: string,"member_id"?: string,"weight"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "draw_participants_draw_id_fkey"
+      columns: ["draw_id"]
+isOneToOne: false
+      referencedRelation: "draws"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "draw_participants_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"draw_results": {
+                  Row: {
+                    "draw_id": string,"draw_order": number,"drawn_at": string,"member_id": string,"prize_id": string,"reveal_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "draw_id": string,"draw_order": number,"drawn_at"?: string,"member_id": string,"prize_id": string,"reveal_at": string
+                  }
+                  Update: {
+                    "draw_id"?: string,"draw_order"?: number,"drawn_at"?: string,"member_id"?: string,"prize_id"?: string,"reveal_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "draw_results_draw_id_fkey"
+      columns: ["draw_id"]
+isOneToOne: false
+      referencedRelation: "draws"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "draw_results_prize_id_fkey"
+      columns: ["prize_id"]
+isOneToOne: false
+      referencedRelation: "draw_prizes"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "draw_results_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"challenges": {
                   Row: {
                     "activity_filter": Json,"closed_at": string | null,"closed_by": string | null,"cover_url": string | null,"created_at": string,"created_by": string | null,"description": string,"ends_at": string,"goal_type": string,"id": string,"participation": string,"penalty_rule": Json,"ranking": string,"registration_closes_at": string | null,"reward_rule": Json,"starts_at": string,"status": string,"title": string,"updated_at": string
