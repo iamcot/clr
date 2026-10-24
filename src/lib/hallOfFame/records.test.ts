@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { ageGroupOf, buildClubRecords, classifyDistance, isNewClubRecord, type RecordResult } from '@/lib/hallOfFame/records'
+import {
+  ageGroupOf,
+  buildClubRecords,
+  checkNewClubRecord,
+  classifyDistance,
+  isNewClubRecord,
+  listRecordHolders, type RecordResult } from '@/lib/hallOfFame/records'
 
 function result(overrides: Partial<RecordResult>): RecordResult {
   return {
@@ -101,5 +107,28 @@ describe('buildClubRecords theo nhóm tuổi', () => {
     ]
     const table = buildClubRecords(results, '50p').find((item) => item.distanceKey === 'HM' && item.genderKey === 'M')
     expect(table?.entries.map((entry) => entry.memberId)).toEqual(['senior'])
+  })
+})
+
+describe('checkNewClubRecord', () => {
+  it('nêu lý do khi không phải kỷ lục', () => {
+    expect(checkNewClubRecord([result({ gender: null })], 'r1')).toBe('no_gender')
+    expect(checkNewClubRecord([result({ distanceMeters: 15000 })], 'r1')).toBe('unknown_distance')
+    expect(checkNewClubRecord([result({ id: 'a', memberId: 'a', chipTimeSeconds: 5000 }), result({})], 'r1')).toBe(
+      'not_faster',
+    )
+    expect(checkNewClubRecord([], 'r1')).toBe('result_missing')
+    expect(checkNewClubRecord([result({})], 'r1')).toBe('record')
+  })
+})
+
+describe('listRecordHolders', () => {
+  it('lấy người đứng đầu từng nhóm cự ly và giới tính', () => {
+    const holders = listRecordHolders([
+      result({ id: 'a', memberId: 'a', chipTimeSeconds: 6200 }),
+      result({ id: 'b', memberId: 'b', chipTimeSeconds: 5900 }),
+      result({ id: 'c', memberId: 'c', gender: 'F', chipTimeSeconds: 7000 }),
+    ])
+    expect(holders.map((holder) => holder.id).sort()).toEqual(['b', 'c'])
   })
 })

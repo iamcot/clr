@@ -21,7 +21,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   return (
     <article>
       <MarkPostRead postId={id} />
-      <Link href="/" className="text-sm text-muted underline">
+      <Link href="/" className="text-sm text-muted">
         ← Trang chủ
       </Link>
       {post.coverUrl && (

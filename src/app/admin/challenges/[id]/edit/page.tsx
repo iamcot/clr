@@ -36,7 +36,7 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
 
   return (
     <section>
-      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted underline">
+      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted">
         ← {challenge.title}
       </Link>
       <h1 className="mt-2 text-2xl font-black">Sửa challenge</h1>

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { FIRST_MARATHON_MIN_METERS, MILESTONES_KM } from '@/config/hallOfFame'
 import { requireBcn } from '@/lib/auth/requireBcn'
+import { announceCurrentRecords } from '@/lib/hallOfFame/announceRecord'
 import { parseSpecialHonor } from '@/lib/hallOfFame/specialHonorInput'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { actionError, actionSuccess, type ActionResult } from '@/lib/toast/actionResult'
@@ -64,4 +65,16 @@ export async function addSpecialHonor(formData: FormData): Promise<ActionResult>
   if (error) return actionError('Không thêm được danh hiệu, vui lòng thử lại')
   refreshPages()
   return actionSuccess('Đã thêm danh hiệu')
+}
+
+export async function announceRecords(): Promise<ActionResult> {
+  await requireBcn()
+  try {
+    const created = await announceCurrentRecords()
+    revalidatePath('/')
+    return actionSuccess(created > 0 ? `Đã đăng ${created} bài chúc mừng kỷ lục` : 'Mọi kỷ lục hiện tại đã có bài')
+  } catch (error) {
+    console.error('Không đăng được bài kỷ lục', error)
+    return actionError('Không đăng được bài kỷ lục, vui lòng thử lại')
+  }
 }

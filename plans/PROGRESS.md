@@ -300,3 +300,8 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Đồng bộ: thay vì broadcast channel, dùng `postgres_changes` trên `draw_results` (hook `useRealtimeRefresh` có sẵn). Server ghi kết quả kèm `reveal_at = bây giờ + 7 giây`; client dựng hiệu ứng cuộn tên theo đồng hồ đã bù chênh lệch với server, chạy 5 giây cuối trước `reveal_at` nên mọi máy dừng cùng lúc. Người vào trễ hoặc tải lại thấy các giải đã qua `reveal_at`, giải đang quay thì chạy tiếp hiệu ứng. Người trúng giải đang quay có thể lộ sớm qua payload realtime (chấp nhận).
 > - Luồng BCN: `/admin/draws/new` tạo (nguồn challenge hoàn thành, event đã điểm danh hoặc chọn tay) → `/admin/draws/[id]` bỏ/thêm người → Chốt (sinh seed, công bố `seed_commit`) → Bắt đầu → Quay giải tiếp theo → Kết thúc (lộ `seed_reveal`, ghi `rewards`, đăng bài kết quả `draw:<id>`). Huỷ cần lý do, hiện công khai. Thành viên xem ở `/draws`, kiểm tra ở `/draws/[id]/verify`.
 > - Chưa có quy tắc loại người đang nợ phạt (câu hỏi BCN); BCN tự bỏ tay ở bước chuẩn bị. Chưa gửi thông báo đẩy khi bắt đầu quay (chờ task 14).
+
+### Chỉnh trang chủ (sau task 13)
+> - Trang chủ: 4 ô lối tắt có icon màu (Thành viên, Xếp hạng, Bảng vàng, Quay số) thay cho dòng link gạch chân; mục "Event sắp diễn ra" (tối đa 2, đang diễn ra hoặc gần nhất) ngay dưới bảng tin; mục "Người bạn theo dõi có tin mới" (PR, danh hiệu đã duyệt, kết quả giải trong 30 ngày; PR Strava chỉ khi CLB bật `full_opt_in`).
+> - Link quay lại "←" bỏ gạch chân ở mọi trang.
+> - Bài kỷ lục CLB: lỗi trước đây bị nuốt im lặng. Giờ toast sau khi xác minh nói rõ kết quả (đã đăng bài, đã có bài, thiếu giới tính, cự ly ngoài nhóm, chưa nhanh hơn kỷ lục); `/admin/honors` có nút "Đăng bài chúc mừng các kỷ lục hiện tại" cho kết quả đã xác minh từ trước khi có tính năng.

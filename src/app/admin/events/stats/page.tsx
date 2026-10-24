@@ -36,7 +36,7 @@ export default async function EventStatsPage({ searchParams }: { searchParams: P
 
   return (
     <section>
-      <Link href="/admin/events" className="text-sm text-muted underline">
+      <Link href="/admin/events" className="text-sm text-muted">
         ← Event
       </Link>
       <h1 className="mt-2 text-2xl font-black">Thống kê event</h1>

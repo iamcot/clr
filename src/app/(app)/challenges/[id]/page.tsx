@@ -69,7 +69,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
 
   return (
     <section>
-      <Link href="/challenges" className="text-sm text-muted underline">
+      <Link href="/challenges" className="text-sm text-muted">
         ← Challenge
       </Link>
       <h1 className="mt-2 text-2xl font-black">{challenge.title}</h1>

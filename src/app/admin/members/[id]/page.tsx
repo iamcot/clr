@@ -51,7 +51,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
 
   return (
     <section>
-      <Link href="/admin/members" className="text-sm text-muted underline">
+      <Link href="/admin/members" className="text-sm text-muted">
         ← Danh sách
       </Link>
       <div className="mt-3 flex items-center gap-3">

@@ -5,7 +5,7 @@ import { NEW_CHALLENGE_DEFAULTS } from '@/lib/challenges/formDefaults'
 export default function NewChallengePage() {
   return (
     <section>
-      <Link href="/admin/challenges" className="text-sm text-muted underline">
+      <Link href="/admin/challenges" className="text-sm text-muted">
         ← Challenge
       </Link>
       <h1 className="mt-2 mb-4 text-2xl font-black">Tạo challenge</h1>
