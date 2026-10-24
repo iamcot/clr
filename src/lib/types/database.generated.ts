@@ -161,14 +161,14 @@ isOneToOne: false
                   ]
                 },"members": {
                   Row: {
-                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"level": number,"level_updated_at": string | null,"club_points": number,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"rejection_reason": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number,"strava_connected": boolean,"updated_at": string
+                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"level": number,"level_updated_at": string | null,"club_points": number,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"rejection_reason": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number | null,"strava_connected": boolean,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id": number,"strava_connected"?: boolean,"updated_at"?: string
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number | null,"strava_connected"?: boolean,"updated_at"?: string
                   }
                   Update: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number,"strava_connected"?: boolean,"updated_at"?: string
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number | null,"strava_connected"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -541,6 +541,20 @@ isOneToOne: false
                   }
                   Update: {
                     "id"?: string,"account_id"?: string,"direction"?: string,"amount"?: number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null,"receipt_public"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"admin_logins": {
+                  Row: {
+                    "member_id": string,"username": string,"created_at": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "member_id": string,"username": string,"created_at"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "member_id"?: string,"username"?: string,"created_at"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     

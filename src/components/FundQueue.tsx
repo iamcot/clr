@@ -1,12 +1,12 @@
 import ActionForm from '@/components/ActionForm'
 import { BANK_EVENT_STATUS_LABELS } from '@/config/fund'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import { classifyFundTransaction, confirmCashPayment, resolveBankEvent } from '@/lib/fund/adminActions'
 import type { CashRequest, FundCategory, OpenIntent, QueuedEvent } from '@/lib/fund/loadAdminFund'
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-line bg-white px-4 font-bold'
+const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
+const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
 
 type QueueProps = { queue: QueuedEvent[]; openIntents: OpenIntent[]; cashRequests: CashRequest[]; categories: FundCategory[] }
 
@@ -22,7 +22,7 @@ function MatchForm({ event, openIntents }: { event: QueuedEvent; openIntents: Op
         </option>
         {options.map((intent) => (
           <option key={intent.id} value={intent.id}>
-            {intent.memberName} · {formatVnd(intent.amount)} · {intent.ref}
+            {intent.memberName} · {formatVndCompact(intent.amount)} · {intent.ref}
           </option>
         ))}
       </select>
@@ -59,9 +59,9 @@ function ClassifyForm({ event, categories }: { event: QueuedEvent; categories: F
 
 function QueueItem({ event, openIntents, categories }: { event: QueuedEvent; openIntents: OpenIntent[]; categories: FundCategory[] }) {
   return (
-    <li className="rounded-lg bg-white p-3 shadow-sm">
+    <li className="rounded-lg bg-white p-3">
       <div className="flex justify-between gap-2">
-        <p className="font-black">{formatVnd(event.amount)}</p>
+        <p className="font-black">{formatVndCompact(event.amount)}</p>
         <p className="text-sm font-bold text-danger">{BANK_EVENT_STATUS_LABELS[event.status]}</p>
       </div>
       <p className="text-sm break-words">{event.content || '(không có nội dung)'}</p>
@@ -84,9 +84,9 @@ export default function FundQueue({ queue, openIntents, cashRequests, categories
       {empty && <p className="mt-2 text-sm text-muted">Không có giao dịch nào cần xử lý.</p>}
       <ul className="mt-2 flex flex-col gap-2">
         {cashRequests.map((request) => (
-          <li key={request.id} className="rounded-lg bg-white p-3 shadow-sm">
+          <li key={request.id} className="rounded-lg bg-white p-3">
             <p className="font-bold">
-              {request.memberName} báo đã nộp tiền mặt {formatVnd(request.amount)}
+              {request.memberName} báo đã nộp tiền mặt {formatVndCompact(request.amount)}
             </p>
             <p className="text-xs text-muted">{formatDateTimeVi(request.createdAt)}</p>
             <ActionForm action={confirmCashPayment} className="mt-2">

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import ActionForm from '@/components/ActionForm'
 import { FUND_DIRECTION_LABELS } from '@/config/fund'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import { voidFundTransaction } from '@/lib/fund/adminActions'
 import { setReceiptPublic } from '@/lib/fund/reportActions'
 import type { FundTransactionRow } from '@/lib/fund/loadAdminFund'
@@ -17,9 +17,9 @@ function VoidForm({ id }: { id: string }) {
           name="reason"
           required
           placeholder="Lý do huỷ"
-          className="min-h-11 w-full rounded-lg border border-line bg-white px-3"
+          className="min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8"
         />
-        <button type="submit" className="min-h-11 rounded-lg border border-line bg-white px-4 font-bold text-danger">
+        <button type="submit" className="min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold text-danger">
           Huỷ
         </button>
       </ActionForm>
@@ -30,11 +30,11 @@ function VoidForm({ id }: { id: string }) {
 function Row({ row }: { row: FundTransactionRow }) {
   const voided = row.voidedAt !== null
   return (
-    <li className={`rounded-lg bg-white p-3 shadow-sm ${voided ? 'opacity-60' : ''}`}>
+    <li className={`rounded-lg bg-white p-3 ${voided ? 'opacity-60' : ''}`}>
       <div className="flex justify-between gap-2">
         <p className={`font-black ${row.direction === 'in' ? 'text-brand-dark' : 'text-danger'} ${voided ? 'line-through' : ''}`}>
           {row.direction === 'in' ? '+' : '−'}
-          {formatVnd(row.amount)}
+          {formatVndCompact(row.amount)}
         </p>
         <p className="text-sm text-muted">
           {FUND_DIRECTION_LABELS[row.direction]} · {row.categoryName}
