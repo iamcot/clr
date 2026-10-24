@@ -337,3 +337,4 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 ### Chỉnh truy cập khách (lần 2)
 > - Header chỉ còn logo: bỏ nút đăng nhập Strava và avatar góc phải (đã có tab Tôi và thẻ ở trang chủ). Danh sách thành viên bỏ nút Theo dõi (vẫn theo dõi được ở trang hồ sơ).
 > - Xếp hạng CLB hiện đủ ba tab (tháng, năm, level) kèm km cho khách và người chưa được duyệt, chỉ che tên và bỏ avatar: migration `0021_masked_rankings.sql` (view `club_rankings_masked`, cần chạy rồi `npm run db:types`). `club_rankings_levels` chỉ còn dùng cho hồ sơ thành viên (không hiện km).
+> - Trang chủ khách: bỏ thẻ "Tháng x của bạn", chỉ còn nút Connect with Strava rộng hết chiều ngang; người chưa duyệt giữ thẻ báo chờ duyệt, bỏ chữ tháng.

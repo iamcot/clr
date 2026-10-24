@@ -11,7 +11,7 @@ import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { HOME_EVENT_LIMIT } from '@/config/members'
 import { pickHomeEvents } from '@/lib/events/eventTime'
 import { loadEventCards } from '@/lib/events/loadEvents'
-import { formatWeekdayDate, givenName, greetingAt, monthNumberAt } from '@/lib/home/greeting'
+import { formatWeekdayDate, givenName, greetingAt } from '@/lib/home/greeting'
 import { loadHomeSummary } from '@/lib/home/loadHomeSummary'
 import { loadHomeFeedPage } from '@/lib/feed/loadHomeFeed'
 import { loadPinnedPosts } from '@/lib/posts/loadFeed'
@@ -42,7 +42,7 @@ export default async function HomePage() {
           {summary.unpaidAmount > 0 && <UnpaidFundBanner amount={summary.unpaidAmount} reason={summary.unpaidReason} />}
         </>
       ) : (
-        <GuestSummaryCard monthNumber={monthNumberAt(now)} viewerKind={viewer.kind === 'member' ? 'pending' : viewer.kind} />
+        <GuestSummaryCard viewerKind={viewer.kind === 'member' ? 'pending' : viewer.kind} />
       )}
       <HomeQuickLinks />
       {pinned.length > 0 && (
