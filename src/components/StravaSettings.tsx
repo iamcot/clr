@@ -1,10 +1,12 @@
+import ActionForm from '@/components/ActionForm'
 import { deleteMyStravaData, disconnectStrava, saveShareStats } from '@/lib/strava/accountActions'
+import type { ActionResult } from '@/lib/toast/actionResult'
 
 const DANGER_BUTTON_CLASS = 'min-h-11 w-full rounded-lg border border-danger px-4 font-bold text-danger'
 
 function ShareStatsForm({ shared }: { shared: boolean }) {
   return (
-    <form action={saveShareStats} className="flex flex-col gap-3">
+    <ActionForm action={saveShareStats} className="flex flex-col gap-3">
       <label className="flex items-start gap-3">
         <input type="checkbox" name="share_stats_with_club" defaultChecked={shared} className="mt-1 size-5 shrink-0" />
         <span className="text-sm">
@@ -15,20 +17,20 @@ function ShareStatsForm({ shared }: { shared: boolean }) {
       <button type="submit" className="min-h-11 rounded-lg bg-brand px-4 font-bold text-white">
         Lưu
       </button>
-    </form>
+    </ActionForm>
   )
 }
 
-function ConfirmAction({ title, warning, action }: { title: string; warning: string; action: () => Promise<void> }) {
+function ConfirmAction({ title, warning, action }: { title: string; warning: string; action: () => Promise<ActionResult | void> }) {
   return (
     <details className="rounded-lg border border-line p-3">
       <summary className="min-h-11 cursor-pointer py-2 font-bold">{title}</summary>
-      <form action={action} className="mt-2 flex flex-col gap-3">
+      <ActionForm action={action} className="mt-2 flex flex-col gap-3">
         <p className="text-sm text-muted">{warning}</p>
         <button type="submit" className={DANGER_BUTTON_CLASS}>
           Xác nhận: {title.toLowerCase()}
         </button>
-      </form>
+      </ActionForm>
     </details>
   )
 }

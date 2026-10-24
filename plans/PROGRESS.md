@@ -179,6 +179,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
   → Đã xử lý: sửa plans/07-challenges.md task 7.2 (...)
 ```
 
+### 2026-10-24 – CoT
+- `/admin` ra 404; các action (cập nhật hồ sơ...) bấm xong không có thông báo.
+  → Đã xử lý: 404 do chưa có `src/app/admin/page.tsx` (task 3 chỉ có `/admin/activities` và `/admin/sync`; không phải do kiểm tra quyền, `requireBcn` chuyển người không phải BCN về `/`). Thêm trang `/admin` và link "Trang quản trị BCN" ở `/me` cho BCN. Thêm toast dùng chung (`ToastProvider`, `ActionForm`, cookie `clr_flash` cho action có redirect) và gắn vào form hồ sơ, tuỳ chọn chia sẻ, xoá dữ liệu/ngắt kết nối Strava, các action admin.
+
 ### 2026-10-23 – CoT
 - Chốt plan. Theme xanh lấy từ logo CLB; mockup Trang chủ theme xanh làm chuẩn màu.
   → Đã xử lý: thêm link mockup vào `plans/00-overview.md`, merge PR #1.

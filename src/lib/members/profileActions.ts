@@ -5,6 +5,7 @@ import { requireActiveMember } from '@/lib/auth/currentMember'
 import type { ProfileFormState } from '@/lib/members/profileFormState'
 import { parseProfileInput } from '@/lib/members/profileInput'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { setFlashToast } from '@/lib/toast/setFlash'
 import type { Database } from '@/lib/types/database'
 
 type MemberUpdate = Database['public']['Tables']['members']['Update']
@@ -42,6 +43,7 @@ export async function saveProfile(_previous: ProfileFormState, formData: FormDat
   const saved = await updateOwnMember(member.id, { ...parsed.value, profile_onboarded_at: new Date().toISOString() })
   if (!saved) return { errors: { form: 'Không lưu được, vui lòng thử lại' }, values }
 
+  await setFlashToast('profile_saved')
   redirect(readRedirectTarget(formData))
 }
 
