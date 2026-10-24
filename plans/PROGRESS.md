@@ -273,3 +273,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
   → Đã xử lý: thêm link mockup vào `plans/00-overview.md`, merge PR #1.
 - Coding style: viết code dễ đọc, theo single responsibility, ít comment inline.
   → Đã xử lý: ghi vào mục "Coding style" trong `CLAUDE.md`.
+
+### Chỉnh giao diện sau task 11
+> - Nền trang trắng (`--color-page`), card tách khối bằng `shadow-sm`. Độ đậm chữ: `font-bold` = 500, `font-black`/`font-extrabold` = 600 (khai báo trong `globals.css`), font chỉ tải 400/500/600.
+> - Số theo `vi-VN` (`src/lib/format/number.ts`): ngăn nghìn bằng `.`, thập phân bằng `,` (ví dụ `1.234,5 km`). Cần người dùng xác nhận phần thập phân.
+> - Thêm `loading.tsx` cho `challenges`, `challenges/[id]`, `events`, `events/[id]` (loading ở layout chung không chạy khi chuyển giữa các trang con).
+> - Bảng xếp hạng challenge bỏ dòng "của tôi" ghim phía trên (bị lặp), vẫn tô nổi dòng của mình trong danh sách.
+> - "Ảnh có tôi" chỉ lọc ảnh được gắn tên mình, không tính ảnh mình upload.

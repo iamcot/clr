@@ -69,7 +69,7 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
           value={body}
           onChange={(event) => setBody(event.target.value)}
           rows={10}
-          className="w-full rounded-lg border border-line bg-white p-3"
+          className="w-full rounded-lg border border-line bg-white shadow-sm p-3"
         />
       </Field>
       <button
@@ -80,7 +80,7 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
         {previewing ? 'Ẩn xem trước' : 'Xem trước'}
       </button>
       {previewing && (
-        <div className="rounded-lg bg-white p-3">
+        <div className="rounded-lg bg-white shadow-sm p-3">
           <Markdown source={body} />
         </div>
       )}

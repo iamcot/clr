@@ -28,7 +28,7 @@ export default async function AdminEventPhotosPage({ params }: { params: Promise
       </div>
       <ul className="grid grid-cols-2 gap-2">
         {photos.map((photo) => (
-          <li key={photo.id} className="rounded-lg bg-white p-1">
+          <li key={photo.id} className="rounded-lg bg-white shadow-sm p-1">
             <Image
               src={photo.thumbUrl}
               alt=""

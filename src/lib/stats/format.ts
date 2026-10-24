@@ -1,3 +1,5 @@
+import { formatFixed } from '@/lib/format/number'
+
 const SECONDS_PER_MINUTE = 60
 const SECONDS_PER_HOUR = 3600
 
@@ -28,7 +30,7 @@ export function formatPace(distanceMeters: number, timeSeconds: number): string 
 
 export function formatKm(distanceMeters: number): string {
   const km = Math.round(distanceMeters / 100) / 10
-  return `${km.toFixed(1).replace('.', ',')} km`
+  return `${formatFixed(km, 1)} km`
 }
 
 // Nhận "h:mm:ss", "mm:ss" hoặc "m:ss"; trả null nếu sai định dạng

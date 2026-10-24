@@ -27,7 +27,7 @@ export default function AdminAttendeeList({ eventId, attendees }: { eventId: str
   return (
     <ul className="mt-2 flex flex-col gap-1">
       {registered.map((attendee) => (
-        <li key={attendee.memberId} className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 py-1">
+        <li key={attendee.memberId} className="flex items-center justify-between gap-2 rounded-lg bg-white shadow-sm px-3 py-1">
           <div className="min-w-0">
             <p className="truncate font-bold">{attendee.displayName ?? 'Thành viên'}</p>
             <p className="text-xs text-muted">

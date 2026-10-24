@@ -43,7 +43,7 @@ export default async function AdminChallengesPage() {
             <ul className="mt-2 flex flex-col gap-2">
               {group.map((challenge) => (
                 <li key={challenge.id}>
-                  <Link href={`/admin/challenges/${challenge.id}`} className="block rounded-lg bg-white p-3">
+                  <Link href={`/admin/challenges/${challenge.id}`} className="block rounded-lg bg-white shadow-sm p-3">
                     <p className="font-bold">
                       {challenge.title}
                       {challenge.id === templateId && <span className="ml-2 text-xs text-brand-dark">Mẫu</span>}

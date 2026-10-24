@@ -79,7 +79,7 @@ export default async function FundPage() {
       </div>
 
       {owed > 0 && (
-        <div className="mt-3 flex flex-col gap-3 rounded-lg bg-white p-3">
+        <div className="mt-3 flex flex-col gap-3 rounded-lg bg-white shadow-sm p-3">
           <p className="font-bold">Cách nộp</p>
           {hasAccount ? (
             <>
@@ -97,7 +97,7 @@ export default async function FundPage() {
       <h2 className="mt-6 text-lg font-black">Các khoản phạt</h2>
       <ul className="mt-2 flex flex-col gap-2">
         {penalties.map((penalty) => (
-          <li key={penalty.id} className="rounded-lg bg-white p-3">
+          <li key={penalty.id} className="rounded-lg bg-white shadow-sm p-3">
             <div className="flex justify-between gap-2">
               <p className="font-bold">{penalty.penalty_types?.name}</p>
               <p className="font-black">{formatVnd(Number(penalty.amount))}</p>
@@ -116,7 +116,7 @@ export default async function FundPage() {
           <h2 className="mt-6 text-lg font-black">Thưởng của bạn</h2>
           <ul className="mt-2 flex flex-col gap-2">
             {rewards.map((reward) => (
-              <li key={reward.id} className="rounded-lg bg-white p-3">
+              <li key={reward.id} className="rounded-lg bg-white shadow-sm p-3">
                 <p className="font-bold">
                   {reward.title}
                   {reward.amount ? ` · ${formatVnd(Number(reward.amount))}` : ''}
@@ -136,7 +136,7 @@ export default async function FundPage() {
           <h2 className="mt-6 text-lg font-black">Tổng phạt tháng {Number(month.slice(5))}</h2>
           <ul className="mt-2 flex flex-col gap-1">
             {totals.map((row) => (
-              <li key={row.member_id} className="flex justify-between rounded-lg bg-white p-3 text-sm">
+              <li key={row.member_id} className="flex justify-between rounded-lg bg-white shadow-sm p-3 text-sm">
                 <span>{row.display_name ?? 'Thành viên'}</span>
                 <span className="font-bold">
                   {formatVnd(row.total_amount)}

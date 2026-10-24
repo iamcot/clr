@@ -112,7 +112,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
         </button>
       </form>
       {!result && (
-        <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">
+        <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">
           Bảng xếp hạng chưa mở vì CLB đang chờ Strava đồng ý cho hiển thị số liệu giữa các thành viên. Số liệu của bạn
           vẫn xem được ở trang Tôi.
         </p>

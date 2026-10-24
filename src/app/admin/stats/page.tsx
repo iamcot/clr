@@ -25,7 +25,7 @@ export default async function AdminStatsPage() {
       </p>
       <ul className="mt-4 flex flex-col gap-2">
         {LEVEL_RULES.map((rule) => (
-          <li key={rule.level} className="flex justify-between rounded-lg bg-white p-3">
+          <li key={rule.level} className="flex justify-between rounded-lg bg-white shadow-sm p-3">
             <span>
               Level {rule.level} · {rule.name}
             </span>

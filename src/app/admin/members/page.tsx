@@ -81,7 +81,7 @@ function FilterForm({ filter }: { filter: MemberFilter }) {
 
 function MemberLine({ member, selectable }: { member: MemberRow; selectable: boolean }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg bg-white p-3">
+    <li className="flex items-center gap-3 rounded-lg bg-white shadow-sm p-3">
       {selectable && <input type="checkbox" name="member_id" value={member.id} className="size-5 shrink-0" />}
       <Link href={`/admin/members/${member.id}`} className="min-w-0 flex-1">
         <span className="block truncate font-bold">{member.display_name ?? 'Chưa có tên'}</span>
@@ -96,7 +96,7 @@ function MemberLine({ member, selectable }: { member: MemberRow; selectable: boo
 
 function ReviewControls() {
   return (
-    <div className="mt-3 flex flex-col gap-2 rounded-lg bg-white p-3">
+    <div className="mt-3 flex flex-col gap-2 rounded-lg bg-white shadow-sm p-3">
       <p className="text-sm text-muted">Tick người cần xử lý, rồi chọn loại và bấm Duyệt, hoặc nhập lý do và bấm Từ chối.</p>
       <select name="member_type" defaultValue="" className={INPUT_CLASS}>
         <option value="">Chọn loại thành viên khi duyệt</option>

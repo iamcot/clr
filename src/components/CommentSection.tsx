@@ -103,7 +103,7 @@ export default function CommentSection({ postId, comments, myMemberId, isBcn }: 
       <h2 className="text-lg font-black">Bình luận ({comments.length})</h2>
       <ul className="mt-2 flex flex-col gap-3">
         {roots.map((root) => (
-          <li key={root.id} className="rounded-lg bg-white p-3">
+          <li key={root.id} className="rounded-lg bg-white shadow-sm p-3">
             <CommentLine comment={root} postId={postId} canDelete={canDelete(root)} canReply />
             <ul className="mt-1 ml-4 flex flex-col gap-2 border-l-2 border-line pl-3">
               {repliesOf(root.id).map((reply) => (

@@ -41,7 +41,7 @@ function Field({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <fieldset className="flex flex-col gap-3 rounded-xl bg-white p-4">
+    <fieldset className="flex flex-col gap-3 rounded-xl bg-white shadow-sm p-4">
       <legend className="px-1 text-lg font-black">{title}</legend>
       {children}
     </fieldset>

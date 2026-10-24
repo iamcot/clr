@@ -25,7 +25,7 @@ export default async function AdminPostsPage() {
       <ul className="mt-4 flex flex-col gap-2">
         {posts.map((post) => (
           <li key={post.id}>
-            <Link href={`/admin/posts/${post.id}`} className="block rounded-lg bg-white p-3">
+            <Link href={`/admin/posts/${post.id}`} className="block rounded-lg bg-white shadow-sm p-3">
               <p className="font-bold">
                 {post.pinned && '📌 '}
                 {post.title}

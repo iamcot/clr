@@ -37,7 +37,7 @@ function JoinButton({ event, now }: { event: EventCard; now: Date }) {
 export function UpcomingEventCard({ event, now }: { event: EventCard; now: Date }) {
   const goingText = event.capacity ? `${event.counts.going}/${event.capacity}` : String(event.counts.going)
   return (
-    <li className="rounded-2xl border border-line bg-white p-4">
+    <li className="rounded-2xl border border-line bg-white shadow-sm p-4">
       <Link href={`/events/${event.id}`} className="flex gap-3 active:opacity-70">
         <DateTile startsAt={event.startsAt} />
         <div className="min-w-0">
@@ -56,7 +56,7 @@ export function UpcomingEventCard({ event, now }: { event: EventCard; now: Date 
 
 export function PastEventCard({ event }: { event: EventCard }) {
   return (
-    <li className="overflow-hidden rounded-2xl border border-line bg-white">
+    <li className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
       <Link href={`/events/${event.id}`} className="block active:opacity-70">
         {event.coverUrl ? (
           <Image

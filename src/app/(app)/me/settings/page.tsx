@@ -7,7 +7,7 @@ import { toProfileFormDefaults } from '@/lib/members/profileDefaults'
 
 function MembershipInfo({ member }: { member: CurrentMember }) {
   return (
-    <dl className="mb-6 grid grid-cols-2 gap-2 rounded-lg bg-white p-3 text-sm">
+    <dl className="mb-6 grid grid-cols-2 gap-2 rounded-lg bg-white shadow-sm p-3 text-sm">
       <dt className="text-muted">Mã thành viên</dt>
       <dd className="font-bold">{member.member_code}</dd>
       <dt className="text-muted">Loại</dt>

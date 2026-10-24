@@ -1,5 +1,6 @@
 import { KM_GOAL_TYPES, type GoalType } from '@/config/challenges'
 import { formatGoal } from '@/lib/challenges/describe'
+import { formatFixed } from '@/lib/format/number'
 
 const DAY_MS = 24 * 3600 * 1000
 const METERS_PER_KM = 1000
@@ -9,7 +10,7 @@ export function daysLeft(endsAt: string, now: Date): number {
 }
 
 function formatKmValue(meters: number): string {
-  return (Math.round(meters / 100) / 10).toFixed(1).replace('.', ',')
+  return formatFixed(Math.round(meters / 100) / 10, 1)
 }
 
 // 'Còn 7,4 km trong 8 ngày · khoảng 1 km/ngày'; mục tiêu không tính bằng km thì không có phần km/ngày

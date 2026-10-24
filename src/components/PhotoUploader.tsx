@@ -24,7 +24,7 @@ const STAGE_LABELS: Record<UploadItem['stage'], string> = {
 
 function ItemRow({ item }: { item: UploadItem }) {
   return (
-    <li className="rounded-lg bg-white p-2 text-sm">
+    <li className="rounded-lg bg-white shadow-sm p-2 text-sm">
       <div className="flex justify-between gap-2">
         <span className="truncate">{item.name}</span>
         <span className={item.stage === 'failed' ? 'text-danger' : 'text-muted'}>{STAGE_LABELS[item.stage]}</span>

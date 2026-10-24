@@ -110,7 +110,7 @@ export default function EventForm({ defaults }: { defaults: Record<string, strin
           name="description_md"
           defaultValue={value('description_md')}
           rows={8}
-          className="w-full rounded-lg border border-line bg-white p-3"
+          className="w-full rounded-lg border border-line bg-white shadow-sm p-3"
         />
       </Field>
       <Field label="Ảnh bìa" hint="Link ảnh https" error={state.errors.cover_url}>

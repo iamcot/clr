@@ -26,7 +26,7 @@ export default async function AdminEventsPage() {
       <ul className="mt-4 flex flex-col gap-2">
         {events.map((event) => (
           <li key={event.id}>
-            <Link href={`/admin/events/${event.id}`} className="block rounded-lg bg-white p-3">
+            <Link href={`/admin/events/${event.id}`} className="block rounded-lg bg-white shadow-sm p-3">
               <p className="font-bold">{event.title}</p>
               <p className="text-sm text-muted">
                 {EVENT_KIND_LABELS[event.kind]} · {EVENT_STATUS_LABELS[event.status]} ·{' '}

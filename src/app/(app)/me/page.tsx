@@ -35,7 +35,7 @@ export default async function MePage() {
         followerCount={followerCount}
         level={member.level}
       />
-      {backfillStatus && <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">{backfillStatus}</p>}
+      {backfillStatus && <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">{backfillStatus}</p>}
       <QuickStats month={summary.month} year={summary.year} />
       <Link href="/me/stats" className="mt-2 flex min-h-11 items-center font-bold text-brand-dark underline">
         Thống kê chi tiết

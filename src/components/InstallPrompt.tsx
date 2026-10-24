@@ -36,7 +36,7 @@ function isStandaloneDisplay(): boolean {
 
 function Card({ title, onDismiss, children }: { title: string; onDismiss: () => void; children: React.ReactNode }) {
   return (
-    <div className="mb-4 rounded-lg bg-white p-3">
+    <div className="mb-4 rounded-lg bg-white shadow-sm p-3">
       <div className="flex items-start justify-between gap-2">
         <p className="font-bold">{title}</p>
         <button type="button" onClick={onDismiss} aria-label="Tắt" className="-mt-2 -mr-2 size-11 text-xl text-muted">

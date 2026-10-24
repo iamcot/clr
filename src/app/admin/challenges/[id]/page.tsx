@@ -229,7 +229,7 @@ export default async function AdminChallengeDetailPage({
       )}
 
       {challenge.status !== 'draft' && challenge.status !== 'closed' && (
-        <ActionForm action={addEntry} className="mt-6 flex flex-col gap-2 rounded-xl bg-white p-4">
+        <ActionForm action={addEntry} className="mt-6 flex flex-col gap-2 rounded-xl bg-white shadow-sm p-4">
           <h3 className="font-black">Thêm người vào challenge</h3>
           <input type="hidden" name="challenge_id" value={id} />
           <select name="member_id" className={INPUT_CLASS} defaultValue="">

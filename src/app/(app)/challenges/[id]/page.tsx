@@ -102,13 +102,13 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
         </ActionForm>
       )}
       {!mine && !showJoin && phase !== 'ended' && (
-        <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">Bạn không nằm trong challenge này.</p>
+        <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">Bạn không nằm trong challenge này.</p>
       )}
 
       {mine && myGoal && summary && (
         <>
           <h2 className="mt-5 text-lg font-black">Tiến độ của bạn</h2>
-          <div className="mt-2 rounded-lg bg-white p-3">
+          <div className="mt-2 rounded-lg bg-white shadow-sm p-3">
             <p className="text-2xl font-black">
               {formatProgressValue(goalType, mine.value)}
               <span className="text-base font-normal text-muted"> / {formatProgressValue(goalType, myGoal)}</span>
@@ -136,7 +136,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
           <h2 className="mt-5 text-lg font-black">Buổi chạy của bạn</h2>
           <ul className="mt-2 flex flex-col gap-2">
             {explained.counted.map(({ activity, name, countedValue }) => (
-              <li key={activity.id} className="rounded-lg bg-white p-3 text-sm">
+              <li key={activity.id} className="rounded-lg bg-white shadow-sm p-3 text-sm">
                 <p className="font-bold">{name}</p>
                 <p className="text-muted">
                   {formatDateTimeVi(activity.startDate)} · tính {countedValueText(goalType, countedValue)}

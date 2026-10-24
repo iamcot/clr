@@ -6,6 +6,7 @@ import PostFeed from '@/components/PostFeed'
 import UnpaidFundBanner from '@/components/UnpaidFundBanner'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
+import { formatFixed } from '@/lib/format/number'
 import { formatWeekdayDate, givenName, greetingAt } from '@/lib/home/greeting'
 import { loadHomeSummary } from '@/lib/home/loadHomeSummary'
 import { loadFriendFeed } from '@/lib/members/friendFeed'
@@ -26,7 +27,7 @@ export default async function HomePage() {
     <section>
       <InstallPrompt />
       <p className="text-sm text-muted">{formatWeekdayDate(now)}</p>
-      <h1 className="mb-4 text-3xl font-black">
+      <h1 className="mb-4 truncate text-xl font-bold">
         {greetingAt(now)}, {givenName(member.display_name)}
       </h1>
       <HomeSummaryCard summary={summary} />
@@ -58,9 +59,9 @@ export default async function HomePage() {
           <h2 className="text-xl font-black">Bạn bè gần đây</h2>
           <ul className="mt-3 flex flex-col gap-2">
             {friendActivities.map((activity) => (
-              <li key={activity.id} className="rounded-2xl border border-line bg-white p-3 text-sm">
+              <li key={activity.id} className="rounded-2xl border border-line bg-white shadow-sm p-3 text-sm">
                 <span className="font-bold">{activity.friendName}</span> chạy{' '}
-                {(activity.distanceMeters / 1000).toFixed(2)} km
+                {formatFixed(activity.distanceMeters / 1000, 2)} km
                 <span className="block text-muted">{formatDateTimeVi(activity.startDate)}</span>
               </li>
             ))}

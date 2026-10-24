@@ -36,7 +36,7 @@ export default function CheckinPanel({ eventId, origin, initial }: CheckinPanelP
 
   if (!current || !link) return <p className="text-muted">Không lấy được mã điểm danh.</p>
   return (
-    <div className="rounded-xl bg-white p-4 text-center">
+    <div className="rounded-xl bg-white shadow-sm p-4 text-center">
       <p className="text-sm text-muted">Cho thành viên quét bằng camera (mã đổi mỗi 30 giây)</p>
       {qrDataUrl && (
         // eslint-disable-next-line @next/next/no-img-element

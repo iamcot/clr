@@ -14,7 +14,7 @@ export default async function PhotosPage() {
       {entries.length === 0 && <p className="mt-3 text-muted">Chưa có ảnh nào.</p>}
       <ul className="mt-3 flex flex-col gap-3">
         {entries.map(({ event, photoCount, previews }) => (
-          <li key={event.id} className="overflow-hidden rounded-2xl border border-line bg-white">
+          <li key={event.id} className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
             <Link href={`/events/${event.id}/photos`} className="block active:opacity-70">
               <div className="grid grid-cols-4 gap-0.5 bg-line">
                 {previews.map((url) => (

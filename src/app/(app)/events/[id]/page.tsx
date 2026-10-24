@@ -124,7 +124,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         )}
       </div>
       {event.descriptionMd && (
-        <div className="mt-6 rounded-2xl border border-line bg-white p-4">
+        <div className="mt-6 rounded-2xl border border-line bg-white shadow-sm p-4">
           <Markdown source={event.descriptionMd} />
         </div>
       )}

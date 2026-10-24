@@ -1,4 +1,5 @@
 import ActionForm from '@/components/ActionForm'
+import { formatFixed } from '@/lib/format/number'
 import { setActivityFlag } from '@/lib/strava/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/types/database'
@@ -20,7 +21,7 @@ async function loadActivities(showCounted: boolean): Promise<ReviewRow[]> {
 }
 
 function formatDistanceKm(distanceMeters: number | null): string {
-  return `${((distanceMeters ?? 0) / 1000).toFixed(2)} km`
+  return `${formatFixed((distanceMeters ?? 0) / 1000, 2)} km`
 }
 
 function formatDate(iso: string | null): string {
@@ -67,7 +68,7 @@ export default async function AdminActivitiesPage({ searchParams }: { searchPara
       </a>
       <ul className="mt-4 flex flex-col gap-3">
         {activities.map((activity) => (
-          <li key={activity.id} className="rounded-lg bg-white p-3">
+          <li key={activity.id} className="rounded-lg bg-white shadow-sm p-3">
             <p className="font-bold">{activity.display_name}</p>
             <p className="text-sm">
               {activity.name} · {activity.sport_type} · {formatDistanceKm(activity.distance_m)} ·{' '}

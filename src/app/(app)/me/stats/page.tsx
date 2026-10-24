@@ -11,7 +11,7 @@ const PREVIOUS_PERIOD_LABELS = { week: 'tuần trước', month: 'tháng trướ
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white p-3">
+    <div className="rounded-lg bg-white shadow-sm p-3">
       <p className="text-xs text-muted">{label}</p>
       <p className="text-lg font-black">{value}</p>
     </div>

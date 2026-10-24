@@ -17,7 +17,7 @@ function distanceMetersOf(record: PersonalRecord): number {
 function RecordRow({ record, editable }: { record: PersonalRecord; editable: boolean }) {
   const hasOverride = record.source !== 'strava'
   return (
-    <li className="flex items-center justify-between gap-3 rounded-lg bg-white p-3">
+    <li className="flex items-center justify-between gap-3 rounded-lg bg-white shadow-sm p-3">
       <div>
         <p className="font-bold">{record.label}</p>
         <p className="text-sm text-muted">
