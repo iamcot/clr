@@ -10,6 +10,9 @@ export type MemberType = 'official' | 'free'
 export type Gender = 'M' | 'F' | 'X'
 export type ActivityVisibility = 'everyone' | 'followers_only' | 'only_me'
 export type BackfillJobStatus = 'pending' | 'done' | 'failed'
+export type EventKind = 'group_run' | 'race' | 'social' | 'charity' | 'other'
+export type EventStatus = 'draft' | 'published' | 'cancelled' | 'done'
+export type AttendanceStatus = 'going' | 'maybe' | 'not_going' | 'waitlist'
 export type RateWindowName = 'read_15m' | 'read_day' | 'all_15m' | 'all_day'
 
 type MemberColumns = { role: MemberRole; status: MemberStatus; member_type: MemberType; gender: Gender }
@@ -32,11 +35,16 @@ type GeneratedTables = GeneratedPublic['Tables']
 type GeneratedViews = GeneratedPublic['Views']
 type GeneratedFunctions = GeneratedPublic['Functions']
 
-type PublicTables = Omit<GeneratedTables, 'members' | 'activities' | 'backfill_jobs' | 'strava_rate_state'> & {
+type PublicTables = Omit<
+  GeneratedTables,
+  'members' | 'activities' | 'backfill_jobs' | 'strava_rate_state' | 'events' | 'event_attendees'
+> & {
   members: NarrowRelation<GeneratedTables['members'], MemberColumns>
   activities: NarrowRelation<GeneratedTables['activities'], ActivityColumns>
   backfill_jobs: NarrowRelation<GeneratedTables['backfill_jobs'], { status: BackfillJobStatus }>
   strava_rate_state: NarrowRelation<GeneratedTables['strava_rate_state'], { window_name: RateWindowName }>
+  events: NarrowRelation<GeneratedTables['events'], { kind: EventKind; status: EventStatus }>
+  event_attendees: NarrowRelation<GeneratedTables['event_attendees'], { status: AttendanceStatus }>
 }
 
 type PublicViews = Omit<GeneratedViews, 'members_public'> & {
