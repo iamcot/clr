@@ -1,11 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import Avatar from '@/components/Avatar'
 import BackLink from '@/components/BackLink'
 import AttendanceButtons from '@/components/AttendanceButtons'
 import Markdown from '@/components/Markdown'
+import MemberOnlyAction from '@/components/MemberOnlyAction'
 import { EVENT_KIND_LABELS } from '@/config/events'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { formatEventSchedule } from '@/lib/events/eventFormat'
 import { isPastEvent, isRegistrationOpen } from '@/lib/events/eventTime'
 import { loadEventDetail, loadEventRunSummary, type EventDetail } from '@/lib/events/loadEvents'
@@ -14,6 +16,7 @@ import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { formatVnd } from '@/lib/format/money'
 import { formatKm, formatPaceValue } from '@/lib/stats/format'
 
+const JOIN_BUTTON = 'flex min-h-12 w-full items-center justify-center rounded-full bg-brand font-bold text-white active:bg-brand-dark'
 const LINK_BUTTON = 'flex min-h-12 items-center justify-center rounded-full border border-brand font-bold text-brand-dark'
 
 function Participants({ event }: { event: EventDetail }) {
@@ -28,13 +31,7 @@ function Participants({ event }: { event: EventDetail }) {
       <ul className="mt-3 flex flex-wrap gap-2">
         {event.goingParticipants.map((person) => (
           <li key={person.memberId} title={person.displayName ?? ''}>
-            {person.avatarUrl ? (
-              <Image src={person.avatarUrl} alt={person.displayName ?? ''} width={40} height={40} className="rounded-full" unoptimized />
-            ) : (
-              <span className="flex size-10 items-center justify-center rounded-full bg-line text-sm font-bold">
-                {(person.displayName ?? '?').slice(0, 1)}
-              </span>
-            )}
+            <Avatar url={person.avatarUrl} size={40} name={person.displayName} />
           </li>
         ))}
         {hidden > 0 && (
@@ -77,11 +74,12 @@ function StatusNotice({ event, now }: { event: EventDetail; now: Date }) {
 }
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const member = await requireActiveMember()
+  const viewer = await getViewer()
   const { id } = await params
-  const event = await loadEventDetail(id, member.id)
+  const event = await loadEventDetail(id, activeMemberOf(viewer)?.id ?? null)
   if (!event) notFound()
 
+  const isMember = viewer.kind === 'member'
   const now = new Date()
   const past = isPastEvent(event, now)
   const mapsUrl = googleMapsUrl({ lat: event.locationLat, lng: event.locationLng, name: event.locationName })
@@ -104,10 +102,20 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         </p>
       )}
       <StatusNotice event={event} now={now} />
-      {past && <PastSummary eventId={event.id} />}
+      {past && isMember && <PastSummary eventId={event.id} />}
       {isRegistrationOpen(event, now) && (
         <div className="mt-4">
-          <AttendanceButtons eventId={event.id} current={event.myStatus} />
+          {isMember ? (
+            <AttendanceButtons eventId={event.id} current={event.myStatus} />
+          ) : (
+            <MemberOnlyAction
+              kind={viewer.kind}
+              next={`/events/${event.id}`}
+              guestLabel="Đăng ký tham gia"
+              pendingText="Chờ duyệt thành viên để tham gia"
+              className={JOIN_BUTTON}
+            />
+          )}
         </div>
       )}
       <div className="mt-3 flex gap-2">
@@ -127,10 +135,22 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           <Markdown source={event.descriptionMd} />
         </div>
       )}
-      <Participants event={event} />
-      <Link href={`/events/${event.id}/photos`} className={`${LINK_BUTTON} mt-6`}>
-        Album ảnh ({event.counts.photos})
-      </Link>
+      {isMember && <Participants event={event} />}
+      <div className="mt-6">
+        {isMember ? (
+          <Link href={`/events/${event.id}/photos`} className={LINK_BUTTON}>
+            Album ảnh ({event.counts.photos})
+          </Link>
+        ) : (
+          <MemberOnlyAction
+            kind={viewer.kind}
+            next={`/events/${event.id}/photos`}
+            guestLabel="Đăng nhập để xem ảnh"
+            pendingText="Chờ duyệt thành viên để xem ảnh"
+            className={LINK_BUTTON}
+          />
+        )}
+      </div>
     </section>
   )
 }

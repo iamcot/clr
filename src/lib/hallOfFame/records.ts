@@ -12,7 +12,7 @@ export type RecordResult = {
   displayName: string
   avatarUrl: string | null
   gender: string | null
-  birthYear: number | null
+  ageAtRace: number | null
   distanceMeters: number
   chipTimeSeconds: number
   raceName: string
@@ -29,10 +29,9 @@ export type RecordTable = {
   entries: RecordEntry[]
 }
 
-export function ageGroupOf(birthYear: number | null, raceDate: string): string | null {
-  if (birthYear === null) return null
-  const age = Number(raceDate.slice(0, 4)) - birthYear
-  return AGE_GROUPS.find((group) => age >= group.minAge && age <= group.maxAge)?.key ?? null
+export function ageGroupOf(ageAtRace: number | null): string | null {
+  if (ageAtRace === null) return null
+  return AGE_GROUPS.find((group) => ageAtRace >= group.minAge && ageAtRace <= group.maxAge)?.key ?? null
 }
 
 export function classifyDistance(distanceMeters: number): string | null {
@@ -64,7 +63,7 @@ function resultsOf(results: RecordResult[], distanceKey: string, genderKey: stri
 
 // ageGroupKey null là xếp chung mọi lứa tuổi
 export function buildClubRecords(results: RecordResult[], ageGroupKey: string | null = null): RecordTable[] {
-  const inGroup = ageGroupKey ? results.filter((result) => ageGroupOf(result.birthYear, result.raceDate) === ageGroupKey) : results
+  const inGroup = ageGroupKey ? results.filter((result) => ageGroupOf(result.ageAtRace) === ageGroupKey) : results
   return RECORD_DISTANCES.flatMap((distance) =>
     RECORD_GENDERS.map((gender) => ({
       distanceKey: distance.key,

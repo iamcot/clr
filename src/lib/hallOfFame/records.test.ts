@@ -14,7 +14,7 @@ function result(overrides: Partial<RecordResult>): RecordResult {
     displayName: 'An',
     avatarUrl: null,
     gender: 'M',
-    birthYear: 1990,
+    ageAtRace: 36,
     distanceMeters: 21097,
     chipTimeSeconds: 6000,
     raceName: 'Giải A',
@@ -87,23 +87,23 @@ describe('isNewClubRecord', () => {
 })
 
 describe('ageGroupOf', () => {
-  it('tính tuổi theo năm của giải', () => {
-    expect(ageGroupOf(2000, '2026-03-01')).toBe('u30')
-    expect(ageGroupOf(1996, '2026-03-01')).toBe('30s')
-    expect(ageGroupOf(1986, '2026-03-01')).toBe('40s')
-    expect(ageGroupOf(1976, '2026-03-01')).toBe('50p')
+  it('chia nhóm theo tuổi lúc chạy', () => {
+    expect(ageGroupOf(26)).toBe('u30')
+    expect(ageGroupOf(30)).toBe('30s')
+    expect(ageGroupOf(40)).toBe('40s')
+    expect(ageGroupOf(50)).toBe('50p')
   })
 
-  it('thiếu năm sinh thì không thuộc nhóm nào', () => {
-    expect(ageGroupOf(null, '2026-03-01')).toBeNull()
+  it('thiếu tuổi thì không thuộc nhóm nào', () => {
+    expect(ageGroupOf(null)).toBeNull()
   })
 })
 
 describe('buildClubRecords theo nhóm tuổi', () => {
   it('chỉ giữ người thuộc nhóm tuổi được chọn', () => {
     const results = [
-      result({ id: 'young', memberId: 'young', birthYear: 2000, chipTimeSeconds: 6000 }),
-      result({ id: 'senior', memberId: 'senior', birthYear: 1970, chipTimeSeconds: 6600 }),
+      result({ id: 'young', memberId: 'young', ageAtRace: 26, chipTimeSeconds: 6000 }),
+      result({ id: 'senior', memberId: 'senior', ageAtRace: 56, chipTimeSeconds: 6600 }),
     ]
     const table = buildClubRecords(results, '50p').find((item) => item.distanceKey === 'HM' && item.genderKey === 'M')
     expect(table?.entries.map((entry) => entry.memberId)).toEqual(['senior'])

@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
+import MemberOnlyAction from '@/components/MemberOnlyAction'
 import { EVENT_KIND_LABELS } from '@/config/events'
+import type { ViewerKind } from '@/lib/auth/viewerKind'
 import { formatDateTile, formatEventStart } from '@/lib/events/eventFormat'
 import { isRegistrationOpen } from '@/lib/events/eventTime'
 import { setAttendance } from '@/lib/events/memberActions'
@@ -18,11 +20,24 @@ function DateTile({ startsAt }: { startsAt: string }) {
   )
 }
 
-function JoinButton({ event, now }: { event: EventCard; now: Date }) {
+const JOIN_CLASS = 'flex min-h-12 w-full items-center justify-center rounded-full bg-brand font-bold text-white active:bg-brand-dark'
+
+function JoinButton({ event, now, viewerKind }: { event: EventCard; now: Date; viewerKind: ViewerKind }) {
   if (event.status === 'cancelled') return <p className="text-sm font-bold text-danger">Đã huỷ</p>
   if (event.myStatus === 'going') return <p className="text-sm font-bold text-brand-dark">✓ Bạn đã đăng ký</p>
   if (event.myStatus === 'waitlist') return <p className="text-sm font-bold text-brand-dark">Bạn đang trong danh sách chờ</p>
   if (!isRegistrationOpen(event, now)) return null
+  if (viewerKind !== 'member') {
+    return (
+      <MemberOnlyAction
+        kind={viewerKind}
+        next={`/events/${event.id}`}
+        guestLabel="Tham gia"
+        pendingText="Chờ duyệt thành viên để tham gia"
+        className={JOIN_CLASS}
+      />
+    )
+  }
   return (
     <ActionForm action={setAttendance}>
       <input type="hidden" name="event_id" value={event.id} />
@@ -34,7 +49,7 @@ function JoinButton({ event, now }: { event: EventCard; now: Date }) {
   )
 }
 
-export function UpcomingEventCard({ event, now }: { event: EventCard; now: Date }) {
+export function UpcomingEventCard({ event, now, viewerKind }: { event: EventCard; now: Date; viewerKind: ViewerKind }) {
   const goingText = event.capacity ? `${event.counts.going}/${event.capacity}` : String(event.counts.going)
   return (
     <li className="rounded-2xl border border-line bg-white shadow-sm p-4">
@@ -44,17 +59,17 @@ export function UpcomingEventCard({ event, now }: { event: EventCard; now: Date 
           <p className="text-xs font-bold text-brand-dark">{EVENT_KIND_LABELS[event.kind]}</p>
           <p className="text-lg leading-snug font-black">{event.title}</p>
           <p className="text-sm text-muted">{formatEventStart(event.startsAt, event.locationName)}</p>
-          <p className="text-sm text-muted">{goingText} người sẽ tham gia</p>
+          {viewerKind === 'member' && <p className="text-sm text-muted">{goingText} người sẽ tham gia</p>}
         </div>
       </Link>
       <div className="mt-3">
-        <JoinButton event={event} now={now} />
+        <JoinButton event={event} now={now} viewerKind={viewerKind} />
       </div>
     </li>
   )
 }
 
-export function PastEventCard({ event }: { event: EventCard }) {
+export function PastEventCard({ event, viewerKind }: { event: EventCard; viewerKind: ViewerKind }) {
   return (
     <li className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
       <Link href={`/events/${event.id}`} className="block active:opacity-70">
@@ -72,9 +87,11 @@ export function PastEventCard({ event }: { event: EventCard }) {
         )}
         <div className="p-3">
           <p className="font-black">{event.title}</p>
-          <p className="text-sm text-muted">
-            {event.counts.going} người tham gia · {event.counts.photos} ảnh
-          </p>
+          {viewerKind === 'member' && (
+            <p className="text-sm text-muted">
+              {event.counts.going} người tham gia · {event.counts.photos} ảnh
+            </p>
+          )}
         </div>
       </Link>
     </li>

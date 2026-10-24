@@ -89,7 +89,7 @@ function AckSection({ post }: { post: FeedPostView }) {
   )
 }
 
-export default function PostCard({ post }: { post: FeedPostView }) {
+export default function PostCard({ post, memberView }: { post: FeedPostView; memberView: boolean }) {
   return (
     <li className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
       <Link href={`/posts/${post.id}`} className="block active:bg-page">
@@ -101,7 +101,7 @@ export default function PostCard({ post }: { post: FeedPostView }) {
           <PostHeading post={post} />
           <p className="mt-3 text-xl leading-snug font-black">{post.title}</p>
           {post.excerpt && <p className="mt-2 text-muted">{post.excerpt}</p>}
-          {!post.pinned && (
+          {!post.pinned && memberView && (
             <div className="mt-4 flex items-center gap-4 border-t border-line pt-3 text-sm text-muted">
               <span className="flex items-center gap-1.5">
                 <HeartIcon />
@@ -116,7 +116,7 @@ export default function PostCard({ post }: { post: FeedPostView }) {
           )}
         </div>
       </Link>
-      {post.requireAck && <AckSection post={post} />}
+      {post.requireAck && memberView && <AckSection post={post} />}
     </li>
   )
 }

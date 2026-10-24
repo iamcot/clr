@@ -25,7 +25,8 @@ export type CommentView = {
   createdAt: string
 }
 
-export async function loadPostDetail(postId: string, memberId: string, now: Date): Promise<PostDetail | null> {
+// memberId null: người xem chưa được duyệt, tên tác giả lấy từ view đã che
+export async function loadPostDetail(postId: string, memberId: string | null, now: Date): Promise<PostDetail | null> {
   const supabase = await createSupabaseServerClient()
   const { data: post } = await supabase
     .from('posts')
@@ -37,10 +38,18 @@ export async function loadPostDetail(postId: string, memberId: string, now: Date
   if (!post) return null
 
   const [reactions, read, author] = await Promise.all([
-    supabase.from('post_reactions').select('member_id, emoji').eq('post_id', postId),
-    supabase.from('post_reads').select('acked_at').eq('post_id', postId).eq('member_id', memberId).maybeSingle(),
+    memberId
+      ? supabase.from('post_reactions').select('member_id, emoji').eq('post_id', postId)
+      : Promise.resolve({ data: [] as { member_id: string; emoji: string }[] }),
+    memberId
+      ? supabase.from('post_reads').select('acked_at').eq('post_id', postId).eq('member_id', memberId).maybeSingle()
+      : Promise.resolve({ data: null }),
     post.author_id
-      ? supabase.from('members_public').select('display_name').eq('id', post.author_id).maybeSingle()
+      ? supabase
+          .from(memberId ? 'members_public' : 'members_masked')
+          .select('display_name')
+          .eq('id', post.author_id)
+          .maybeSingle()
       : Promise.resolve({ data: null }),
   ])
   const counts: Partial<Record<ReactionCode, number>> = {}

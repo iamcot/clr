@@ -35,8 +35,9 @@ export async function loadDrawList(): Promise<DrawSummary[]> {
 async function loadMemberNames(memberIds: string[]): Promise<Map<string, string>> {
   if (memberIds.length === 0) return new Map()
   const supabase = await createSupabaseServerClient()
-  const { data } = await supabase.from('members_public').select('id, display_name').in('id', memberIds)
-  return new Map((data ?? []).map((member) => [member.id, member.display_name ?? 'Thành viên']))
+  // View riêng của quay số: tên thật của người tham gia, người chưa được duyệt cũng đọc được
+  const { data } = await supabase.from('draw_members').select('id, display_name').in('id', memberIds)
+  return new Map((data ?? []).flatMap((member) => (member.id ? [[member.id, member.display_name ?? 'Thành viên'] as const] : [])))
 }
 
 export async function loadDrawDetail(drawId: string): Promise<DrawDetail | null> {

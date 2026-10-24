@@ -36,8 +36,8 @@ type FeedRow = {
   post_comments: { count: number }[]
 }
 
-async function loadMemberMarks(postIds: string[], memberId: string) {
-  if (postIds.length === 0) return { reactions: new Map<string, ReactionCode>(), acked: new Set<string>() }
+async function loadMemberMarks(postIds: string[], memberId: string | null) {
+  if (!memberId || postIds.length === 0) return { reactions: new Map<string, ReactionCode>(), acked: new Set<string>() }
   const supabase = await createSupabaseServerClient()
   const [reactions, reads] = await Promise.all([
     supabase.from('post_reactions').select('post_id, emoji').eq('member_id', memberId).in('post_id', postIds),
@@ -49,7 +49,7 @@ async function loadMemberMarks(postIds: string[], memberId: string) {
   }
 }
 
-async function toViews(rows: FeedRow[], memberId: string): Promise<FeedPostView[]> {
+async function toViews(rows: FeedRow[], memberId: string | null): Promise<FeedPostView[]> {
   const marks = await loadMemberMarks(
     rows.map((row) => row.id),
     memberId,
@@ -71,7 +71,7 @@ async function toViews(rows: FeedRow[], memberId: string): Promise<FeedPostView[
 }
 
 // BCN đọc được cả bản nháp, bài hẹn giờ và bài đã xoá qua RLS nên bộ lọc hiển thị phải viết rõ ở đây
-export async function loadPinnedPosts(memberId: string, now: Date): Promise<FeedPostView[]> {
+export async function loadPinnedPosts(memberId: string | null, now: Date): Promise<FeedPostView[]> {
   const supabase = await createSupabaseServerClient()
   const nowIso = now.toISOString()
   const { data } = await supabase
@@ -88,7 +88,7 @@ export async function loadPinnedPosts(memberId: string, now: Date): Promise<Feed
 }
 
 export async function loadFeedPage(
-  memberId: string,
+  memberId: string | null,
   now: Date,
   cursor: string | null,
   pinnedIds: string[],

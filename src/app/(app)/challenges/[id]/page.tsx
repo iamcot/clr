@@ -3,7 +3,8 @@ import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import LiveChallengeRanking, { type LiveRankingRow } from '@/components/LiveChallengeRanking'
 import { KM_GOAL_TYPES, type ChallengeStatus, type GoalType } from '@/config/challenges'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import MemberOnlyAction from '@/components/MemberOnlyAction'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { describeGoal, formatProgressValue } from '@/lib/challenges/describe'
 import { describeActivityFilter } from '@/lib/challenges/filter'
 import { loadChallenge } from '@/lib/challenges/loadChallenges'
@@ -27,7 +28,8 @@ function countedValueText(goalType: GoalType, value: number): string {
 
 export default async function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const member = await requireActiveMember()
+  const viewer = await getViewer()
+  const member = activeMemberOf(viewer)
   const data = await loadChallenge(id)
   if (!data || data.challenge.status === 'draft') notFound()
   const { challenge, categories, filter } = data
@@ -36,14 +38,12 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
   const now = new Date()
   const phase = challengePhase(status, challenge.starts_at, challenge.ends_at, now)
 
-  const [mine, ranking, followingIds] = await Promise.all([
-    loadMyEntry(id, member.id),
-    loadRankingRows(id),
-    loadFollowingIds(member.id),
-  ])
+  const [mine, ranking, followingIds] = member
+    ? await Promise.all([loadMyEntry(id, member.id), loadRankingRows(id), loadFollowingIds(member.id)])
+    : [null, null, [] as string[]]
   const myCategory = categories.find((category) => category.id === mine?.categoryId)
   const myGoal = myCategory ? Number(myCategory.goal_value) : null
-  const explained = mine && myGoal ? await explainMyActivities(challenge, myGoal, member.id) : null
+  const explained = member && mine && myGoal ? await explainMyActivities(challenge, myGoal, member.id) : null
   const summary =
     mine && myGoal
       ? summarizeProgress(
@@ -57,9 +57,9 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
   const showJoin =
     !mine && canRegister(challenge.participation, status, challenge.ends_at, challenge.registration_closes_at, now)
 
-  const rows: LiveRankingRow[] = ranking.rows.map((row) => ({
+  const rows: LiveRankingRow[] = (ranking?.rows ?? []).map((row) => ({
     memberId: row.memberId,
-    name: ranking.names[row.memberId] ?? 'Thành viên',
+    name: ranking?.names[row.memberId] ?? 'Thành viên',
     categoryId: row.categoryId,
     valueText: formatProgressValue(goalType, row.value),
     progressPct: row.progressPct,
@@ -88,7 +88,18 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
         ))}
       </ul>
 
-      {showJoin && (
+      {showJoin && !member && (
+        <div className="mt-4">
+          <MemberOnlyAction
+            kind={viewer.kind}
+            next={`/challenges/${id}`}
+            guestLabel="Tham gia"
+            pendingText="Chờ duyệt thành viên để tham gia"
+            className="flex min-h-12 w-full items-center justify-center rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
+          />
+        </div>
+      )}
+      {showJoin && member && (
         <ActionForm action={joinChallenge} className="mt-4">
           <input type="hidden" name="challenge_id" value={id} />
           <button
@@ -99,7 +110,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
           </button>
         </ActionForm>
       )}
-      {!mine && !showJoin && phase !== 'ended' && (
+      {member && !mine && !showJoin && phase !== 'ended' && (
         <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">Bạn không nằm trong challenge này.</p>
       )}
 
@@ -156,19 +167,23 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
         </>
       )}
 
-      <h2 className="mt-5 text-lg font-black">Bảng xếp hạng</h2>
-      <div className="mt-2">
-        <LiveChallengeRanking
-          challengeId={id}
-          categories={categories.map((category) => ({
-            id: category.id,
-            name: category.name,
-          }))}
-          rows={rows}
-          myMemberId={member.id}
-          followingIds={followingIds}
-        />
-      </div>
+      {member && (
+        <>
+        <h2 className="mt-5 text-lg font-black">Bảng xếp hạng</h2>
+        <div className="mt-2">
+          <LiveChallengeRanking
+            challengeId={id}
+            categories={categories.map((category) => ({
+              id: category.id,
+              name: category.name,
+            }))}
+            rows={rows}
+            myMemberId={member.id}
+            followingIds={followingIds}
+          />
+        </div>
+        </>
+      )}
     </section>
   )
 }

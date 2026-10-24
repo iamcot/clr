@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getAppUrl } from '@/lib/env'
-import { getCurrentMember } from '@/lib/auth/currentMember'
 import { buildIcs } from '@/lib/events/ics'
 import { loadEventDetail } from '@/lib/events/loadEvents'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const member = await getCurrentMember()
-  if (!member || member.status !== 'active') return new NextResponse('Unauthorized', { status: 401 })
-
   const { id } = await params
-  const event = await loadEventDetail(id, member.id)
+  const event = await loadEventDetail(id, null)
   if (!event) return new NextResponse('Not found', { status: 404 })
 
   const body = buildIcs(

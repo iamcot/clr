@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import { redirect } from 'next/navigation'
+import Avatar from '@/components/Avatar'
 import { getCurrentMember, type CurrentMember } from '@/lib/auth/currentMember'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -25,9 +25,7 @@ export default async function PendingPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-4 px-6 text-center">
-      {member.avatar_url && (
-        <Image src={member.avatar_url} alt="" width={96} height={96} className="rounded-full" unoptimized />
-      )}
+      <Avatar url={member.avatar_url} size={96} />
       <h1 className="text-xl font-black">{member.display_name ?? 'Thành viên mới'}</h1>
       <p className="text-lg font-bold text-brand-dark">{STATUS_MESSAGES[member.status]}</p>
       {member.rejection_reason && member.status === 'rejected' && (

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { COMMENT_MAX_LENGTH, REACTIONS } from '@/config/posts'
 import { requireActiveMember } from '@/lib/auth/currentMember'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { loadHomeFeedPage } from '@/lib/feed/loadHomeFeed'
 import type { HomeFeedPage } from '@/lib/feed/mergeFeed'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -92,6 +93,6 @@ export async function deleteComment(formData: FormData): Promise<ActionResult> {
 }
 
 export async function loadMoreFeed(cursor: string, pinnedIds: string[]): Promise<HomeFeedPage> {
-  const member = await requireActiveMember()
-  return loadHomeFeedPage(member.id, new Date(), cursor, pinnedIds)
+  const viewer = await getViewer()
+  return loadHomeFeedPage(activeMemberOf(viewer)?.id ?? null, new Date(), cursor, pinnedIds)
 }

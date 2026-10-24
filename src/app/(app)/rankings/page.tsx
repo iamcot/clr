@@ -1,12 +1,13 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import Avatar from '@/components/Avatar'
+import MedalIcon from '@/components/MedalIcon'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
 import { GENDER_OPTIONS } from '@/config/profile'
 import { RANKING_PAGE_SIZE } from '@/config/levels'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { formatKm } from '@/lib/stats/format'
 import { levelName } from '@/lib/stats/level'
-import { loadClubRankingRows } from '@/lib/stats/loadRankings'
+import { loadClubRankingRows, loadLevelRankingRows } from '@/lib/stats/loadRankings'
 import { buildRankingPage, type RankedRow, type RankingMetric } from '@/lib/stats/ranking'
 import { canShowOthersActivities } from '@/lib/settings/clubDisplayMode'
 import { loadClubDisplayMode } from '@/lib/settings/loadClubDisplayMode'
@@ -34,17 +35,28 @@ function valueText(row: RankedRow, metric: RankingMetric): string {
   return formatKm(row.value)
 }
 
+const MEDAL_COLORS = ['text-gold', 'text-silver', 'text-bronze'] as const
+
+function RankBadge({ rank }: { rank: number }) {
+  const medalColor = MEDAL_COLORS[rank - 1]
+  if (!medalColor) return <span className="w-12 text-center font-medium">{rank}</span>
+  return (
+    <span className="flex w-12 items-center justify-center gap-0.5 text-xl font-black">
+      <MedalIcon className={`size-6 shrink-0 ${medalColor}`} />
+      {rank}
+    </span>
+  )
+}
+
 function RankingLine({ row, metric, highlight }: { row: RankedRow; metric: RankingMetric; highlight: boolean }) {
   return (
     <li className={`flex items-center gap-3 rounded-lg p-3 ${highlight ? 'bg-lime/30' : 'bg-white'}`}>
-      <span className="w-8 text-center font-black">{row.rank}</span>
-      {row.avatarUrl ? (
-        <Image src={row.avatarUrl} alt="" width={36} height={36} className="rounded-full" unoptimized />
-      ) : (
-        <span className="size-9 rounded-full bg-line" />
-      )}
+      <RankBadge rank={row.rank} />
+      <Avatar url={row.avatarUrl} size={36} />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-bold">{row.displayName ?? 'Thành viên'}</p>
+        <p className={`truncate ${row.rank <= MEDAL_COLORS.length ? 'text-lg font-black' : 'font-bold'}`}>
+          {row.displayName ?? 'Thành viên'}
+        </p>
         <p className="text-xs text-muted">
           Level {row.level} {levelName(row.level)}
         </p>
@@ -55,17 +67,19 @@ function RankingLine({ row, metric, highlight }: { row: RankedRow; metric: Ranki
 }
 
 export default async function RankingsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const member = await requireActiveMember()
+  const viewer = await getViewer()
+  const member = activeMemberOf(viewer)
+  const tabs = member ? TABS : TABS.filter((tab) => tab.metric === 'level')
   const params = await searchParams
-  const metric = parseMetric(params.tab)
+  const metric = member ? parseMetric(params.tab) : 'level'
   const page = Math.max(1, Number(params.page) || 1)
   const enabled = canShowOthersActivities(await loadClubDisplayMode())
   const result = enabled
     ? buildRankingPage(
-        await loadClubRankingRows(),
+        member ? await loadClubRankingRows() : await loadLevelRankingRows(),
         metric,
         { gender: params.gender || null, memberType: params.type || null },
-        member.id,
+        member?.id ?? '',
         page,
         RANKING_PAGE_SIZE,
       )
@@ -76,7 +90,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
     <section>
       <h1 className="text-2xl font-black">Xếp hạng CLB</h1>
       <div className="mt-3 flex gap-2">
-        {TABS.map((tab) => (
+        {tabs.map((tab) => (
           <Link
             key={tab.metric}
             href={buildHref({ ...base, tab: tab.metric })}
@@ -111,6 +125,9 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
           Lọc
         </button>
       </form>
+      {!member && (
+        <p className="mt-3 text-sm text-muted">Số km của từng người chỉ hiện với thành viên đã được duyệt.</p>
+      )}
       {!result && (
         <p className="mt-4 rounded-lg bg-white shadow-sm p-3 text-sm text-muted">
           Bảng xếp hạng chưa mở vì CLB đang chờ Strava đồng ý cho hiển thị số liệu giữa các thành viên. Số liệu của bạn
@@ -119,7 +136,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
       )}
       {result && (
         <>
-          {!member.share_stats_with_club && (
+          {member && !member.share_stats_with_club && (
             <p className="mt-3 text-sm text-muted">
               Bạn không có trong bảng vì chưa bật chia sẻ số liệu.{' '}
               <Link href="/me/settings" className="font-bold text-brand-dark underline">
@@ -129,7 +146,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
           )}
           <ul className="mt-3 flex flex-col gap-2">
             {result.rows.map((row) => (
-              <RankingLine key={row.memberId} row={row} metric={metric} highlight={row.memberId === member.id} />
+              <RankingLine key={row.memberId} row={row} metric={metric} highlight={row.memberId === member?.id} />
             ))}
           </ul>
           {result.hasMore && (

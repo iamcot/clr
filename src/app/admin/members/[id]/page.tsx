@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import Avatar from '@/components/Avatar'
 import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import {
@@ -53,9 +53,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
     <section>
       <BackLink href="/admin/members">Danh sách</BackLink>
       <div className="mt-3 flex items-center gap-3">
-        {member.avatar_url && (
-          <Image src={member.avatar_url} alt="" width={64} height={64} className="rounded-full" unoptimized />
-        )}
+        <Avatar url={member.avatar_url} size={64} />
         <div>
           <h1 className="text-2xl font-black">{member.display_name ?? 'Chưa có tên'}</h1>
           <p className="text-sm text-muted">

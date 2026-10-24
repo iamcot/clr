@@ -89,7 +89,8 @@ async function loadMyStatuses(memberId: string, eventIds: string[]): Promise<Map
   return new Map((data ?? []).map((row) => [row.event_id, row.status]))
 }
 
-export async function loadEventCards(memberId: string): Promise<EventCard[]> {
+// memberId null (khách hoặc chưa được duyệt): không có số người tham gia, trạng thái đăng ký và danh sách người tham gia
+export async function loadEventCards(memberId: string | null): Promise<EventCard[]> {
   const supabase = await createSupabaseServerClient()
   const { data } = await supabase
     .from('events')
@@ -99,7 +100,9 @@ export async function loadEventCards(memberId: string): Promise<EventCard[]> {
     .limit(EVENT_LIST_LIMIT)
   const views = (data ?? []).map(toEventView)
   const ids = views.map((view) => view.id)
-  const [counts, statuses] = await Promise.all([loadCounts(ids), loadMyStatuses(memberId, ids)])
+  const [counts, statuses] = memberId
+    ? await Promise.all([loadCounts(ids), loadMyStatuses(memberId, ids)])
+    : [new Map<string, EventCounts>(), new Map<string, AttendanceStatus>()]
   return views.map((view) => ({
     ...view,
     counts: counts.get(view.id) ?? EMPTY_COUNTS,
@@ -126,16 +129,14 @@ async function loadGoingParticipants(eventId: string): Promise<Participant[]> {
   })
 }
 
-export async function loadEventDetail(eventId: string, memberId: string): Promise<EventDetail | null> {
+export async function loadEventDetail(eventId: string, memberId: string | null): Promise<EventDetail | null> {
   const supabase = await createSupabaseServerClient()
   const { data } = await supabase.from('events').select('*').eq('id', eventId).neq('status', 'draft').maybeSingle()
   if (!data) return null
   const view = toEventView(data)
-  const [counts, statuses, goingParticipants] = await Promise.all([
-    loadCounts([eventId]),
-    loadMyStatuses(memberId, [eventId]),
-    loadGoingParticipants(eventId),
-  ])
+  const [counts, statuses, goingParticipants] = memberId
+    ? await Promise.all([loadCounts([eventId]), loadMyStatuses(memberId, [eventId]), loadGoingParticipants(eventId)])
+    : [new Map<string, EventCounts>(), new Map<string, AttendanceStatus>(), [] as Participant[]]
   const eventCounts = counts.get(eventId) ?? EMPTY_COUNTS
   return {
     ...view,

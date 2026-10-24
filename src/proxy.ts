@@ -2,10 +2,19 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/supabase/env'
 
-const PUBLIC_PATH_PREFIXES = ['/login', '/api/auth', '/api/strava/webhook', '/api/cron', '/dev']
+// Trang đọc được khi chưa đăng nhập (trang chủ, challenge, event, thành viên, xếp hạng, bảng vàng, quay số, bài viết, đăng nhập);
+// các trang khác và mọi API phải có phiên, trừ những API công khai dưới đây
+const PUBLIC_API_PREFIXES = ['/api/auth', '/api/strava/webhook', '/api/cron', '/api/draws', '/dev']
+const LOGIN_REQUIRED_PAGE_PREFIXES = ['/me', '/fund', '/admin', '/welcome', '/pending', '/photos']
 
-function isPublicPath(pathname: string) {
-  return PUBLIC_PATH_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+function matchesPrefix(pathname: string, prefixes: string[]) {
+  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+}
+
+function requiresLogin(pathname: string) {
+  if (matchesPrefix(pathname, PUBLIC_API_PREFIXES)) return false
+  if (pathname.startsWith('/api/')) return true
+  return matchesPrefix(pathname, LOGIN_REQUIRED_PAGE_PREFIXES)
 }
 
 export async function proxy(request: NextRequest) {
@@ -23,7 +32,7 @@ export async function proxy(request: NextRequest) {
   })
 
   const { data } = await supabase.auth.getClaims()
-  if (!data?.claims && !isPublicPath(request.nextUrl.pathname)) {
+  if (!data?.claims && requiresLogin(request.nextUrl.pathname)) {
     if (request.nextUrl.pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 })
     }

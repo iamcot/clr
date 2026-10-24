@@ -1,6 +1,6 @@
 import ChallengeCard from '@/components/ChallengeCard'
 import { MEMBER_VISIBLE_STATUSES, type ChallengeStatus } from '@/config/challenges'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { loadChallenges, type ChallengeRow } from '@/lib/challenges/loadChallenges'
 import { challengePhase } from '@/lib/challenges/status'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
@@ -8,7 +8,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 type MyEntrySummary = { progressPct: number; completed: boolean }
 
-async function loadMyEntries(memberId: string): Promise<Map<string, MyEntrySummary>> {
+async function loadMyEntries(memberId: string | undefined): Promise<Map<string, MyEntrySummary>> {
+  if (!memberId) return new Map()
   const supabase = await createSupabaseServerClient()
   const { data } = await supabase
     .from('challenge_entries')
@@ -23,6 +24,11 @@ function periodText(challenge: ChallengeRow): string {
   return `${formatDateTimeVi(challenge.starts_at)} - ${formatDateTimeVi(challenge.ends_at)}`
 }
 
+function runningSubtitle(challenge: ChallengeRow, entry: MyEntrySummary | undefined, isMember: boolean): string {
+  if (!isMember) return periodText(challenge)
+  return entry ? `Tiến độ của bạn ${Math.round(entry.progressPct)}%` : 'Bạn chưa tham gia'
+}
+
 function Group({ title, children }: { title: string; children: React.ReactNode[] }) {
   if (children.length === 0) return null
   return (
@@ -34,8 +40,8 @@ function Group({ title, children }: { title: string; children: React.ReactNode[]
 }
 
 export default async function ChallengesPage() {
-  const member = await requireActiveMember()
-  const [challenges, mine] = await Promise.all([loadChallenges(MEMBER_VISIBLE_STATUSES), loadMyEntries(member.id)])
+  const member = activeMemberOf(await getViewer())
+  const [challenges, mine] = await Promise.all([loadChallenges(MEMBER_VISIBLE_STATUSES), loadMyEntries(member?.id)])
   const now = new Date()
   const phaseOf = (challenge: ChallengeRow) =>
     challengePhase(challenge.status as ChallengeStatus, challenge.starts_at, challenge.ends_at, now)
@@ -57,7 +63,7 @@ export default async function ChallengesPage() {
               key={challenge.id}
               href={href(challenge)}
               title={challenge.title}
-              subtitle={entry ? `Tiến độ của bạn ${Math.round(entry.progressPct)}%` : 'Bạn chưa tham gia'}
+              subtitle={runningSubtitle(challenge, entry, member !== null)}
               progressPct={entry?.progressPct}
               badge={entry?.completed ? 'Hoàn thành' : undefined}
             />
