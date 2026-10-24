@@ -1,4 +1,5 @@
 import Avatar from '@/components/Avatar'
+import LaurelIcon from '@/components/LaurelIcon'
 import { formatDateVi } from '@/lib/format/dateTime'
 import type { RecordTable } from '@/lib/hallOfFame/records'
 import { formatDuration } from '@/lib/stats/format'
@@ -6,7 +7,7 @@ import { formatDuration } from '@/lib/stats/format'
 function RecordRow({ entry }: { entry: RecordTable['entries'][number] }) {
   return (
     <li className="flex items-center gap-3 rounded-lg bg-white p-3 shadow-sm">
-      <span className="w-6 text-center font-black">{entry.rank}</span>
+      <LaurelIcon className="size-7 shrink-0 text-gold" />
       <Avatar url={entry.avatarUrl} size={36} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-bold">{entry.displayName}</p>

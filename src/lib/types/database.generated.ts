@@ -959,6 +959,14 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"members_masked": {
+                  Row: {
+                    "avatar_url": string | null,"display_name": string | null,"id": string | null,"joined_at": string | null,"member_type": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"event_counts": {
                   Row: {
                     "event_id": string | null,"going_count": number | null,"maybe_count": number | null,"photo_count": number | null,"waitlist_count": number | null

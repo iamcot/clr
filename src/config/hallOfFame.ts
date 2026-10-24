@@ -4,11 +4,12 @@ export type RecordDistance = {
   distanceMeters: number
 }
 
+// Cự ly dài nhất xếp trước
 export const RECORD_DISTANCES: readonly RecordDistance[] = [
-  { key: '5K', label: '5K', distanceMeters: 5000 },
-  { key: '10K', label: '10K', distanceMeters: 10000 },
-  { key: 'HM', label: 'Half Marathon', distanceMeters: 21097 },
   { key: 'FM', label: 'Marathon', distanceMeters: 42195 },
+  { key: 'HM', label: 'Half Marathon', distanceMeters: 21097 },
+  { key: '10K', label: '10K', distanceMeters: 10000 },
+  { key: '5K', label: '5K', distanceMeters: 5000 },
 ]
 
 // Quãng đường của giải lệch tối đa bao nhiêu so với cự ly chuẩn thì vẫn tính cùng nhóm kỷ lục

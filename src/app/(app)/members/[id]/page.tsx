@@ -6,6 +6,7 @@ import HonorBadges from '@/components/HonorBadges'
 import PersonalRecordsCard from '@/components/PersonalRecordsCard'
 import RaceResultsList from '@/components/RaceResultsList'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
+import type { MemberType } from '@/lib/types/database'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { loadHonors } from '@/lib/hallOfFame/loadHonors'
@@ -36,18 +37,24 @@ async function loadSharedStats(memberId: string, includeDistance: boolean): Prom
   return { level: data.level ?? 1, monthDistanceM: data.month_distance_m ?? 0, yearDistanceM: data.year_distance_m ?? 0 }
 }
 
-async function loadProfile(memberId: string, viewerId: string | null) {
+// Người chưa được duyệt đọc view đã che tên và bỏ ảnh
+async function loadProfile(memberId: string, viewerId: string | null, isMember: boolean) {
   const supabase = await createSupabaseServerClient()
   const [profile, followers, following, viewerFollows] = await Promise.all([
-    supabase.from('members_public').select('id, display_name, avatar_url, member_type, joined_at').eq('id', memberId).maybeSingle(),
+    supabase
+      .from(isMember ? 'members_public' : 'members_masked')
+      .select('id, display_name, avatar_url, member_type, joined_at')
+      .eq('id', memberId)
+      .maybeSingle(),
     supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('followee_id', memberId),
     supabase.from('follows').select('followee_id', { count: 'exact', head: true }).eq('follower_id', memberId),
     viewerId
       ? supabase.from('follows').select('followee_id').eq('follower_id', viewerId).eq('followee_id', memberId).maybeSingle()
       : Promise.resolve({ data: null }),
   ])
+  const row = profile.data
   return {
-    profile: profile.data,
+    profile: row?.id ? { ...row, id: row.id, member_type: (row.member_type as MemberType | null) ?? null } : null,
     followerCount: followers.count ?? 0,
     followingCount: following.count ?? 0,
     viewerFollows: viewerFollows.data !== null,
@@ -58,7 +65,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   const viewer = await getViewer()
   const me = activeMemberOf(viewer)
   const { id } = await params
-  const { profile, followerCount, followingCount, viewerFollows } = await loadProfile(id, me?.id ?? null)
+  const { profile, followerCount, followingCount, viewerFollows } = await loadProfile(id, me?.id ?? null, viewer.kind === 'member')
   if (!profile) notFound()
   const isMember = viewer.kind === 'member'
   const includeStravaPrs = isMember && canShowOthersActivities(await loadClubDisplayMode())

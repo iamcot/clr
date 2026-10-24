@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Avatar from '@/components/Avatar'
+import MedalIcon from '@/components/MedalIcon'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
 import { GENDER_OPTIONS } from '@/config/profile'
 import { RANKING_PAGE_SIZE } from '@/config/levels'
@@ -34,13 +35,28 @@ function valueText(row: RankedRow, metric: RankingMetric): string {
   return formatKm(row.value)
 }
 
+const MEDAL_COLORS = ['text-gold', 'text-silver', 'text-bronze'] as const
+
+function RankBadge({ rank }: { rank: number }) {
+  const medalColor = MEDAL_COLORS[rank - 1]
+  if (!medalColor) return <span className="w-12 text-center font-medium">{rank}</span>
+  return (
+    <span className="flex w-12 items-center justify-center gap-0.5 text-xl font-black">
+      <MedalIcon className={`size-6 shrink-0 ${medalColor}`} />
+      {rank}
+    </span>
+  )
+}
+
 function RankingLine({ row, metric, highlight }: { row: RankedRow; metric: RankingMetric; highlight: boolean }) {
   return (
     <li className={`flex items-center gap-3 rounded-lg p-3 ${highlight ? 'bg-lime/30' : 'bg-white'}`}>
-      <span className="w-8 text-center font-black">{row.rank}</span>
+      <RankBadge rank={row.rank} />
       <Avatar url={row.avatarUrl} size={36} />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-bold">{row.displayName ?? 'Thành viên'}</p>
+        <p className={`truncate ${row.rank <= MEDAL_COLORS.length ? 'text-lg font-black' : 'font-bold'}`}>
+          {row.displayName ?? 'Thành viên'}
+        </p>
         <p className="text-xs text-muted">
           Level {row.level} {levelName(row.level)}
         </p>

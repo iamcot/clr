@@ -25,6 +25,7 @@ export type CommentView = {
   createdAt: string
 }
 
+// memberId null: người xem chưa được duyệt, tên tác giả lấy từ view đã che
 export async function loadPostDetail(postId: string, memberId: string | null, now: Date): Promise<PostDetail | null> {
   const supabase = await createSupabaseServerClient()
   const { data: post } = await supabase
@@ -44,7 +45,11 @@ export async function loadPostDetail(postId: string, memberId: string | null, no
       ? supabase.from('post_reads').select('acked_at').eq('post_id', postId).eq('member_id', memberId).maybeSingle()
       : Promise.resolve({ data: null }),
     post.author_id
-      ? supabase.from('members_public').select('display_name').eq('id', post.author_id).maybeSingle()
+      ? supabase
+          .from(memberId ? 'members_public' : 'members_masked')
+          .select('display_name')
+          .eq('id', post.author_id)
+          .maybeSingle()
       : Promise.resolve({ data: null }),
   ])
   const counts: Partial<Record<ReactionCode, number>> = {}

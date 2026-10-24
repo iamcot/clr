@@ -3,21 +3,25 @@ import Avatar from '@/components/Avatar'
 import FollowButton from '@/components/FollowButton'
 import { MEMBER_DIRECTORY_PAGE_SIZE, MEMBER_TYPE_LABELS } from '@/config/members'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
+import type { MemberType } from '@/lib/types/database'
 import { toLikePattern } from '@/lib/members/memberFilter'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 const SEARCH_MAX_LENGTH = 50
 
-async function loadDirectory(search: string) {
+// Người chưa được duyệt đọc view đã che tên và bỏ ảnh
+async function loadDirectory(search: string, isMember: boolean) {
   const supabase = await createSupabaseServerClient()
   let query = supabase
-    .from('members_public')
+    .from(isMember ? 'members_public' : 'members_masked')
     .select('id, display_name, avatar_url, member_type')
     .order('display_name')
     .limit(MEMBER_DIRECTORY_PAGE_SIZE)
   if (search) query = query.ilike('display_name', toLikePattern(search))
   const { data } = await query
-  return data ?? []
+  return (data ?? []).flatMap((row) =>
+    row.id ? [{ ...row, id: row.id, member_type: (row.member_type as MemberType | null) ?? null }] : [],
+  )
 }
 
 async function loadFollowingIds(memberId: string | undefined): Promise<Set<string>> {
@@ -31,7 +35,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const viewer = await getViewer()
   const me = activeMemberOf(viewer)
   const search = ((await searchParams).q ?? '').trim().slice(0, SEARCH_MAX_LENGTH)
-  const [members, followingIds] = await Promise.all([loadDirectory(search), loadFollowingIds(me?.id)])
+  const [members, followingIds] = await Promise.all([loadDirectory(search, me !== null), loadFollowingIds(me?.id)])
 
   return (
     <section>
