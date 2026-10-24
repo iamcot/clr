@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import FundQueue from '@/components/FundQueue'
 import FundTransactionsList from '@/components/FundTransactionsList'
 import { BankAccountForm, ManualTransactionForm, ReconciliationForm } from '@/components/FundForms'
@@ -26,6 +27,12 @@ export default async function AdminFundPage() {
           ))}
         </ul>
       </div>
+      <Link
+        href="/admin/fund/reports"
+        className="mt-3 flex min-h-12 items-center justify-center rounded-lg border border-line bg-white font-bold"
+      >
+        Báo cáo, chốt sổ và xuất file
+      </Link>
       <FundQueue queue={data.queue} openIntents={data.openIntents} cashRequests={data.cashRequests} categories={data.categories} />
       <FundTransactionsList rows={data.transactions} />
       <ManualTransactionForm accounts={data.accounts} categories={data.categories} />

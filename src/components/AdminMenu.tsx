@@ -50,7 +50,7 @@ export default function AdminMenu() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex items-center gap-3 bg-deep px-4 pb-2 pt-[calc(0.5rem+env(safe-area-inset-top))] text-white md:hidden">
+      <header className="sticky top-0 z-20 flex print:hidden items-center gap-3 bg-deep px-4 pb-2 pt-[calc(0.5rem+env(safe-area-inset-top))] text-white md:hidden">
         <button
           type="button"
           aria-expanded={open}
@@ -66,11 +66,11 @@ export default function AdminMenu() {
         </Link>
       </header>
       {open && (
-        <div className="fixed inset-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-10 bg-white p-3 md:hidden">
+        <div className="fixed inset-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-10 bg-white p-3 md:hidden print:hidden">
           <MenuItems onNavigate={close} />
         </div>
       )}
-      <aside className="hidden w-60 shrink-0 border-r border-line bg-white p-3 md:block">
+      <aside className="hidden w-60 shrink-0 border-r border-line bg-white p-3 md:block print:hidden">
         <p className="px-3 py-2 text-lg font-black">Quản trị CLR</p>
         <MenuItems onNavigate={close} />
         <Link href="/" className="mt-4 flex min-h-11 items-center px-3 text-sm text-muted">

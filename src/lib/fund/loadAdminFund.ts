@@ -30,6 +30,7 @@ export type FundTransactionRow = {
   memberName: string | null
   accountName: string
   receiptUrl: string | null
+  receiptPublic: boolean
   voidedAt: string | null
   voidReason: string | null
 }
@@ -159,6 +160,7 @@ export async function loadAdminFund(): Promise<AdminFundData> {
       memberName: row.member_id ? (memberName.get(row.member_id) ?? null) : null,
       accountName: accountName.get(row.account_id) ?? '',
       receiptUrl: row.receipt_url,
+      receiptPublic: row.receipt_public,
       voidedAt: row.voided_at,
       voidReason: row.void_reason,
     })),

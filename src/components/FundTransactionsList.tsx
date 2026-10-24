@@ -4,6 +4,7 @@ import { FUND_DIRECTION_LABELS } from '@/config/fund'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { formatVnd } from '@/lib/format/money'
 import { voidFundTransaction } from '@/lib/fund/adminActions'
+import { setReceiptPublic } from '@/lib/fund/reportActions'
 import type { FundTransactionRow } from '@/lib/fund/loadAdminFund'
 
 function VoidForm({ id }: { id: string }) {
@@ -48,6 +49,15 @@ function Row({ row }: { row: FundTransactionRow }) {
         <a href={row.receiptUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block">
           <Image src={row.receiptUrl} alt="Hoá đơn" width={64} height={64} className="size-16 rounded object-cover" unoptimized />
         </a>
+      )}
+      {row.receiptUrl && !voided && (
+        <ActionForm action={setReceiptPublic} className="mt-1">
+          <input type="hidden" name="id" value={row.id} />
+          <input type="hidden" name="public" value={row.receiptPublic ? 'false' : 'true'} />
+          <button type="submit" className="min-h-11 text-sm font-bold text-brand-dark">
+            {row.receiptPublic ? 'Đang công khai ảnh hoá đơn, bấm để ẩn' : 'Cho thành viên xem ảnh hoá đơn'}
+          </button>
+        </ActionForm>
       )}
       {voided ? <p className="mt-1 text-xs font-bold text-danger">Đã huỷ: {row.voidReason}</p> : <VoidForm id={row.id} />}
     </li>

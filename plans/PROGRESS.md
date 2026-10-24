@@ -229,9 +229,16 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Ghi chú huỷ giao dịch: huỷ một giao dịch "Phạt" đã khớp chỉ trừ số dư, khoản phạt vẫn là đã nộp; muốn đổi lại thì dùng "huỷ trạng thái nộp" ở `/admin/penalties`.
 
 ### 17 – Báo cáo tài chính
-- [ ] 17.1 Tổng hợp
-- [ ] 17.2 Trang công khai
-- [ ] 17.3 Báo cáo cho BCN
+- [~] 17.1 Tổng hợp
+- [~] 17.2 Trang công khai
+- [~] 17.3 Báo cáo cho BCN
+
+> Ghi chú task 17 (làm 17.1 → 17.3 trong một PR; đã chạy typecheck/lint/test/build, thử migration `0023` trên Postgres 16 cục bộ: báo cáo bỏ giao dịch huỷ và cân sổ, chốt sổ chặn thêm và huỷ giao dịch của tháng đã chốt, mở khoá cần lý do và quyền, hàm chỉ thành viên đã duyệt gọi được; bản in đã kiểm bằng Chromium ra PDF khổ A4 vừa một trang; **chưa** test tay trên app thật nên Nghiệm thu chưa tick):
+> - Migration `0023_fund_report.sql`: `fund_report_rows` (số dư đầu kỳ và tổng thu chi theo danh mục, bỏ giao dịch đã huỷ), `fund_penalty_report` (phạt phát sinh theo ngày tạo, đã thu, còn nợ, đã miễn), `fund_monthly` (thu chi theo tháng cho biểu đồ), `fund_public_expenses`; thành viên đã duyệt gọi được vì chỉ trả số tổng hợp và khoản chi, không có tên người nộp phạt. `fund_transactions.receipt_public` (BCN chọn công khai ảnh hoá đơn khi thêm giao dịch hoặc bật ở danh sách); `add_fund_transaction` có thêm tham số `p_receipt_public`. Gộp bằng hàm thuần `assembleFundReport` (`src/lib/finance/report.ts`, có test cân sổ). `database.generated.ts` sửa tay, cần `npm run db:types` khi có DB.
+> - Trang thành viên `/fund/club` (từ thẻ "Quỹ CLB" ở tab Quỹ): số dư hiện tại, biểu đồ cột thu/chi 12 tháng (SVG tự vẽ), báo cáo từng tháng có chuyển tháng, danh sách khoản chi kèm ảnh hoá đơn nếu công khai. Khoản thu từ phạt chỉ hiện tổng (theo danh mục), không có tên từng người (không đụng tới cài đặt `penalty_totals_public` ở bảng tổng phạt tháng). Chỉ thành viên đã duyệt xem được.
+> - `/admin/fund/reports`: chọn tháng, quý, năm; số liệu như trang thành viên kèm thống kê khoản phạt; xuất CSV (`/admin/fund/reports/csv`, kèm cả giao dịch đã huỷ có cột trạng thái, ghi nhật ký) và bản in (`/admin/fund/reports/print`, CSS in A4, có tên CLB, kỳ báo cáo, ô chữ ký thủ quỹ và chủ nhiệm để trống, lưu PDF bằng trình duyệt).
+> - Chốt sổ theo tháng (`fund_period_locks`): chỉ chốt được tháng đã qua; sau khi chốt, trigger chặn **thêm** và **huỷ** giao dịch thuộc tháng đó (kể cả BCN) cho tới khi mở khoá có lý do (có log). Ngoại lệ có chủ ý: tiền vào từ webhook ngân hàng vẫn được ghi vì tiền đã về thật, nên có thể làm số liệu một tháng đã chốt đổi nếu webhook về trễ; BCN nên đối chiếu lại nếu gặp. Việc phân loại lại danh mục không bị chặn. Chốt sổ tự đăng bài tóm tắt lên bảng tin (loại `system`, dedupe theo `fund-close:YYYY-MM`, tôn trọng cài đặt `auto_posts_publish` để thành nháp nếu tắt tự đăng); bật tắt bằng cài đặt `fund_close_autopost` ở trang báo cáo.
+> - Chưa có mẫu báo cáo Excel của CLB (câu hỏi plan) nên bản in và CSV theo cấu trúc tự đặt; kỳ chốt sổ làm theo tháng (hỏi BCN có cần chốt quý không).
 
 ---
 

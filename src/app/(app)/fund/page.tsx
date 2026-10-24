@@ -6,6 +6,7 @@ import { PENALTY_STATUS_LABELS, REWARD_STATUS_LABELS, type PenaltyStatus } from 
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { formatVnd } from '@/lib/format/money'
+import { loadCurrentBalance } from '@/lib/finance/loadFinance'
 import { effectiveIntentStatus } from '@/lib/fund/loadPayment'
 import { currentMonthVn, monthRangeVn, summarizePenalties, transferNote } from '@/lib/penalties/calc'
 import { loadFundSettings } from '@/lib/penalties/fundSettings'
@@ -77,13 +78,14 @@ export default async function FundPage() {
   const member = await requireActiveMember()
   const now = new Date()
   const month = currentMonthVn(now)
-  const [penalties, rewards, fund, totals, openIntents, qrReady] = await Promise.all([
+  const [penalties, rewards, fund, totals, openIntents, qrReady, clubBalance] = await Promise.all([
     loadMyPenalties(member.id),
     loadMyRewards(member.id),
     loadFundSettings(),
     loadMonthTotals(month),
     loadOpenIntents(member.id, now),
     hasReceivingAccount(),
+    loadCurrentBalance(now),
   ])
   const owed = summarizePenalties(
     penalties.map((penalty) => ({
@@ -108,6 +110,14 @@ export default async function FundPage() {
         <p className="text-sm text-muted">Bạn còn nợ</p>
         <p className={`text-4xl font-black ${owed > 0 ? 'text-danger' : 'text-brand-dark'}`}>{formatVnd(owed)}</p>
       </div>
+
+      <Link href="/fund/club" className="mt-3 flex min-h-14 items-center justify-between gap-2 rounded-lg bg-deep p-3 text-white">
+        <span>
+          <span className="block text-xs text-white/70">Quỹ CLB</span>
+          <span className="text-xl font-black">{formatVnd(clubBalance)}</span>
+        </span>
+        <span className="font-bold text-lime">Xem thu chi →</span>
+      </Link>
 
       {openIntents.length > 0 && (
         <ul className="mt-3 flex flex-col gap-2">
