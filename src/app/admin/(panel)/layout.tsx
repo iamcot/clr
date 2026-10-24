@@ -5,9 +5,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requireBcn()
 
   return (
-    <div className="min-h-dvh bg-page md:flex">
+    <div className="min-h-dvh bg-surface md:flex">
       <AdminMenu />
-      <main className="mx-auto w-full max-w-4xl px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">{children}</main>
+      <main className="mx-auto w-full min-w-0 max-w-6xl px-4 pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:px-8 md:pt-8 print:max-w-none print:p-0">
+        {children}
+      </main>
     </div>
   )
 }

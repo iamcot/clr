@@ -545,6 +545,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"admin_logins": {
+                  Row: {
+                    "member_id": string,"username": string,"created_at": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "member_id": string,"username": string,"created_at"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "member_id"?: string,"username"?: string,"created_at"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"fund_period_locks": {
                   Row: {
                     "id": string,"month": string,"locked_at": string,"locked_by": string | null,"note": string,"unlocked_at": string | null,"unlocked_by": string | null,"unlock_reason": string | null

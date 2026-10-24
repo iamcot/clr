@@ -6,15 +6,26 @@ import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/supabase/env'
 // các trang khác và mọi API phải có phiên, trừ những API công khai dưới đây
 const PUBLIC_API_PREFIXES = ['/api/auth', '/api/strava/webhook', '/api/bank/webhook', '/api/cron', '/api/draws', '/dev']
 const LOGIN_REQUIRED_PAGE_PREFIXES = ['/me', '/fund', '/admin', '/welcome', '/pending', '/photos']
+const ADMIN_PREFIX = '/admin'
+const ADMIN_LOGIN_PATH = '/admin/login'
 
 function matchesPrefix(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 }
 
 function requiresLogin(pathname: string) {
+  if (pathname === ADMIN_LOGIN_PATH) return false
   if (matchesPrefix(pathname, PUBLIC_API_PREFIXES)) return false
   if (pathname.startsWith('/api/')) return true
   return matchesPrefix(pathname, LOGIN_REQUIRED_PAGE_PREFIXES)
+}
+
+function loginUrlFor(request: NextRequest) {
+  const { pathname, search } = request.nextUrl
+  if (!matchesPrefix(pathname, [ADMIN_PREFIX])) return new URL('/login', request.url)
+  const loginUrl = new URL(ADMIN_LOGIN_PATH, request.url)
+  loginUrl.searchParams.set('next', `${pathname}${search}`)
+  return loginUrl
 }
 
 export async function proxy(request: NextRequest) {
@@ -36,7 +47,7 @@ export async function proxy(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 })
     }
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(loginUrlFor(request))
   }
   return response
 }

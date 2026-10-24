@@ -11,6 +11,8 @@ import {
   MEMBER_TYPES,
   MEMBER_TYPE_LABELS,
 } from '@/config/members'
+import AdminLoginSection from '@/components/AdminLoginSection'
+import { requireBcn } from '@/lib/auth/requireBcn'
 import { updateMember } from '@/lib/members/adminActions'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -47,7 +49,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
   const { id } = await params
   const member = await loadMember(id)
   if (!member) notFound()
-  const history = await loadHistory(id)
+  const [history, viewer] = await Promise.all([loadHistory(id), requireBcn()])
 
   return (
     <section>
@@ -117,6 +119,9 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
           Lưu thay đổi
         </button>
       </ActionForm>
+      {member.role === 'bcn' && member.status === 'active' && (
+        <AdminLoginSection memberId={member.id} isSelf={member.id === viewer.id} />
+      )}
       <h2 className="mt-6 text-lg font-black">Lịch sử thay đổi</h2>
       <ul className="mt-2 flex flex-col gap-2">
         {history.map((log) => (

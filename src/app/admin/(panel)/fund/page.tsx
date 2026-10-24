@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import StatCard from '@/components/admin/StatCard'
+import { adminButtonClass } from '@/components/admin/styles'
 import FundQueue from '@/components/FundQueue'
 import FundTransactionsList from '@/components/FundTransactionsList'
 import { BankAccountForm, ManualTransactionForm, ReconciliationForm } from '@/components/FundForms'
@@ -14,25 +17,21 @@ export default async function AdminFundPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Quỹ</h1>
-      <div className="mt-3 rounded-2xl bg-deep p-4 text-white">
-        <p className="text-sm text-white/70">Tổng số dư</p>
-        <p className="text-3xl font-black">{formatVnd(total)}</p>
-        <ul className="mt-2 flex flex-col gap-1 text-sm">
-          {data.balances.map((balance) => (
-            <li key={balance.accountId} className="flex justify-between gap-2">
-              <span className="text-white/80">{balance.name}</span>
-              <span className="font-bold">{formatVnd(balance.balance)}</span>
-            </li>
-          ))}
-        </ul>
+      <AdminPageHeader
+        title="Quỹ"
+        description="Sổ quỹ, đối soát chuyển khoản và thu chi"
+        actions={
+          <Link href="/admin/fund/reports" className={adminButtonClass('secondary')}>
+            Báo cáo, chốt sổ và xuất file
+          </Link>
+        }
+      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <StatCard label="Tổng số dư" value={formatVnd(total)} />
+        {data.balances.map((balance) => (
+          <StatCard key={balance.accountId} label={balance.name} value={formatVnd(balance.balance)} />
+        ))}
       </div>
-      <Link
-        href="/admin/fund/reports"
-        className="mt-3 flex min-h-12 items-center justify-center rounded-lg border border-line bg-white font-bold"
-      >
-        Báo cáo, chốt sổ và xuất file
-      </Link>
       <FundQueue queue={data.queue} openIntents={data.openIntents} cashRequests={data.cashRequests} categories={data.categories} />
       <FundTransactionsList rows={data.transactions} />
       <ManualTransactionForm accounts={data.accounts} categories={data.categories} />
