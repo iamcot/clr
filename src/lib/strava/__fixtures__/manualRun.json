@@ -1,0 +1,15 @@
+{
+  "id": 9876543212,
+  "name": "Chạy bù",
+  "sport_type": "Run",
+  "start_date": "2026-10-19T13:00:00Z",
+  "start_date_local": "2026-10-19T20:00:00Z",
+  "distance": 3000,
+  "moving_time": 1200,
+  "elapsed_time": 1200,
+  "manual": true,
+  "trainer": false,
+  "private": false,
+  "visibility": "only_me",
+  "start_latlng": null
+}

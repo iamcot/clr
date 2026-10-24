@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/supabase/env'
 
-const PUBLIC_PATH_PREFIXES = ['/login', '/api/auth', '/dev']
+const PUBLIC_PATH_PREFIXES = ['/login', '/api/auth', '/api/strava/webhook', '/api/cron', '/dev']
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATH_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))

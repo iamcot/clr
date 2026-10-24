@@ -5,7 +5,15 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const REQUESTED_SCOPE = 'read,activity:read_all'
 const REQUIRED_SCOPE = 'activity:read_all'
 
+const REVOKE_URL = 'https://www.strava.com/oauth/revoke'
+
 type FetchFn = typeof fetch
+
+export class TokenRequestError extends Error {
+  constructor(readonly status: number) {
+    super(`Strava trả lỗi ${status} khi lấy token`)
+  }
+}
 
 export type StravaAthlete = {
   id: number
@@ -72,7 +80,7 @@ async function postToken(fetchFn: FetchFn, body: Record<string, string>): Promis
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-  if (!response.ok) throw new Error(`Strava trả lỗi ${response.status} khi lấy token`)
+  if (!response.ok) throw new TokenRequestError(response.status)
   return (await response.json()) as Record<string, unknown>
 }
 
@@ -120,4 +128,17 @@ export async function refreshToken(
     grant_type: 'refresh_token',
   })
   return toTokenSet(payload)
+}
+
+export async function revokeAccess(
+  fetchFn: FetchFn,
+  options: { clientId: string; clientSecret: string; token: string },
+): Promise<void> {
+  const credentials = Buffer.from(`${options.clientId}:${options.clientSecret}`).toString('base64')
+  const response = await fetchFn(REVOKE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Authorization: `Basic ${credentials}` },
+    body: new URLSearchParams({ token: options.token, token_type_hint: 'access_token' }),
+  })
+  if (!response.ok) throw new TokenRequestError(response.status)
 }

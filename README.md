@@ -37,3 +37,8 @@ Migration chỉ thêm file mới (`supabase/migrations/000N_*.sql`), không sử
 ## Triển khai
 
 Vercel: preview cho mỗi PR, production từ `main`. Biến môi trường khai báo theo `.env.example` (URL công khai là `APP_URL`, không có tiền tố `NEXT_PUBLIC_`), tách Preview và Production (Preview dùng project Supabase riêng).
+
+## Đồng bộ Strava
+
+1. Điền `STRAVA_WEBHOOK_VERIFY_TOKEN` và `CRON_SECRET` trên Vercel (Production và Preview), thêm secret `APP_URL` và `CRON_SECRET` vào GitHub Actions để workflow `Strava cron` gọi `/api/cron/*`.
+2. Sau khi deploy, đăng ký webhook một lần: `npm run strava:subscribe -- create` (đọc `.env.local`; Strava gọi `GET /api/strava/webhook` để xác thực). `list` xem subscription, `delete <id>` xoá. Mỗi app Strava chỉ có một subscription.
