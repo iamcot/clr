@@ -394,6 +394,47 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"honors": {
+                  Row: {
+                    "approved": boolean,"challenge_id": string | null,"created_at": string,"created_by": string | null,"dedupe_key": string | null,"detail": string,"honor_date": string,"id": string,"image_url": string | null,"kind": string,"member_id": string,"race_result_id": string | null,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "approved"?: boolean,"challenge_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"dedupe_key"?: string | null,"detail"?: string,"honor_date": string,"id"?: string,"image_url"?: string | null,"kind": string,"member_id": string,"race_result_id"?: string | null,"title": string
+                  }
+                  Update: {
+                    "approved"?: boolean,"challenge_id"?: string | null,"created_at"?: string,"created_by"?: string | null,"dedupe_key"?: string | null,"detail"?: string,"honor_date"?: string,"id"?: string,"image_url"?: string | null,"kind"?: string,"member_id"?: string,"race_result_id"?: string | null,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "honors_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "honors_race_result_id_fkey"
+      columns: ["race_result_id"]
+isOneToOne: false
+      referencedRelation: "race_results"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "honors_challenge_id_fkey"
+      columns: ["challenge_id"]
+isOneToOne: false
+      referencedRelation: "challenges"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "honors_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"challenges": {
                   Row: {
                     "activity_filter": Json,"closed_at": string | null,"closed_by": string | null,"cover_url": string | null,"created_at": string,"created_by": string | null,"description": string,"ends_at": string,"goal_type": string,"id": string,"participation": string,"penalty_rule": Json,"ranking": string,"registration_closes_at": string | null,"reward_rule": Json,"starts_at": string,"status": string,"title": string,"updated_at": string
@@ -894,6 +935,9 @@ isOneToOne: false
                            },
 "admin_review_members":
 { Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
+                           },
+"generate_honors":
+{ Args: { "p_first_marathon_min_m": number,"p_milestones_km": number[] }; Returns: number
                            },
 "admin_verify_race_result":
 { Args: { "p_result_id": string,"p_verified": boolean }; Returns: undefined
