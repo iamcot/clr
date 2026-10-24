@@ -19,6 +19,8 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Còn thiếu để 1.3/1.4 xong hẳn: tạo project Supabase + Vercel, điền biến môi trường, kiểm tra PR thử có CI xanh và link preview.
 > - Tên biến Supabase theo key mới: `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`.
 
+> - Kiểu DB (2026-10-24): `npm run db:types` giờ ghi `src/lib/types/database.generated.ts` (sinh từ `supabase start` local, không còn bản viết tay). `src/lib/types/database.ts` là lớp thu hẹp: các cột text có check constraint (`role`, `status`, `member_type`, `gender`, `visibility`, `backfill_jobs.status`, `window_name`) thành union literal, `start_latlng` thành `string | null`, `set_activity_flag.p_reason` nhận `null`. Không chuyển sang Postgres enum (xem PR). Thêm giá trị vào check constraint thì phải sửa union tương ứng.
+
 ### 02 – Đăng nhập Strava
 - [x] 2.1 Bảng members + strava_tokens
 - [~] 2.2 OAuth start + callback ⚠️

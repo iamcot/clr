@@ -46,7 +46,7 @@ Làm:
 - Tạo project Supabase (region Singapore). Cài Supabase CLI làm dev dependency, `supabase init`, dùng `supabase start` để có DB local.
 - `src/lib/supabase/server.ts` (dùng `@supabase/ssr` + cookies), `browser.ts`, `service.ts` (service role, chỉ import được ở server: thêm `import 'server-only'`).
 - Migration `0001_init.sql`: extension `pgcrypto`, `pg_cron`; bảng `settings (key text pk, value jsonb, updated_at)`; bảng `audit_logs (id, actor_id, action, target_table, target_id, before jsonb, after jsonb, created_at)`; hàm `set_updated_at()` trigger dùng chung.
-- Script `npm run db:types` sinh `src/lib/types/database.ts` từ schema.
+- Script `npm run db:types` sinh `src/lib/types/database.generated.ts` từ schema; `src/lib/types/database.ts` thu hẹp lại các cột enum.
 - `.env.example` liệt kê đủ biến (không có giá trị thật).
 
 Nghiệm thu:
