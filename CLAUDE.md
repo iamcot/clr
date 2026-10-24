@@ -29,6 +29,8 @@ CLR là webapp (PWA, ưu tiên điện thoại) cho CLB chạy bộ CLR, khoản
 - Đặt tên: component `PascalCase.tsx` (một component chính `export default function`, component phụ nhỏ để cùng file); hàm/biến `camelCase`; hằng số `UPPER_SNAKE`; bảng/cột DB `snake_case`; route URL tiếng Anh viết thường có gạch (`/challenges/[id]`).
 - Next.js App Router. Server Component mặc định, chỉ thêm `'use client'` khi cần tương tác. Đọc dữ liệu ở server, ghi qua Server Action hoặc Route Handler.
 - Tailwind CSS v4, không dùng thư viện UI. Màu lấy từ token trong `globals.css` (`page`, `brand`, `brand-dark`, `deep`, `lime`, `gold`, `ink`, `muted`, `line`, `danger`; bảng màu ở `plans/00-overview.md`), không viết mã màu thẳng trong component.
+- **Trang mới phải có skeleton**: mỗi route mới (nhất là trang chi tiết có tải dữ liệu) thêm `loading.tsx` dùng `ListSkeleton` hoặc `DetailSkeleton` trong `components/PageSkeleton.tsx`, để mở trang không bị trắng.
+- Nút quay lại dùng `components/BackLink.tsx`, không tự viết `<Link>` với `←` để các trang đồng một style.
 - Gọi HTTP bằng `fetch` gốc, không axios. Supabase qua `@supabase/ssr` + `@supabase/supabase-js`.
 - Không có thư viện state toàn cục. Context + `useState` là đủ.
 - **Mọi thông số nghiệp vụ** (ngưỡng level, mức phạt mặc định, pace tối đa hợp lệ, giới hạn rate Strava...) nằm trong `src/config/*.ts` hoặc bảng `settings`, **không hardcode** trong logic.

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import BackLink from '@/components/BackLink'
 import RaceResultsList from '@/components/RaceResultsList'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { addActivitySuggestions, loadRaceResults } from '@/lib/races/loadRaces'
@@ -9,9 +10,7 @@ export default async function MyRacesPage() {
 
   return (
     <section>
-      <Link href="/me" className="text-sm text-muted">
-        ← Tôi
-      </Link>
+      <BackLink href="/me">Tôi</BackLink>
       <h1 className="mt-2 text-2xl font-black">Giải đã chạy</h1>
       <Link
         href="/me/races/new"

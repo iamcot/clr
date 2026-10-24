@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import { REWARD_STATUS_LABELS } from '@/config/penalties'
 import { formatDateVi } from '@/lib/format/dateTime'
@@ -20,9 +20,7 @@ export default async function AdminRewardsPage() {
 
   return (
     <section>
-      <Link href="/admin/penalties" className="text-sm text-muted">
-        ← Thưởng phạt
-      </Link>
+      <BackLink href="/admin/penalties">Thưởng phạt</BackLink>
       <h1 className="mt-2 text-2xl font-black">Thưởng</h1>
       <ul className="mt-3 flex flex-col gap-2">
         {rewards.map((reward) => (

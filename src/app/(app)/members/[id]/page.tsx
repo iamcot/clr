@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import FollowButton from '@/components/FollowButton'
 import HonorBadges from '@/components/HonorBadges'
 import PersonalRecordsCard from '@/components/PersonalRecordsCard'
@@ -59,9 +59,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
   return (
     <section>
-      <Link href="/members" className="text-sm text-muted">
-        ← Danh bạ
-      </Link>
+      <BackLink href="/members">Danh bạ</BackLink>
       <div className="mt-3 flex items-center gap-4">
         {profile.avatar_url ? (
           <Image src={profile.avatar_url} alt="" width={80} height={80} className="rounded-full" unoptimized />

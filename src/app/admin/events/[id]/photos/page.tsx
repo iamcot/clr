@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import PhotoUploader from '@/components/PhotoUploader'
 import { requireBcn } from '@/lib/auth/requireBcn'
@@ -19,9 +19,7 @@ export default async function AdminEventPhotosPage({ params }: { params: Promise
 
   return (
     <section>
-      <Link href={`/admin/events/${id}`} className="text-sm text-muted">
-        ← {event.title}
-      </Link>
+      <BackLink href={`/admin/events/${id}`}>{event.title}</BackLink>
       <h1 className="mt-2 mb-4 text-2xl font-black">Quản lý ảnh ({photos.length})</h1>
       <div className="mb-4">
         <PhotoUploader eventId={id} />

@@ -26,9 +26,10 @@ export const MEMBER_ROLES = Object.keys(MEMBER_ROLE_LABELS) as MemberRole[]
 export const ADMIN_MEMBER_PAGE_SIZE = 100
 export const MEMBER_DIRECTORY_PAGE_SIZE = 200
 export const MEMBER_HISTORY_LIMIT = 50
-export const FRIEND_FEED_LIMIT = 10
+export const FRIEND_FEED_LIMIT = 20
 export const OVERVIEW_ACTIVITY_DAYS = 7
 
 export const HOME_EVENT_LIMIT = 2
+export const HOME_CHALLENGE_LIMIT = 3
 export const HIGHLIGHT_WINDOW_DAYS = 30
-export const HIGHLIGHT_LIMIT = 8
+export const HIGHLIGHT_LIMIT = 40

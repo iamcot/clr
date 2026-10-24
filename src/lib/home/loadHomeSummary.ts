@@ -1,8 +1,8 @@
 import 'server-only'
 import type { GoalType } from '@/config/challenges'
+import { HOME_CHALLENGE_LIMIT } from '@/config/members'
 import type { CurrentMember } from '@/lib/auth/currentMember'
 import { formatGoal } from '@/lib/challenges/describe'
-import { daysLeft, describeRemaining } from '@/lib/home/challengeProgress'
 import { monthNumberAt } from '@/lib/home/greeting'
 import { formatPaceValue } from '@/lib/stats/format'
 import { levelName } from '@/lib/stats/level'
@@ -18,7 +18,6 @@ export type HomeChallenge = {
   goalText: string
   progressPct: number
   completed: boolean
-  remainingText: string
 }
 
 export type HomeSummary = {
@@ -29,39 +28,34 @@ export type HomeSummary = {
   activityCount: number
   averagePace: string
   clubRank: number | null
-  mainChallenge: HomeChallenge | null
+  challenges: HomeChallenge[]
   unpaidAmount: number
   unpaidReason: string
   syncNotice: string | null
 }
 
-async function loadMainChallenge(memberId: string, now: Date): Promise<HomeChallenge | null> {
+async function loadHomeChallenges(memberId: string, now: Date): Promise<HomeChallenge[]> {
   const supabase = await createSupabaseServerClient()
   const nowIso = now.toISOString()
   const { data } = await supabase
     .from('challenge_entries')
     .select(
-      'value, progress_pct, completed, challenge_categories!inner(goal_value), challenges!inner(id, title, goal_type, status, starts_at, ends_at)',
+      'progress_pct, completed, challenge_categories!inner(goal_value), challenges!inner(id, title, goal_type, status, starts_at, ends_at)',
     )
     .eq('member_id', memberId)
     .eq('excluded', false)
     .in('challenges.status', ['published', 'running'])
     .lte('challenges.starts_at', nowIso)
     .gte('challenges.ends_at', nowIso)
-    .order('ends_at', { referencedTable: 'challenges', ascending: true })
-    .limit(1)
-  const row = data?.[0]
-  if (!row) return null
-  const goalType = row.challenges.goal_type as GoalType
-  const goalValue = Number(row.challenge_categories.goal_value)
-  return {
+  // Sắp theo hạn kết thúc ở đây vì order trên bảng nhúng không sắp lại các dòng cha
+  const soonestFirst = [...(data ?? [])].sort((a, b) => a.challenges.ends_at.localeCompare(b.challenges.ends_at))
+  return soonestFirst.slice(0, HOME_CHALLENGE_LIMIT).map((row) => ({
     id: row.challenges.id,
     title: row.challenges.title,
-    goalText: formatGoal(goalType, goalValue),
+    goalText: formatGoal(row.challenges.goal_type as GoalType, Number(row.challenge_categories.goal_value)),
     progressPct: Number(row.progress_pct),
     completed: row.completed,
-    remainingText: describeRemaining(goalType, goalValue, Number(row.value), daysLeft(row.challenges.ends_at, now)),
-  }
+  }))
 }
 
 async function loadUnpaid(memberId: string): Promise<{ amount: number; reason: string }> {
@@ -86,9 +80,9 @@ async function loadOwnClubRank(memberId: string): Promise<number | null> {
 }
 
 export async function loadHomeSummary(member: CurrentMember, now: Date): Promise<HomeSummary> {
-  const [stats, mainChallenge, unpaid, clubRank, syncNotice] = await Promise.all([
+  const [stats, challenges, unpaid, clubRank, syncNotice] = await Promise.all([
     loadOwnMonthAndYear(member.id, now),
-    loadMainChallenge(member.id, now),
+    loadHomeChallenges(member.id, now),
     loadUnpaid(member.id),
     loadOwnClubRank(member.id),
     getBackfillStatusText(member.id),
@@ -101,7 +95,7 @@ export async function loadHomeSummary(member: CurrentMember, now: Date): Promise
     activityCount: stats.month.activityCount,
     averagePace: formatPaceValue(stats.month.distanceMeters, stats.month.movingTimeSeconds),
     clubRank,
-    mainChallenge,
+    challenges,
     unpaidAmount: unpaid.amount,
     unpaidReason: unpaid.reason,
     syncNotice,

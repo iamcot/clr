@@ -49,24 +49,24 @@ export async function createDraw(formData: FormData): Promise<ActionResult | voi
   const bcn = await requireBcn()
   const parsed = parseDrawInput(formData)
   if (!parsed.ok) return actionError(parsed.message)
-  const { title, sourceType, sourceId, style, prizes } = parsed.value
+  const { title, sourceType, sourceIds, style, prizes } = parsed.value
 
   const db = createSupabaseServiceClient()
   const { data: draw, error } = await db
     .from('draws')
-    .insert({ title, source_type: sourceType, source_id: sourceId, style, created_by: bcn.id })
+    .insert({ title, source_type: sourceType, source_id: sourceIds[0] ?? null, style, created_by: bcn.id })
     .select('id')
     .single()
   if (error || !draw) return actionError('Không tạo được đợt quay số, vui lòng thử lại')
 
   await db.from('draw_prizes').insert(prizes.map((prize, index) => ({ draw_id: draw.id, ...prize, sort: index + 1 })))
-  const memberIds = await listSourceMemberIds(db, sourceType, sourceId)
+  const memberIds = await listSourceMemberIds(db, sourceType, sourceIds)
   if (memberIds.length > 0) {
     await db
       .from('draw_participants')
       .insert(memberIds.map((memberId) => ({ draw_id: draw.id, member_id: memberId, weight: DEFAULT_PARTICIPANT_WEIGHT })))
   }
-  await logAudit({ action: 'create_draw', targetTable: 'draws', targetId: draw.id, after: { title, sourceType } })
+  await logAudit({ action: 'create_draw', targetTable: 'draws', targetId: draw.id, after: { title, sourceType, sourceIds } })
   await setFlashToast('draw_created')
   redirect(`/admin/draws/${draw.id}`)
 }

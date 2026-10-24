@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import DrawLive from '@/components/DrawLive'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
@@ -74,9 +75,7 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
 
   return (
     <section>
-      <Link href="/admin/draws" className="text-sm text-muted">
-        ← Quay số
-      </Link>
+      <BackLink href="/admin/draws">Quay số</BackLink>
       <h1 className="mt-2 text-2xl font-black">{draw.title}</h1>
       <p className="text-sm text-muted">
         {DRAW_STATUS_LABELS[draw.status]} · {drawnCount}/{totalSlots} giải đã quay
