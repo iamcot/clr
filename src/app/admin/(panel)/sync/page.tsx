@@ -1,4 +1,8 @@
 import ActionForm from '@/components/ActionForm'
+import AdminCard from '@/components/admin/AdminCard'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import StatCard from '@/components/admin/StatCard'
+import { adminButtonClass } from '@/components/admin/styles'
 import { EVENT_QUEUE } from '@/config/strava'
 import { currentUsage, type RateWindowName } from '@/lib/strava/rateLimit'
 import { retryStravaEvent } from '@/lib/strava/adminActions'
@@ -41,62 +45,74 @@ async function loadSyncState() {
   }
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-lg bg-white p-3">
-      <h2 className="font-black">{title}</h2>
-      <div className="mt-1 text-sm">{children}</div>
-    </div>
-  )
-}
-
 export default async function AdminSyncPage() {
   const state = await loadSyncState()
   const now = new Date()
 
   return (
-    <section className="flex flex-col gap-3">
-      <h1 className="text-2xl font-black">Đồng bộ Strava</h1>
-      <Card title="Hạn mức Strava đang dùng">
-        {state.rates.length === 0 && <p className="text-muted">Chưa có số liệu.</p>}
-        {state.rates.map((rate) => (
-          <p key={rate.window_name}>
-            {WINDOW_LABELS[rate.window_name]}:{' '}
-            {currentUsage(
-              rate.window_name,
-              { limit: rate.request_limit, usage: rate.usage, updatedAt: new Date(rate.updated_at) },
-              now,
-            )}
-            /{rate.request_limit}
-          </p>
-        ))}
-      </Card>
-      <Card title="Hàng đợi">
-        <p>Event chưa xử lý: {state.pendingEvents}</p>
-        <p>Job kéo lịch sử còn lại: {state.pendingJobs}</p>
-        <p>Job kéo lịch sử thất bại: {state.failedJobs}</p>
-      </Card>
-      <Card title="Event lỗi">
-        {state.failedEvents.length === 0 && <p className="text-muted">Không có.</p>}
-        {state.failedEvents.map((event) => (
-          <ActionForm key={event.id} action={retryStravaEvent} className="mt-2 border-t border-hairline pt-2">
-            <input type="hidden" name="event_id" value={event.id} />
-            <p>
-              {event.object_type} {event.object_id} ({event.aspect_type})
-            </p>
-            <p className="text-danger">{event.error}</p>
-            <button type="submit" className="mt-1 min-h-11 rounded-lg border border-hairline px-4 font-bold">
-              Thử lại
-            </button>
-          </ActionForm>
-        ))}
-      </Card>
-      <Card title="Thành viên mất kết nối Strava">
-        {state.disconnected.length === 0 && <p className="text-muted">Không có.</p>}
-        {state.disconnected.map((member) => (
-          <p key={member.id}>{member.display_name}</p>
-        ))}
-      </Card>
+    <section>
+      <AdminPageHeader title="Đồng bộ Strava" description="Hạn mức, hàng đợi và các event cần xử lý" />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="Event chưa xử lý" value={state.pendingEvents} />
+        <StatCard label="Job lịch sử còn lại" value={state.pendingJobs} />
+        <StatCard label="Job lịch sử thất bại" value={state.failedJobs} tone={state.failedJobs > 0 ? 'alert' : 'default'} />
+        <StatCard
+          label="Mất kết nối Strava"
+          value={state.disconnected.length}
+          tone={state.disconnected.length > 0 ? 'alert' : 'default'}
+        />
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <AdminCard title="Hạn mức Strava đang dùng">
+          {state.rates.length === 0 && <p className="text-sm text-muted">Chưa có số liệu.</p>}
+          <ul className="divide-y divide-hairline text-sm">
+            {state.rates.map((rate) => (
+              <li key={rate.window_name} className="flex justify-between py-2">
+                <span className="text-muted">{WINDOW_LABELS[rate.window_name]}</span>
+                <b>
+                  {currentUsage(
+                    rate.window_name,
+                    { limit: rate.request_limit, usage: rate.usage, updatedAt: new Date(rate.updated_at) },
+                    now,
+                  )}
+                  /{rate.request_limit}
+                </b>
+              </li>
+            ))}
+          </ul>
+        </AdminCard>
+        <AdminCard title="Thành viên mất kết nối Strava">
+          {state.disconnected.length === 0 && <p className="text-sm text-muted">Không có.</p>}
+          <ul className="divide-y divide-hairline text-sm">
+            {state.disconnected.map((member) => (
+              <li key={member.id} className="py-2">
+                {member.display_name}
+              </li>
+            ))}
+          </ul>
+        </AdminCard>
+      </div>
+      <AdminCard title="Event lỗi" className="mt-4">
+        {state.failedEvents.length === 0 && <p className="text-sm text-muted">Không có.</p>}
+        <ul className="divide-y divide-hairline">
+          {state.failedEvents.map((event) => (
+            <li key={event.id} className="py-3">
+              <ActionForm action={retryStravaEvent} className="flex items-center justify-between gap-3">
+                <input type="hidden" name="event_id" value={event.id} />
+                <div className="min-w-0 text-sm">
+                  <p className="font-bold">
+                    {event.object_type} {event.object_id} ({event.aspect_type})
+                  </p>
+                  <p className="break-words text-danger">{event.error}</p>
+                </div>
+                <button type="submit" className={adminButtonClass('secondary')}>
+                  Thử lại
+                </button>
+              </ActionForm>
+            </li>
+          ))}
+        </ul>
+      </AdminCard>
     </section>
   )
 }

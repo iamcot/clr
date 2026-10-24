@@ -1,4 +1,9 @@
 import ActionForm from '@/components/ActionForm'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
+import Badge from '@/components/admin/Badge'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import { formatFixed } from '@/lib/format/number'
 import { setActivityFlag } from '@/lib/strava/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -7,7 +12,6 @@ import type { Database } from '@/lib/types/database'
 type ReviewRow = Database['public']['Views']['activities_review']['Row']
 
 const PAGE_SIZE = 100
-const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
 
 async function loadActivities(showCounted: boolean): Promise<ReviewRow[]> {
   const supabase = await createSupabaseServerClient()
@@ -37,17 +41,50 @@ function exclusionNote(activity: ReviewRow): string {
 
 function FlagForm({ activity }: { activity: ReviewRow }) {
   const flagged = activity.flagged_invalid === true
-  return (
-    <ActionForm action={setActivityFlag} className="mt-2 flex flex-col gap-2">
+  const fields = (
+    <ActionForm action={setActivityFlag} className="flex flex-col gap-2 py-1">
       <input type="hidden" name="activity_id" value={activity.id ?? ''} />
       <input type="hidden" name="flagged" value={flagged ? 'false' : 'true'} />
-      {!flagged && <input name="reason" placeholder="Lý do" required maxLength={200} className={INPUT_CLASS} />}
-      <button type="submit" className="min-h-11 rounded-lg border border-hairline px-4 font-bold">
-        {flagged ? 'Bỏ đánh dấu không hợp lệ' : 'Đánh dấu không hợp lệ'}
+      {!flagged && <input name="reason" placeholder="Lý do" required maxLength={200} className={ADMIN_INPUT_CLASS} />}
+      <button type="submit" className={adminButtonClass(flagged ? 'secondary' : 'danger')}>
+        {flagged ? 'Bỏ đánh dấu' : 'Đánh dấu không hợp lệ'}
       </button>
     </ActionForm>
   )
+  if (flagged) return fields
+  return (
+    <details className="min-w-44">
+      <summary className="flex min-h-8 cursor-pointer items-center text-sm font-bold text-brand-dark">Đánh dấu</summary>
+      {fields}
+    </details>
+  )
 }
+
+const COLUMNS: DataTableColumn<ReviewRow>[] = [
+  { key: 'member', header: 'Thành viên', cell: (activity) => <b>{activity.display_name}</b> },
+  {
+    key: 'activity',
+    header: 'Hoạt động',
+    cell: (activity) => (
+      <span>
+        {activity.name}
+        <span className="block text-xs text-muted">{activity.sport_type}</span>
+      </span>
+    ),
+  },
+  { key: 'distance', header: 'Cự ly', align: 'right', cell: (activity) => formatDistanceKm(activity.distance_m) },
+  { key: 'date', header: 'Ngày', hideBelowMd: true, cell: (activity) => formatDate(activity.start_date) },
+  {
+    key: 'note',
+    header: 'Ghi chú',
+    hideBelowMd: true,
+    cell: (activity) => {
+      const note = exclusionNote(activity)
+      return note ? <Badge tone={activity.flagged_invalid ? 'danger' : 'neutral'}>{note}</Badge> : null
+    },
+  },
+  { key: 'action', header: '', cell: (activity) => <FlagForm activity={activity} /> },
+]
 
 export default async function AdminActivitiesPage({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
   const showCounted = (await searchParams).show === 'counted'
@@ -55,31 +92,24 @@ export default async function AdminActivitiesPage({ searchParams }: { searchPara
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Hoạt động</h1>
-      <p className="mt-1 text-sm text-muted">
-        {showCounted ? 'Hoạt động đang được tính cho CLB' : 'Hoạt động bị loại'}. Hoạt động riêng tư không
-        hiện ở đây.
-      </p>
-      <a
-        href={showCounted ? '/admin/activities' : '/admin/activities?show=counted'}
-        className="mt-2 block font-bold text-brand-dark underline"
-      >
-        {showCounted ? 'Xem hoạt động bị loại' : 'Xem hoạt động đang được tính'}
-      </a>
-      <ul className="mt-4 flex flex-col gap-3">
-        {activities.map((activity) => (
-          <li key={activity.id} className="rounded-lg bg-white p-3">
-            <p className="font-bold">{activity.display_name}</p>
-            <p className="text-sm">
-              {activity.name} · {activity.sport_type} · {formatDistanceKm(activity.distance_m)} ·{' '}
-              {formatDate(activity.start_date)}
-            </p>
-            <p className="text-sm text-muted">{exclusionNote(activity)}</p>
-            <FlagForm activity={activity} />
-          </li>
-        ))}
-      </ul>
-      {activities.length === 0 && <p className="mt-4 text-muted">Không có hoạt động nào.</p>}
+      <AdminPageHeader
+        title="Hoạt động"
+        description="Hoạt động riêng tư không hiện ở đây. Đánh dấu không hợp lệ để loại khỏi số liệu CLB."
+      />
+      <AdminTabs
+        items={[
+          { href: '/admin/activities', label: 'Bị loại', active: !showCounted },
+          { href: '/admin/activities?show=counted', label: 'Đang được tính', active: showCounted },
+        ]}
+      />
+      <div className="mt-4">
+        <DataTable
+          columns={COLUMNS}
+          rows={activities}
+          rowKey={(activity) => String(activity.id)}
+          emptyText="Không có hoạt động nào."
+        />
+      </div>
     </section>
   )
 }

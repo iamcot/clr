@@ -1,8 +1,20 @@
 import Link from 'next/link'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import Badge from '@/components/admin/Badge'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import { adminButtonClass } from '@/components/admin/styles'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadDrawList } from '@/lib/draw/loadDraw'
+
+type DrawRow = Awaited<ReturnType<typeof loadDrawList>>[number]
+
+const COLUMNS: DataTableColumn<DrawRow>[] = [
+  { key: 'title', header: 'Đợt quay số', isLink: true, cell: (draw) => draw.title },
+  { key: 'status', header: 'Trạng thái', cell: (draw) => <Badge tone="info">{DRAW_STATUS_LABELS[draw.status]}</Badge> },
+  { key: 'created', header: 'Tạo lúc', hideBelowMd: true, cell: (draw) => formatDateTimeVi(draw.createdAt) },
+]
 
 export default async function AdminDrawsPage() {
   await requireBcn()
@@ -10,23 +22,22 @@ export default async function AdminDrawsPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Quay số</h1>
-      <Link href="/admin/draws/new" className="mt-3 flex min-h-12 items-center justify-center rounded-full bg-brand font-bold text-white">
-        Tạo đợt quay số
-      </Link>
-      <ul className="mt-4 flex flex-col gap-2">
-        {draws.map((draw) => (
-          <li key={draw.id}>
-            <Link href={`/admin/draws/${draw.id}`} className="block rounded-lg bg-white p-3">
-              <p className="font-bold">{draw.title}</p>
-              <p className="text-sm text-muted">
-                {DRAW_STATUS_LABELS[draw.status]} · {formatDateTimeVi(draw.createdAt)}
-              </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {draws.length === 0 && <p className="mt-4 text-muted">Chưa có đợt quay số nào.</p>}
+      <AdminPageHeader
+        title="Quay số"
+        description="Quay số trúng thưởng trực tiếp"
+        actions={
+          <Link href="/admin/draws/new" className={adminButtonClass('primary')}>
+            + Tạo đợt quay số
+          </Link>
+        }
+      />
+      <DataTable
+        columns={COLUMNS}
+        rows={draws}
+        rowKey={(draw) => draw.id}
+        rowHref={(draw) => `/admin/draws/${draw.id}`}
+        emptyText="Chưa có đợt quay số nào."
+      />
     </section>
   )
 }

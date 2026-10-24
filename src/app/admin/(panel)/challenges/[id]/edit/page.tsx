@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import BackLink from '@/components/BackLink'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import ChallengeForm from '@/components/ChallengeForm'
 import { toFormDefaults } from '@/lib/challenges/formDefaults'
 import { loadChallenge } from '@/lib/challenges/loadChallenges'
@@ -36,17 +36,14 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
 
   return (
     <section>
-      <BackLink href={`/admin/challenges/${id}`}>{challenge.title}</BackLink>
-      <h1 className="mt-2 text-2xl font-black">Sửa challenge</h1>
+      <AdminPageHeader title="Sửa challenge" backHref={`/admin/challenges/${id}`} backLabel={challenge.title} />
       {isLive && (
-        <p className="mt-2 rounded-lg bg-gold/30 p-3 text-sm">
+        <p className="mb-4 rounded-lg bg-gold/30 p-3 text-sm">
           Challenge đã công bố. Sau khi lưu, bấm &quot;Tính lại tất cả&quot; ở trang chi tiết để áp luật mới cho mọi
           người.
         </p>
       )}
-      <div className="mt-4">
-        <ChallengeForm defaults={defaults} />
-      </div>
+      <ChallengeForm defaults={defaults} />
     </section>
   )
 }
