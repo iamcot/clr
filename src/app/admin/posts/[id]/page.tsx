@@ -37,7 +37,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         </ActionForm>
       )}
       {stats && (
-        <div className="mb-4 rounded-lg bg-white p-3">
+        <div className="mb-4 rounded-lg bg-white shadow-sm p-3">
           <p className="font-bold">Xác nhận đã đọc</p>
           <p className="text-sm text-muted">
             Đã xác nhận {stats.ackedCount}/{stats.activeMembers} · đã mở đọc {stats.readCount} · chưa xác nhận{' '}

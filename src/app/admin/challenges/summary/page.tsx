@@ -76,7 +76,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
       </div>
       <ul className="mt-3 flex flex-col gap-2">
         {rows.map((row) => (
-          <li key={row.memberId} className="rounded-lg bg-white p-3">
+          <li key={row.memberId} className="rounded-lg bg-white shadow-sm p-3">
             <p className="font-bold">{names[row.memberId] ?? 'Thành viên'}</p>
             <p className="text-sm text-muted">
               Tham gia {row.joined} · Hoàn thành {row.completed} · Chuỗi dài nhất {row.longestStreak} tháng · Chuỗi hiện

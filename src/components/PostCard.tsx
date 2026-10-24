@@ -91,7 +91,7 @@ function AckSection({ post }: { post: FeedPostView }) {
 
 export default function PostCard({ post }: { post: FeedPostView }) {
   return (
-    <li className="overflow-hidden rounded-2xl border border-line bg-white">
+    <li className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
       <Link href={`/posts/${post.id}`} className="block active:bg-page">
         {post.coverUrl && (
           // eslint-disable-next-line @next/next/no-img-element -- ảnh bìa là link ngoài do BCN dán, chưa có kho ảnh để cấu hình next/image

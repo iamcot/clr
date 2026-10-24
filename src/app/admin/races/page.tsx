@@ -32,7 +32,7 @@ export default async function AdminRacesPage({ searchParams }: { searchParams: P
       </a>
       <ul className="mt-4 flex flex-col gap-3">
         {results.map((result) => (
-          <li key={result.id} className="rounded-lg bg-white p-3">
+          <li key={result.id} className="rounded-lg bg-white shadow-sm p-3">
             <p className="font-bold">{result.display_name}</p>
             <p className="text-sm">
               {result.race_name} · {result.distance_label} · {formatDuration(result.chip_time_s ?? 0)}

@@ -47,7 +47,7 @@ function PenaltyLine({ row }: { row: PenaltyListRow }) {
 
 function ClosedPenalty({ row }: { row: PenaltyListRow }) {
   return (
-    <li className="rounded-lg bg-white p-3">
+    <li className="rounded-lg bg-white shadow-sm p-3">
       <PenaltyLine row={row} />
       <p className="text-xs text-muted">
         {PENALTY_STATUS_LABELS[row.status]}
@@ -129,21 +129,21 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
       </form>
 
       <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
-        <div className="rounded-lg bg-white p-2">
+        <div className="rounded-lg bg-white shadow-sm p-2">
           <dt className="text-xs text-muted">Đã thu</dt>
           <dd className="font-black">{formatVnd(totals.collected)}</dd>
         </div>
-        <div className="rounded-lg bg-white p-2">
+        <div className="rounded-lg bg-white shadow-sm p-2">
           <dt className="text-xs text-muted">Còn nợ</dt>
           <dd className="font-black text-danger">{formatVnd(totals.outstanding)}</dd>
         </div>
-        <div className="rounded-lg bg-white p-2">
+        <div className="rounded-lg bg-white shadow-sm p-2">
           <dt className="text-xs text-muted">Đã miễn</dt>
           <dd className="font-black">{formatVnd(totals.waived)}</dd>
         </div>
       </dl>
 
-      <details className="mt-4 rounded-lg bg-white p-3">
+      <details className="mt-4 rounded-lg bg-white shadow-sm p-3">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Thêm phạt tay</summary>
         <ActionForm action={addManualPenalties} className="flex flex-col gap-2 pb-2">
           <select name="member_ids" multiple size={8} className={INPUT_CLASS} aria-label="Chọn thành viên">
@@ -176,7 +176,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         </ActionForm>
       </details>
 
-      <details className="mt-2 rounded-lg bg-white p-3">
+      <details className="mt-2 rounded-lg bg-white shadow-sm p-3">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Tài khoản nhận phạt</summary>
         <ActionForm action={saveFundSettings} className="flex flex-col gap-2 pb-2">
           <input name="bank_name" defaultValue={fund.bankName} placeholder="Ngân hàng" className={INPUT_CLASS} />
@@ -207,7 +207,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         <ActionForm action={applyPenaltySelection} className="mt-2 flex flex-col gap-2">
           <ul className="flex flex-col gap-2">
             {open.map((row) => (
-              <li key={row.id} className="rounded-lg bg-white">
+              <li key={row.id} className="rounded-lg bg-white shadow-sm">
                 <label className="flex min-h-11 items-start gap-3 p-3">
                   <input type="checkbox" name="ids" value={row.id} className="mt-1 size-5" />
                   <span className="min-w-0 flex-1">
@@ -217,7 +217,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
               </li>
             ))}
           </ul>
-          <div className="rounded-lg bg-white p-3">
+          <div className="rounded-lg bg-white shadow-sm p-3">
             <p className="text-sm font-bold">Áp dụng cho các khoản đã chọn</p>
             <select name="method" className={`${INPUT_CLASS} mt-2`} defaultValue="cash">
               {Object.entries(PAYMENT_METHOD_LABELS).map(([value, label]) => (

@@ -186,7 +186,8 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Tự gắn hoạt động: `src/lib/events/matchActivity.ts` (khung ±1 giờ, bán kính 3 km từ `start_latlng`, mỗi người lấy buổi dài nhất, bỏ hoạt động riêng tư nếu chủ chưa đồng ý cộng vào số liệu tổng). Event không có toạ độ thì không tự gắn. Job `GET /api/cron/event-activities` (chạy cùng nhịp 15 phút trong workflow Strava cron) và nút "Quét hoạt động" ở `/admin/events/[id]`. Hoạt động khớp mà chưa điểm danh chỉ hiện gợi ý cho BCN, không tự điểm danh.
 > - Upload ảnh: `POST /api/uploads` cấp 2 link PUT ký sẵn (ảnh + thumbnail, độ dài file nằm trong chữ ký), `POST /api/uploads/complete` đọc lại object trên R2, kiểm kích thước và chữ ký JPEG (file `.exe` đổi đuôi bị xoá và từ chối) rồi mới ghi `event_photos`. Client nén bằng canvas (2048px/0,82, thumbnail 480px) nên EXIF/GPS không còn; ngày chụp đọc từ EXIF của file gốc. Chưa có HEIC (báo lỗi rõ). `proxy.ts`: request chưa đăng nhập tới `/api/*` (không công khai) trả 401 thay vì chuyển hướng.
 > - Cần điền `R2_*` (xem `.env.example`) và cấu hình CORS cho bucket (README, mục Ảnh event) trước khi thử upload. Chưa có việc chuyển ảnh cũ (chờ trả lời câu hỏi cho BCN).
-> - Chưa có mã QR: CLAUDE.md cấm thêm thư viện ngoài danh sách. Màn BCN hiện link điểm danh đổi mỗi 30 giây (có nút chép) thay cho QR; cần chốt thêm thư viện QR hoặc cách khác (xem câu hỏi ở báo cáo).
+> - Mã QR: người dùng đã đồng ý thêm `qrcode` 1.5.4 (+ `@types/qrcode`). `CheckinPanel` vẽ QR ở trình duyệt từ link điểm danh (`src/lib/events/checkinLink.ts`), tự đổi theo mã 30 giây; vẫn giữ mã chữ và nút chép link. Chưa thử quét bằng camera iPhone thật.
+> - `/admin/events/[id]/photos` có thêm `PhotoUploader` để BCN upload ngay tại trang quản lý ảnh.
 > - Task 11.2 không nêu màn tạo event cho BCN nên thêm tối thiểu `/admin/events` (danh sách, tạo/sửa, điểm danh tay, phạt vắng dùng loại `event_absent` của 8.1, quản lý ảnh: ẩn, xoá, chọn ảnh bìa) và bật tab Event, mục Event ở `/admin`.
 
 ### 12 – Bảng vàng
@@ -272,3 +273,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
   → Đã xử lý: thêm link mockup vào `plans/00-overview.md`, merge PR #1.
 - Coding style: viết code dễ đọc, theo single responsibility, ít comment inline.
   → Đã xử lý: ghi vào mục "Coding style" trong `CLAUDE.md`.
+
+### Chỉnh giao diện sau task 11
+> - Nền trang trắng (`--color-page`), card tách khối bằng `shadow-sm`. Độ đậm chữ: `font-bold` = 500, `font-black`/`font-extrabold` = 600 (khai báo trong `globals.css`), font chỉ tải 400/500/600.
+> - Số theo `vi-VN` (`src/lib/format/number.ts`): ngăn nghìn bằng `.`, thập phân bằng `,` (ví dụ `1.234,5 km`). Cần người dùng xác nhận phần thập phân.
+> - Thêm `loading.tsx` cho `challenges`, `challenges/[id]`, `events`, `events/[id]` (loading ở layout chung không chạy khi chuyển giữa các trang con).
+> - Bảng xếp hạng challenge bỏ dòng "của tôi" ghim phía trên (bị lặp), vẫn tô nổi dòng của mình trong danh sách.
+> - "Ảnh có tôi" chỉ lọc ảnh được gắn tên mình, không tính ảnh mình upload.

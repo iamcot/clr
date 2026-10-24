@@ -83,15 +83,15 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
       )}
       {shared && (
         <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-          <div className="rounded-lg bg-white p-2">
+          <div className="rounded-lg bg-white shadow-sm p-2">
             <p className="text-xs text-muted">Level</p>
             <p className="font-black">{shared.level} {levelName(shared.level ?? 1)}</p>
           </div>
-          <div className="rounded-lg bg-white p-2">
+          <div className="rounded-lg bg-white shadow-sm p-2">
             <p className="text-xs text-muted">Km tháng này</p>
             <p className="font-black">{formatKm(shared.month_distance_m ?? 0)}</p>
           </div>
-          <div className="rounded-lg bg-white p-2">
+          <div className="rounded-lg bg-white shadow-sm p-2">
             <p className="text-xs text-muted">Km năm nay</p>
             <p className="font-black">{formatKm(shared.year_distance_m ?? 0)}</p>
           </div>

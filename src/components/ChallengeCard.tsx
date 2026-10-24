@@ -10,7 +10,7 @@ type ChallengeCardProps = {
 
 export default function ChallengeCard({ href, title, subtitle, progressPct, badge }: ChallengeCardProps) {
   return (
-    <Link href={href} className="block rounded-lg bg-white p-3 active:bg-line">
+    <Link href={href} className="block rounded-lg bg-white shadow-sm p-3 active:bg-line">
       <div className="flex items-start justify-between gap-2">
         <p className="font-bold">{title}</p>
         {badge && <span className="shrink-0 rounded-full bg-lime/40 px-2 py-0.5 text-xs font-bold">{badge}</span>}

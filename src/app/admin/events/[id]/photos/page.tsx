@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import ActionForm from '@/components/ActionForm'
+import PhotoUploader from '@/components/PhotoUploader'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { loadAdminEvent } from '@/lib/events/loadAdminEvents'
 import { loadEventPhotos } from '@/lib/events/loadPhotos'
@@ -22,9 +23,12 @@ export default async function AdminEventPhotosPage({ params }: { params: Promise
         ← {event.title}
       </Link>
       <h1 className="mt-2 mb-4 text-2xl font-black">Quản lý ảnh ({photos.length})</h1>
+      <div className="mb-4">
+        <PhotoUploader eventId={id} />
+      </div>
       <ul className="grid grid-cols-2 gap-2">
         {photos.map((photo) => (
-          <li key={photo.id} className="rounded-lg bg-white p-1">
+          <li key={photo.id} className="rounded-lg bg-white shadow-sm p-1">
             <Image
               src={photo.thumbUrl}
               alt=""

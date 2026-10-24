@@ -65,7 +65,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
           </p>
         </div>
       </div>
-      <dl className="mt-4 grid grid-cols-2 gap-2 rounded-lg bg-white p-3 text-sm">
+      <dl className="mt-4 grid grid-cols-2 gap-2 rounded-lg bg-white shadow-sm p-3 text-sm">
         <dt className="text-muted">SĐT</dt>
         <dd>{member.phone ?? '—'}</dd>
         <dt className="text-muted">Năm sinh</dt>
@@ -81,7 +81,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
           </>
         )}
       </dl>
-      <ActionForm action={updateMember} className="mt-4 flex flex-col gap-3 rounded-lg bg-white p-3">
+      <ActionForm action={updateMember} className="mt-4 flex flex-col gap-3 rounded-lg bg-white shadow-sm p-3">
         <input type="hidden" name="member_id" value={member.id} />
         <label className="block">
           <span className="text-sm font-bold">Loại</span>
@@ -124,7 +124,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
       <h2 className="mt-6 text-lg font-black">Lịch sử thay đổi</h2>
       <ul className="mt-2 flex flex-col gap-2">
         {history.map((log) => (
-          <li key={log.id} className="rounded-lg bg-white p-3 text-sm">
+          <li key={log.id} className="rounded-lg bg-white shadow-sm p-3 text-sm">
             <p className="font-bold">
               {log.action} · {log.actorName}
             </p>

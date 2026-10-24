@@ -23,7 +23,7 @@ type LiveChallengeRankingProps = {
 
 function RankingLine({ row, mine }: { row: LiveRankingRow; mine: boolean }) {
   return (
-    <li className={`flex items-center gap-3 rounded-lg p-3 ${mine ? 'bg-lime/30' : 'bg-white'}`}>
+    <li className={`flex items-center gap-3 rounded-lg p-3 ${mine ? 'bg-lime/30' : 'bg-white shadow-sm'}`}>
       <span className="w-8 text-center font-black">{row.rank ?? '-'}</span>
       <div className="min-w-0 flex-1">
         <p className="truncate font-bold">
@@ -55,7 +55,6 @@ export default function LiveChallengeRanking({
       .filter((row) => !onlyFollowing || row.memberId === myMemberId || following.has(row.memberId))
       .sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity))
   }, [rows, categoryId, onlyFollowing, followingIds, myMemberId])
-  const myRow = visibleRows.find((row) => row.memberId === myMemberId)
 
   return (
     <div>
@@ -79,11 +78,6 @@ export default function LiveChallengeRanking({
         <input type="checkbox" checked={onlyFollowing} onChange={(event) => setOnlyFollowing(event.target.checked)} />
         Chỉ người tôi theo dõi
       </label>
-      {myRow && (
-        <ul className="mt-1 mb-2">
-          <RankingLine row={myRow} mine />
-        </ul>
-      )}
       <ul className="flex flex-col gap-2">
         {visibleRows.map((row) => (
           <RankingLine key={row.memberId} row={row} mine={row.memberId === myMemberId} />

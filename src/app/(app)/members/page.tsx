@@ -47,7 +47,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
       </form>
       <ul className="mt-4 flex flex-col gap-2">
         {members.map((member) => (
-          <li key={member.id} className="flex items-center gap-3 rounded-lg bg-white p-3">
+          <li key={member.id} className="flex items-center gap-3 rounded-lg bg-white shadow-sm p-3">
             <Link href={`/members/${member.id}`} className="flex min-w-0 flex-1 items-center gap-3">
               {member.avatar_url ? (
                 <Image src={member.avatar_url} alt="" width={40} height={40} className="rounded-full" unoptimized />

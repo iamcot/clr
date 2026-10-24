@@ -47,7 +47,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
           </p>
           <ul className="mt-2 flex flex-col gap-1 text-sm">
             {preview.plan.penalties.map((penalty) => (
-              <li key={`${penalty.memberId}-${penalty.typeCode}`} className="rounded-lg bg-white p-2">
+              <li key={`${penalty.memberId}-${penalty.typeCode}`} className="rounded-lg bg-white shadow-sm p-2">
                 <b>{preview.names[penalty.memberId]}</b>: phạt {formatVnd(penalty.amount)} (
                 {PENALTY_NAMES[penalty.typeCode] ?? penalty.typeCode}, {penalty.reason})
               </li>

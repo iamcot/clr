@@ -44,7 +44,7 @@ function OwnerActions({ result }: { result: RaceResultView }) {
 
 function ResultRow({ result, editable }: { result: RaceResultView; editable: boolean }) {
   return (
-    <li className="rounded-lg bg-white p-3">
+    <li className="rounded-lg bg-white shadow-sm p-3">
       <p className="font-bold">{result.raceName}</p>
       <p className="text-sm text-muted">
         {formatDateVi(`${result.raceDate}T00:00:00+07:00`)} · {result.distanceLabel}

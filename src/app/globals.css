@@ -6,12 +6,18 @@
   --color-deep: #1e3a1a;
   --color-lime: #8bc83c;
   --color-gold: #dbc426;
-  --color-page: #f4f5f7;
+  --color-page: #ffffff;
   --color-ink: #1a1f1a;
   --color-muted: #5f6b5f;
   --color-line: #e2e6e0;
   --color-danger: #c2410c;
   --color-success: var(--color-brand);
+
+  --font-weight-medium: 500;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-weight-extrabold: 600;
+  --font-weight-black: 600;
 
   --font-sans: var(--font-be-vietnam-pro), system-ui, sans-serif;
 }

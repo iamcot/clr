@@ -43,7 +43,7 @@ async function loadSyncState() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg bg-white p-3">
+    <div className="rounded-lg bg-white shadow-sm p-3">
       <h2 className="font-black">{title}</h2>
       <div className="mt-1 text-sm">{children}</div>
     </div>

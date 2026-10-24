@@ -5,7 +5,7 @@ import type { OwnActivity } from '@/lib/strava/recentActivities'
 
 function ActivityRow({ activity }: { activity: OwnActivity }) {
   return (
-    <li className="flex gap-3 rounded-lg bg-white p-3">
+    <li className="flex gap-3 rounded-lg bg-white shadow-sm p-3">
       <div className="min-w-0 flex-1">
         <p className="truncate font-bold">{activity.name || activity.sport_type}</p>
         <p className="text-sm text-muted">

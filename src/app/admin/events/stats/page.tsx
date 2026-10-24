@@ -18,7 +18,7 @@ function periodLabel(period: StatsPeriod, value: string): string {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-white p-3">
+    <div className="rounded-lg bg-white shadow-sm p-3">
       <p className="text-xs text-muted">{label}</p>
       <p className="text-xl font-black">{value}</p>
     </div>
@@ -71,7 +71,7 @@ export default async function EventStatsPage({ searchParams }: { searchParams: P
       <h2 className="mt-6 text-lg font-black">Từng event</h2>
       <ul className="mt-2 flex flex-col gap-1">
         {rows.map((row) => (
-          <li key={row.eventId} className="rounded-lg bg-white p-3 text-sm">
+          <li key={row.eventId} className="rounded-lg bg-white shadow-sm p-3 text-sm">
             <p className="font-bold">{row.title}</p>
             <p className="text-muted">
               {formatDateVi(row.startsAt)} · đăng ký {row.registeredCount} · đến {row.attendedCount} ·{' '}
@@ -84,7 +84,7 @@ export default async function EventStatsPage({ searchParams }: { searchParams: P
       <h2 className="mt-6 text-lg font-black">Đi event nhiều nhất</h2>
       <ol className="mt-2 flex flex-col gap-1">
         {top.map((person, index) => (
-          <li key={person.memberId} className="flex justify-between rounded-lg bg-white p-3 text-sm">
+          <li key={person.memberId} className="flex justify-between rounded-lg bg-white shadow-sm p-3 text-sm">
             <span>
               {index + 1}. {person.displayName ?? 'Thành viên'}
             </span>
