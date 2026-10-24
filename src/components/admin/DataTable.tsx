@@ -20,7 +20,7 @@ type DataTableProps<Row> = {
 function cellClass<Row>(column: DataTableColumn<Row>, extra = ''): string {
   const visibility = column.hideBelowMd ? 'hidden md:table-cell' : ''
   const align = column.align === 'right' ? 'text-right' : 'text-left'
-  return `${visibility} ${align} px-4 py-3 align-middle ${extra}`
+  return `${visibility} ${align} px-3 py-2 align-middle ${extra}`
 }
 
 export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyText }: DataTableProps<Row>) {
@@ -48,7 +48,7 @@ export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyTe
                 {columns.map((column) => (
                   <td key={column.key} className={cellClass(column)}>
                     {column.isLink && href ? (
-                      <Link href={href} className="flex min-h-9 items-center font-bold">
+                      <Link href={href} className="flex min-h-7 items-center font-bold">
                         {column.cell(row)}
                       </Link>
                     ) : (
