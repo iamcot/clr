@@ -61,7 +61,7 @@ export default function AdminMenu() {
           ☰
         </button>
         <span className="font-black">Quản trị CLR</span>
-        <Link href="/" className="ml-auto text-sm underline">
+        <Link href="/" className="ml-auto text-sm">
           ← App
         </Link>
       </header>
@@ -73,7 +73,7 @@ export default function AdminMenu() {
       <aside className="hidden w-60 shrink-0 border-r border-line bg-white p-3 md:block">
         <p className="px-3 py-2 text-lg font-black">Quản trị CLR</p>
         <MenuItems onNavigate={close} />
-        <Link href="/" className="mt-4 flex min-h-11 items-center px-3 text-sm text-muted underline">
+        <Link href="/" className="mt-4 flex min-h-11 items-center px-3 text-sm text-muted">
           ← Về app
         </Link>
       </aside>

@@ -59,7 +59,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
   return (
     <section>
-      <Link href="/members" className="text-sm text-muted underline">
+      <Link href="/members" className="text-sm text-muted">
         ← Danh bạ
       </Link>
       <div className="mt-3 flex items-center gap-4">

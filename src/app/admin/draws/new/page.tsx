@@ -1,5 +1,5 @@
 import ActionForm from '@/components/ActionForm'
-import { DRAW_SOURCE_LABELS, DRAW_SOURCE_TYPES } from '@/config/draw'
+import { DRAW_SOURCE_LABELS, DRAW_SOURCE_TYPES, DRAW_STYLE_CONFIG, DRAW_STYLES } from '@/config/draw'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { createDraw } from '@/lib/draw/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -27,6 +27,16 @@ export default async function NewDrawPage() {
         <label className="flex flex-col gap-1">
           <span className="font-bold">Tên đợt quay số</span>
           <input name="title" required className={INPUT_CLASS} />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-bold">Hình thức quay</span>
+          <select name="style" defaultValue="reel" className={INPUT_CLASS}>
+            {DRAW_STYLES.map((style) => (
+              <option key={style} value={style}>
+                {DRAW_STYLE_CONFIG[style].label} ({DRAW_STYLE_CONFIG[style].durationMs / 1000} giây mỗi giải)
+              </option>
+            ))}
+          </select>
         </label>
         <label className="flex flex-col gap-1">
           <span className="font-bold">Nguồn danh sách</span>

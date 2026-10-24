@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { DEFAULT_PARTICIPANT_WEIGHT, ONE_PRIZE_PER_MEMBER, REVEAL_DELAY_MS, SEED_BYTES } from '@/config/draw'
+import { DEFAULT_PARTICIPANT_WEIGHT, DRAW_STYLE_CONFIG, DRAW_STYLES, ONE_PRIZE_PER_MEMBER, SEED_BYTES } from '@/config/draw'
 import { logAudit } from '@/lib/audit/logAudit'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { parseDrawInput } from '@/lib/draw/drawInput'
@@ -49,12 +49,12 @@ export async function createDraw(formData: FormData): Promise<ActionResult | voi
   const bcn = await requireBcn()
   const parsed = parseDrawInput(formData)
   if (!parsed.ok) return actionError(parsed.message)
-  const { title, sourceType, sourceId, prizes } = parsed.value
+  const { title, sourceType, sourceId, style, prizes } = parsed.value
 
   const db = createSupabaseServiceClient()
   const { data: draw, error } = await db
     .from('draws')
-    .insert({ title, source_type: sourceType, source_id: sourceId, created_by: bcn.id })
+    .insert({ title, source_type: sourceType, source_id: sourceId, style, created_by: bcn.id })
     .select('id')
     .single()
   if (error || !draw) return actionError('Không tạo được đợt quay số, vui lòng thử lại')
@@ -125,6 +125,11 @@ export async function startDraw(formData: FormData): Promise<ActionResult> {
   return actionSuccess('Đã bắt đầu quay số')
 }
 
+function drawDurationMs(style: string): number {
+  const known = DRAW_STYLES.find((item) => item === style) ?? 'reel'
+  return DRAW_STYLE_CONFIG[known].durationMs
+}
+
 async function computeAllPicks(db: ServiceClient, drawId: string) {
   const { data: secret } = await db.from('draw_secrets').select('seed').eq('draw_id', drawId).maybeSingle()
   if (!secret) return null
@@ -150,7 +155,7 @@ export async function drawNext(formData: FormData): Promise<ActionResult> {
     draw_order: next.order,
     prize_id: next.prizeId,
     member_id: next.memberId,
-    reveal_at: new Date(Date.now() + REVEAL_DELAY_MS).toISOString(),
+    reveal_at: new Date(Date.now() + drawDurationMs(draw.style)).toISOString(),
   })
   if (error) return actionError('Không quay được, vui lòng thử lại')
   refreshPages(draw.id)

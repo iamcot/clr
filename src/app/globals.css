@@ -11,6 +11,8 @@
   --color-muted: #5f6b5f;
   --color-line: #e2e6e0;
   --color-danger: #c2410c;
+  --color-water: #59b8f5;
+  --color-water-deep: #2f8fdc;
   --color-success: var(--color-brand);
 
   --font-weight-medium: 500;
@@ -44,4 +46,54 @@ body {
 
 .nav-progress-bar {
   animation: nav-progress 8s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+
+@keyframes sprite-swing-a {
+  0%,
+  100% {
+    transform: rotate(-35deg);
+  }
+  50% {
+    transform: rotate(35deg);
+  }
+}
+
+@keyframes sprite-swing-b {
+  0%,
+  100% {
+    transform: rotate(35deg);
+  }
+  50% {
+    transform: rotate(-35deg);
+  }
+}
+
+@keyframes sprite-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Dùng trong <symbol> của hiệu ứng quay số; --d là độ trễ riêng của từng người để không chạy đồng bộ */
+.sprite-swing-a {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: sprite-swing-a 0.45s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.sprite-swing-b {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: sprite-swing-b 0.45s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.sprite-bob {
+  animation: sprite-bob 0.6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
 }

@@ -16,7 +16,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <section>
-      <Link href="/admin/posts" className="text-sm text-muted underline">
+      <Link href="/admin/posts" className="text-sm text-muted">
         ← Bài viết
       </Link>
       <h1 className="mt-2 mb-4 text-2xl font-black">Sửa bài</h1>
