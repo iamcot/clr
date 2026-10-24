@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import TopProgressBar from '@/components/TopProgressBar'
 
 const GIVE_UP_AFTER_MS = 15000
 
@@ -42,9 +43,5 @@ export default function NavigationProgress() {
   }, [startedAt])
 
   if (startedAt !== locationKey) return null
-  return (
-    <div role="progressbar" aria-label="Đang tải trang" className="fixed inset-x-0 top-0 z-[60] h-1 bg-lime/30">
-      <div className="nav-progress-bar h-full bg-lime" />
-    </div>
-  )
+  return <TopProgressBar />
 }

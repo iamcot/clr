@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useEffect } from 'react'
+import { useBusyIndicator } from '@/components/BusyProvider'
 import { useToast } from '@/components/ToastProvider'
 import { GENDER_OPTIONS } from '@/config/profile'
 import { saveProfile, skipProfile } from '@/lib/members/profileActions'
@@ -34,6 +35,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 export default function ProfileForm({ defaults, redirectTo, canSkip = false }: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(saveProfile, EMPTY_PROFILE_FORM_STATE)
   const toast = useToast()
+  useBusyIndicator(pending)
   const value = (field: keyof ProfileFormDefaults) => state.values[field] ?? defaults[field]
 
   useEffect(() => {

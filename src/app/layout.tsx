@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Be_Vietnam_Pro } from 'next/font/google'
 import { Suspense } from 'react'
+import BusyProvider from '@/components/BusyProvider'
 import NavigationProgress from '@/components/NavigationProgress'
 import ToastProvider from '@/components/ToastProvider'
 import './globals.css'
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense>
           <NavigationProgress />
         </Suspense>
-        <ToastProvider>{children}</ToastProvider>
+        <BusyProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </BusyProvider>
       </body>
     </html>
   )

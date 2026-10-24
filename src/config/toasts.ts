@@ -8,6 +8,7 @@ export const TOAST_DURATION_MS = 4000
 
 export const FLASH_TOASTS = {
   profile_saved: { kind: 'success', text: 'Đã lưu hồ sơ' },
+  race_saved: { kind: 'success', text: 'Đã lưu kết quả giải' },
   strava_disconnected: { kind: 'success', text: 'Đã ngắt kết nối Strava và xoá dữ liệu đã đồng bộ' },
 } as const satisfies Record<string, ToastMessage>
 

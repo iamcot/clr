@@ -30,7 +30,7 @@ function formatDate(iso: string | null): string {
 
 function exclusionNote(activity: ReviewRow): string {
   if (activity.flagged_invalid) return `BCN đánh dấu: ${activity.invalid_reason ?? ''}`
-  if (!activity.counts_for_club) return activity.manual ? 'Nhập tay' : `Luật loại (${activity.sport_type})`
+  if (!activity.counts_for_club) return activity.manual ? 'Nhập tay' : `Loại (${activity.sport_type})`
   return ''
 }
 
@@ -56,7 +56,7 @@ export default async function AdminActivitiesPage({ searchParams }: { searchPara
     <section>
       <h1 className="text-2xl font-black">Hoạt động</h1>
       <p className="mt-1 text-sm text-muted">
-        {showCounted ? 'Hoạt động đang được tính cho CLB' : 'Hoạt động bị luật hoặc BCN loại'}. Hoạt động riêng tư không
+        {showCounted ? 'Hoạt động đang được tính cho CLB' : 'Hoạt động bị loại'}. Hoạt động riêng tư không
         hiện ở đây.
       </p>
       <a

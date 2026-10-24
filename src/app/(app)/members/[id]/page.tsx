@@ -2,9 +2,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import FollowButton from '@/components/FollowButton'
+import PersonalRecordsCard from '@/components/PersonalRecordsCard'
+import RaceResultsList from '@/components/RaceResultsList'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
+import { loadRaceResults } from '@/lib/races/loadRaces'
+import { loadPublicPersonalRecords } from '@/lib/records/loadPersonalRecords'
+import { canShowOthersActivities } from '@/lib/settings/clubDisplayMode'
+import { loadClubDisplayMode } from '@/lib/settings/loadClubDisplayMode'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 async function loadProfile(memberId: string, viewerId: string) {
@@ -28,6 +34,11 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   const { id } = await params
   const { profile, followerCount, followingCount, viewerFollows } = await loadProfile(id, me.id)
   if (!profile) notFound()
+  const includeStravaPrs = canShowOthersActivities(await loadClubDisplayMode())
+  const [records, races] = await Promise.all([
+    loadPublicPersonalRecords(profile.id, includeStravaPrs),
+    loadRaceResults(profile.id),
+  ])
 
   return (
     <section>
@@ -56,6 +67,11 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           <FollowButton memberId={profile.id} following={viewerFollows} />
         </div>
       )}
+      <PersonalRecordsCard records={records} editable={false} />
+      <div className="mt-6">
+        <h2 className="text-lg font-black">Giải đã chạy</h2>
+        <RaceResultsList results={races} editable={false} />
+      </div>
     </section>
   )
 }
