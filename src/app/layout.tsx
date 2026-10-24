@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: 'CLR',
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     startupImage: SPLASH_SIZES.map((size) => ({
       url: `/icons/splash-${size.width}x${size.height}.png`,
       media: `(device-width: ${size.deviceWidth}px) and (device-height: ${size.deviceHeight}px) and (-webkit-device-pixel-ratio: ${size.width / size.deviceWidth})`,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1e3a1a',
+  themeColor: '#ffffff',
   viewportFit: 'cover',
 }
 

@@ -1,8 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
+import { useMemo, useState } from 'react'
+import { useRealtimeRefresh } from '@/components/useRealtimeRefresh'
 
 export type LiveRankingRow = {
   memberId: string
@@ -20,37 +19,6 @@ type LiveChallengeRankingProps = {
   rows: LiveRankingRow[]
   myMemberId: string
   followingIds: string[]
-}
-
-const REFRESH_DEBOUNCE_MS = 1500
-
-function useRefreshOnEntryChange(challengeId: string) {
-  const router = useRouter()
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient()
-    const channel = supabase
-      .channel(`challenge-${challengeId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'challenge_entries',
-          filter: `challenge_id=eq.${challengeId}`,
-        },
-        () => {
-          if (timer.current) clearTimeout(timer.current)
-          timer.current = setTimeout(() => router.refresh(), REFRESH_DEBOUNCE_MS)
-        },
-      )
-      .subscribe()
-    return () => {
-      if (timer.current) clearTimeout(timer.current)
-      void supabase.removeChannel(channel)
-    }
-  }, [challengeId, router])
 }
 
 function RankingLine({ row, mine }: { row: LiveRankingRow; mine: boolean }) {
@@ -76,7 +44,7 @@ export default function LiveChallengeRanking({
   myMemberId,
   followingIds,
 }: LiveChallengeRankingProps) {
-  useRefreshOnEntryChange(challengeId)
+  useRealtimeRefresh('challenge_entries', `challenge_id=eq.${challengeId}`)
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '')
   const [onlyFollowing, setOnlyFollowing] = useState(false)
 

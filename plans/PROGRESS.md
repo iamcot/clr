@@ -160,10 +160,17 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 ## V2
 
 ### 10 – Bảng tin
-- [ ] 10.1 Schema
-- [ ] 10.2 Trang chủ = bảng tin
-- [ ] 10.3 Admin bài viết
-- [ ] 10.4 Bài tự sinh
+- [~] 10.1 Schema
+- [~] 10.2 Trang chủ = bảng tin
+- [~] 10.3 Admin bài viết
+- [~] 10.4 Bài tự sinh
+
+> Ghi chú task 10 (đã chạy typecheck/lint/test/build; migration `0010` và các truy vấn chính được thử bằng Postgres 16 + PostgREST cục bộ với auth giả: thành viên chỉ thấy bài đã đăng, không tự đăng bài, không thả tim/đọc thay người khác, trả lời một cấp, BCN ẩn bình luận; **chưa** test tay trên app thật nên Nghiệm thu chưa tick):
+> - Migration `0010_news_feed.sql`: `posts`, `post_reactions`, `post_comments`, `post_reads`, `level_changes` (trigger ghi mỗi lần đổi level, để làm bài tổng kết tuần), hàm `unread_post_count`, `delete_post_comment` (xoá mềm, chủ bình luận hoặc BCN; xoá bình luận gốc thì xoá luôn các trả lời), Realtime cho `post_comments`. `posts.published_at` null là bản nháp, tương lai là hẹn giờ (RLS chỉ cho thành viên thấy khi `published_at <= now()`, không cần job). BCN đọc được cả nháp/hẹn giờ qua RLS nên mọi truy vấn của thành viên lọc rõ `deleted_at`, `published_at` (cùng lỗi từng gây 404 ở challenge). `database.generated.ts` sửa tay.
+> - Giả định cho câu hỏi BCN: **chỉ BCN đăng bài**, thành viên thả cảm xúc và bình luận. Ảnh bìa chỉ nhận link https (chưa có upload R2, chờ task 11.4). Chưa gửi thông báo đẩy khi đăng (chờ task 14).
+> - Trang chủ: khối tóm tắt (km tháng, challenge đang chạy gần hết hạn nhất, tiền còn nợ), bài ghim tối đa 3 (có hạn ghim), bài mới nhất 20 bài mỗi lần (cuộn tới cuối tự tải thêm, có nút "Xem thêm"), bài cần xác nhận có nút "Đã đọc và đồng ý". Badge trên tab Trang chủ đếm bài đăng trong 30 ngày gần nhất mà mình chưa mở. `/posts/[id]`: markdown tự viết (`src/lib/markdown/parse.ts`, có test): tiêu đề, đậm, nghiêng, code, danh sách, trích dẫn, liên kết http/https/mailto hoặc đường dẫn nội bộ; không HTML thô, không ảnh; `<script>` hiện thành chữ. Bình luận tự làm mới sau khoảng 1,5 giây khi có người khác bình luận (Realtime kích hoạt tải lại dữ liệu trang), chưa test trên 2 điện thoại.
+> - `/admin/posts`: soạn bài có xem trước, đăng ngay/hẹn giờ/nháp (giờ Việt Nam), ghim, bật xác nhận, xoá mềm. Bài cần xác nhận hiện đã xác nhận/đã mở/chưa xác nhận, danh sách người chưa xác nhận và xuất CSV (ghi audit). Hẹn giờ không cần cron: bài hiện ra khi tới giờ ở lần mở trang kế tiếp (chưa có badge realtime cho bài mới).
+> - Bài tự sinh: khi BCN chốt challenge tạo bài `result` (số người hoàn thành mỗi hạng mục, top 3); tên người chỉ có khi `club_display_mode = full_opt_in` và người đó bật chia sẻ, nếu không bài chỉ có số lượng. Job tuần (GitHub Actions Chủ nhật 18:00 UTC = 01:00 thứ Hai giờ VN, `GET /api/cron/digest`) tạo một bài "Chúc mừng các thành viên lên level tuần này", cũng chỉ khi `full_opt_in` và chỉ gồm người đã bật chia sẻ. Chống trùng bằng `posts.source_key`. `settings.auto_posts_publish = false` thì bài tự sinh thành bản nháp để BCN sửa rồi đăng ở `/admin/posts`.
 
 ### 11 – Event + album
 - [ ] 11.1 Schema

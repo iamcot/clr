@@ -417,6 +417,130 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"posts": {
+                  Row: {
+                    "id": string,"author_id": string | null,"kind": string,"title": string,"body_md": string,"cover_url": string | null,"pinned": boolean,"pinned_until": string | null,"require_ack": boolean,"source_key": string | null,"published_at": string | null,"created_at": string,"updated_at": string,"deleted_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"author_id"?: string | null,"kind"?: string,"title": string,"body_md"?: string,"cover_url"?: string | null,"pinned"?: boolean,"pinned_until"?: string | null,"require_ack"?: boolean,"source_key"?: string | null,"published_at"?: string | null,"created_at"?: string,"updated_at"?: string,"deleted_at"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"author_id"?: string | null,"kind"?: string,"title"?: string,"body_md"?: string,"cover_url"?: string | null,"pinned"?: boolean,"pinned_until"?: string | null,"require_ack"?: boolean,"source_key"?: string | null,"published_at"?: string | null,"created_at"?: string,"updated_at"?: string,"deleted_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "posts_author_id_fkey"
+      columns: ["author_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"post_reactions": {
+                  Row: {
+                    "post_id": string,"member_id": string,"emoji": string,"created_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "post_id": string,"member_id": string,"emoji": string,"created_at"?: string
+                  }
+                  Update: {
+                    "post_id"?: string,"member_id"?: string,"emoji"?: string,"created_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "post_reactions_post_id_fkey"
+      columns: ["post_id"]
+isOneToOne: false
+      referencedRelation: "posts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "post_reactions_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"post_comments": {
+                  Row: {
+                    "id": string,"post_id": string,"member_id": string,"body": string,"parent_id": string | null,"created_at": string,"deleted_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"post_id": string,"member_id": string,"body": string,"parent_id"?: string | null,"created_at"?: string,"deleted_at"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"post_id"?: string,"member_id"?: string,"body"?: string,"parent_id"?: string | null,"created_at"?: string,"deleted_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "post_comments_post_id_fkey"
+      columns: ["post_id"]
+isOneToOne: false
+      referencedRelation: "posts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "post_comments_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "post_comments_parent_id_fkey"
+      columns: ["parent_id"]
+isOneToOne: false
+      referencedRelation: "post_comments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"post_reads": {
+                  Row: {
+                    "post_id": string,"member_id": string,"read_at": string,"acked_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "post_id": string,"member_id": string,"read_at"?: string,"acked_at"?: string | null
+                  }
+                  Update: {
+                    "post_id"?: string,"member_id"?: string,"read_at"?: string,"acked_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "post_reads_post_id_fkey"
+      columns: ["post_id"]
+isOneToOne: false
+      referencedRelation: "posts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "post_reads_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"level_changes": {
+                  Row: {
+                    "id": string,"member_id": string,"old_level": number,"new_level": number,"changed_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"member_id": string,"old_level": number,"new_level": number,"changed_at"?: string
+                  }
+                  Update: {
+                    "id"?: string,"member_id"?: string,"old_level"?: number,"new_level"?: number,"changed_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "level_changes_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"settings": {
                   Row: {
                     "key": string,"updated_at": string,"value": NonNullable<Json>
@@ -621,6 +745,15 @@ isOneToOne: false
                            },
 "penalty_totals":
 { Args: { "p_from": string; "p_to": string }; Returns: { member_id: string; display_name: string | null; total_amount: number; unpaid_amount: number }[]
+                           },
+"post_is_readable":
+{ Args: { "p_post_id": string }; Returns: boolean
+                           },
+"delete_post_comment":
+{ Args: { "p_comment_id": string }; Returns: undefined
+                           },
+"unread_post_count":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "admin_review_members":
 { Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
