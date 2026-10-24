@@ -18,7 +18,7 @@ Trang kiểm tra (chỉ có khi chạy dev): `/dev/theme` (bảng màu), `/dev/d
 
 Kiểm tra trước khi commit: `npm run typecheck && npm run lint && npm test`.
 
-Sinh lại kiểu DB sau khi đổi schema: `npm run db:types`.
+Sinh lại kiểu DB sau khi đổi schema: `npm run db:types` (ghi `src/lib/types/database.generated.ts`, không sửa tay). Code import `Database` từ `@/lib/types/database`, file này thu hẹp các cột text có check constraint thành union; thêm giá trị vào constraint thì sửa union ở đó.
 
 ## Đưa migration lên production
 

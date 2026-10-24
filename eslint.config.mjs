@@ -13,7 +13,7 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
-  globalIgnores(['.next/**', 'out/**', 'coverage/**', 'next-env.d.ts', 'src/lib/types/database.ts']),
+  globalIgnores(['.next/**', 'out/**', 'coverage/**', 'next-env.d.ts', 'src/lib/types/database.generated.ts']),
 ])
 
 export default eslintConfig
