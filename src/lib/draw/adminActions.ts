@@ -76,18 +76,21 @@ export async function setParticipant(formData: FormData): Promise<ActionResult> 
   const db = createSupabaseServiceClient()
   const draw = await loadDraw(db, drawIdOf(formData))
   if (!draw || draw.status !== 'draft' || draw.seed_commit) return actionError('Danh sách đã chốt, không sửa được')
-  const memberId = String(formData.get('member_id') ?? '')
-  if (!isUuid(memberId)) return actionError('Hãy chọn thành viên')
+  const memberIds = [...new Set(formData.getAll('member_id').map(String).filter(isUuid))]
+  if (memberIds.length === 0) return actionError('Hãy chọn thành viên')
 
   const remove = formData.get('remove') === 'true'
   const { error } = remove
-    ? await db.from('draw_participants').delete().eq('draw_id', draw.id).eq('member_id', memberId)
+    ? await db.from('draw_participants').delete().eq('draw_id', draw.id).in('member_id', memberIds)
     : await db
         .from('draw_participants')
-        .upsert({ draw_id: draw.id, member_id: memberId, weight: DEFAULT_PARTICIPANT_WEIGHT }, { ignoreDuplicates: true })
+        .upsert(
+          memberIds.map((memberId) => ({ draw_id: draw.id, member_id: memberId, weight: DEFAULT_PARTICIPANT_WEIGHT })),
+          { ignoreDuplicates: true },
+        )
   if (error) return actionError('Không cập nhật được danh sách, vui lòng thử lại')
   refreshPages(draw.id)
-  return actionSuccess(remove ? 'Đã bỏ khỏi danh sách' : 'Đã thêm vào danh sách')
+  return actionSuccess(remove ? 'Đã bỏ khỏi danh sách' : `Đã thêm ${memberIds.length} người vào danh sách`)
 }
 
 // Chốt danh sách: sinh seed bí mật, công bố sha256(seed) để không ai (kể cả BCN) đổi kết quả về sau
