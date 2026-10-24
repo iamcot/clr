@@ -6,6 +6,7 @@ import { useToast } from '@/components/ToastProvider'
 import { EVENT_KIND_LABELS, EVENT_KINDS, EVENT_STATUS_LABELS } from '@/config/events'
 import { saveEvent, type EventFormState } from '@/lib/events/adminActions'
 import type { EventStatus } from '@/lib/types/database'
+import ImageField from '@/components/ImageField'
 
 const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
 const EMPTY_STATE: EventFormState = { errors: {}, values: {} }
@@ -113,8 +114,8 @@ export default function EventForm({ defaults }: { defaults: Record<string, strin
           className="w-full rounded-lg border border-line bg-white shadow-sm p-3"
         />
       </Field>
-      <Field label="Ảnh bìa" hint="Link ảnh https" error={state.errors.cover_url}>
-        <input name="cover_url" type="url" defaultValue={value('cover_url')} className={INPUT_CLASS} />
+      <Field label="Ảnh bìa" error={state.errors.cover_url}>
+        <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
       </Field>
       <label className="flex min-h-11 items-center gap-2">
         <input type="checkbox" name="absent_penalty" defaultChecked={value('absent_penalty') === 'on'} className="size-5" />
