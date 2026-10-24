@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import BackLink from '@/components/BackLink'
 import PhotoGrid from '@/components/PhotoGrid'
-import PhotoUploader from '@/components/PhotoUploader'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { loadEventDetail } from '@/lib/events/loadEvents'
 import { loadEventPhotos } from '@/lib/events/loadPhotos'
@@ -45,11 +44,8 @@ export default async function EventPhotosPage({
           Ảnh có tôi
         </Link>
       </div>
-      <div className="mt-3">
-        <PhotoUploader eventId={id} />
-      </div>
       <div className="mt-3 -mx-4">
-        <PhotoGrid photos={photos} />
+        <PhotoGrid photos={photos} uploadEventId={mineOnly ? undefined : id} />
       </div>
       {photos.length === 0 && (
         <p className="mt-4 text-muted">{mineOnly ? 'Chưa có ảnh nào gắn tên bạn.' : 'Chưa có ảnh nào.'}</p>

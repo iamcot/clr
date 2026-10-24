@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import DrawLive from '@/components/DrawLive'
+import MultiSelectDropdown from '@/components/MultiSelectDropdown'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { cancelDraw, drawNext, finishDraw, lockDraw, setParticipant, startDraw } from '@/lib/draw/adminActions'
@@ -24,21 +24,21 @@ function DrawIdField({ drawId }: { drawId: string }) {
 }
 
 function ParticipantEditor({ draw, members }: { draw: DrawDetail; members: { id: string | null; display_name: string | null }[] }) {
+  const joinedIds = new Set(draw.participants.map((participant) => participant.memberId))
+  const candidates = members.filter((member) => member.id && !joinedIds.has(member.id))
   return (
     <div className="mt-4">
       <h2 className="text-lg font-black">Danh sách tham gia ({draw.participants.length})</h2>
-      <ActionForm action={setParticipant} className="mt-2 flex gap-2">
+      <ActionForm action={setParticipant} className="mt-2 flex items-start gap-2">
         <DrawIdField drawId={draw.id} />
-        <select name="member_id" defaultValue="" className="min-h-11 min-w-0 flex-1 rounded-lg border border-line bg-white px-3">
-          <option value="" disabled>
-            Thêm thành viên
-          </option>
-          {members.map((member) => (
-            <option key={member.id} value={member.id ?? ''}>
-              {member.display_name ?? 'Thành viên'}
-            </option>
-          ))}
-        </select>
+        <div className="min-w-0 flex-1">
+          <MultiSelectDropdown
+            key={draw.participants.length}
+            name="member_id"
+            placeholder="Thêm thành viên (chọn nhiều)"
+            options={candidates.map((member) => ({ id: member.id ?? '', title: member.display_name ?? 'Thành viên' }))}
+          />
+        </div>
         <button type="submit" className={BUTTON_CLASS}>
           Thêm
         </button>
@@ -113,11 +113,6 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
             {drawnCount < totalSlots ? 'Quay giải tiếp theo' : 'Kết thúc và công bố kết quả'}
           </button>
         </ActionForm>
-      )}
-      {draw.status === 'done' && (
-        <Link href={`/draws/${draw.id}`} className="mt-4 flex min-h-11 items-center font-bold text-brand-dark underline">
-          Xem trang công khai
-        </Link>
       )}
       {!finalStatus && (
         <ActionForm action={cancelDraw} className="mt-6 flex flex-col gap-2">
