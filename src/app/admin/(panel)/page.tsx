@@ -21,7 +21,7 @@ function todoItems(overview: AdminOverview): TodoItem[] {
 function TodoList({ items }: { items: TodoItem[] }) {
   if (items.length === 0) return <p className="text-muted">Không có việc nào đang chờ.</p>
   return (
-    <ul className="divide-y divide-line">
+    <ul className="divide-y divide-hairline">
       {items.map((item) => (
         <li key={item.href}>
           <Link href={item.href} className="flex min-h-12 items-center justify-between gap-3 py-2">

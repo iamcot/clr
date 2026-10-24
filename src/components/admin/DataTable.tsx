@@ -20,19 +20,19 @@ type DataTableProps<Row> = {
 function cellClass<Row>(column: DataTableColumn<Row>, extra = ''): string {
   const visibility = column.hideBelowMd ? 'hidden md:table-cell' : ''
   const align = column.align === 'right' ? 'text-right' : 'text-left'
-  return `${visibility} ${align} px-3 py-1.5 align-middle ${extra}`
+  return `${visibility} ${align} px-4 py-3 align-middle ${extra}`
 }
 
 export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyText }: DataTableProps<Row>) {
   if (rows.length === 0) {
-    return <p className="rounded-md border border-dashed border-line bg-white p-6 text-center text-muted">{emptyText ?? 'Chưa có dữ liệu.'}</p>
+    return <p className="rounded-xl border border-dashed border-hairline bg-white p-8 text-center text-muted">{emptyText ?? 'Chưa có dữ liệu.'}</p>
   }
 
   return (
-    <div className="overflow-x-auto rounded-md border border-line bg-white">
+    <div className="overflow-x-auto rounded-xl border border-hairline bg-white shadow-sm">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-line bg-surface text-xs font-bold text-muted">
+          <tr className="bg-surface/70 text-xs font-bold text-muted">
             {columns.map((column) => (
               <th key={column.key} scope="col" className={cellClass(column, 'font-bold')}>
                 {column.header}
@@ -44,11 +44,11 @@ export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyTe
           {rows.map((row) => {
             const href = rowHref?.(row)
             return (
-              <tr key={rowKey(row)} className="border-b border-line last:border-b-0 md:hover:bg-surface/70">
+              <tr key={rowKey(row)} className="border-t border-hairline md:hover:bg-surface/60">
                 {columns.map((column) => (
                   <td key={column.key} className={cellClass(column)}>
                     {column.isLink && href ? (
-                      <Link href={href} className="flex min-h-8 items-center font-bold">
+                      <Link href={href} className="flex min-h-9 items-center font-bold">
                         {column.cell(row)}
                       </Link>
                     ) : (

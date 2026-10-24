@@ -10,7 +10,7 @@ type AdminPageHeaderProps = {
 
 export default function AdminPageHeader({ title, description, backHref, backLabel, actions }: AdminPageHeaderProps) {
   return (
-    <header className="mb-4">
+    <header className="mb-5">
       {backHref && <BackLink href={backHref}>{backLabel ?? 'Quay lại'}</BackLink>}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">

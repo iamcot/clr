@@ -32,7 +32,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
       <Link
         href={`/admin/challenges/${id}/results/csv`}
         prefetch={false}
-        className="mt-3 flex min-h-11 items-center justify-center rounded-md border border-line bg-white font-bold"
+        className="mt-3 flex min-h-11 items-center justify-center rounded-lg border border-hairline bg-white font-bold"
       >
         Xuất CSV
       </Link>
@@ -46,13 +46,13 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
           </p>
           <ul className="mt-2 flex flex-col gap-1 text-sm">
             {preview.plan.penalties.map((penalty) => (
-              <li key={`${penalty.memberId}-${penalty.typeCode}`} className="rounded-md bg-white p-2">
+              <li key={`${penalty.memberId}-${penalty.typeCode}`} className="rounded-lg bg-white p-2">
                 <b>{preview.names[penalty.memberId]}</b>: phạt {formatVndCompact(penalty.amount)} (
                 {PENALTY_NAMES[penalty.typeCode] ?? penalty.typeCode}, {penalty.reason})
               </li>
             ))}
             {preview.plan.rewards.map((reward) => (
-              <li key={`${reward.memberId}-${reward.title}`} className="rounded-md bg-lime/30 p-2">
+              <li key={`${reward.memberId}-${reward.title}`} className="rounded-lg bg-lime/30 p-2">
                 <b>{preview.names[reward.memberId]}</b>: thưởng {reward.title}
                 {reward.amount ? ` ${formatVndCompact(reward.amount)}` : ''} ({reward.reason})
               </li>
@@ -68,7 +68,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
           <input type="hidden" name="challenge_id" value={id} />
           <button
             type="submit"
-            className="min-h-12 w-full rounded-md bg-brand font-bold text-white active:bg-brand-dark"
+            className="min-h-12 w-full rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
           >
             Chốt kết quả
           </button>
@@ -79,7 +79,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
       <h2 className="mt-6 text-lg font-black">Bảng kết quả</h2>
       <ul className="mt-2 flex flex-col gap-2">
         {entries.map((entry) => (
-          <li key={entry.member_id} className={`rounded-md p-3 ${entry.excluded ? 'bg-line' : 'bg-white'}`}>
+          <li key={entry.member_id} className={`rounded-lg p-3 ${entry.excluded ? 'bg-line' : 'bg-white'}`}>
             <p className="font-bold">
               {entry.rank ? `#${entry.rank} ` : ''}
               {entry.displayName}

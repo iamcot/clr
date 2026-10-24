@@ -25,7 +25,7 @@ export default async function AdminStatsPage() {
       </p>
       <ul className="mt-4 flex flex-col gap-2">
         {LEVEL_RULES.map((rule) => (
-          <li key={rule.level} className="flex justify-between rounded-md bg-white p-3">
+          <li key={rule.level} className="flex justify-between rounded-lg bg-white p-3">
             <span>
               Level {rule.level} · {rule.name}
             </span>
@@ -34,7 +34,7 @@ export default async function AdminStatsPage() {
         ))}
       </ul>
       <ActionForm action={recomputeStatsAndLevels} className="mt-4">
-        <button type="submit" className="min-h-12 w-full rounded-md bg-brand font-bold text-white active:bg-brand-dark">
+        <button type="submit" className="min-h-12 w-full rounded-lg bg-brand font-bold text-white active:bg-brand-dark">
           Tính lại thống kê và level cho mọi người
         </button>
       </ActionForm>

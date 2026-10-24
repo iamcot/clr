@@ -17,9 +17,9 @@ function VoidForm({ id }: { id: string }) {
           name="reason"
           required
           placeholder="Lý do huỷ"
-          className="min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8"
+          className="min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8"
         />
-        <button type="submit" className="min-h-11 rounded-md border border-line bg-white px-4 font-bold text-danger">
+        <button type="submit" className="min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold text-danger">
           Huỷ
         </button>
       </ActionForm>
@@ -30,7 +30,7 @@ function VoidForm({ id }: { id: string }) {
 function Row({ row }: { row: FundTransactionRow }) {
   const voided = row.voidedAt !== null
   return (
-    <li className={`rounded-md bg-white p-3 ${voided ? 'opacity-60' : ''}`}>
+    <li className={`rounded-lg bg-white p-3 ${voided ? 'opacity-60' : ''}`}>
       <div className="flex justify-between gap-2">
         <p className={`font-black ${row.direction === 'in' ? 'text-brand-dark' : 'text-danger'} ${voided ? 'line-through' : ''}`}>
           {row.direction === 'in' ? '+' : '−'}

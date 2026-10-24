@@ -42,12 +42,12 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
           name="year"
           type="number"
           defaultValue={year}
-          className="min-h-11 w-24 rounded-md border border-line bg-white px-3"
+          className="min-h-11 w-24 rounded-lg border border-hairline bg-white px-3"
         />
         <select
           name="type"
           defaultValue={params.type ?? ''}
-          className="min-h-11 flex-1 rounded-md border border-line bg-white px-2"
+          className="min-h-11 flex-1 rounded-lg border border-hairline bg-white px-2"
         >
           <option value="">Mọi loại</option>
           {Object.entries(MEMBER_TYPE_LABELS).map(([value, label]) => (
@@ -56,7 +56,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
             </option>
           ))}
         </select>
-        <button type="submit" className="min-h-11 rounded-md border border-line px-3 font-bold">
+        <button type="submit" className="min-h-11 rounded-lg border border-hairline px-3 font-bold">
           Lọc
         </button>
       </form>
@@ -65,7 +65,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
           <Link
             key={column.key}
             href={`/admin/challenges/summary?year=${year}&type=${params.type ?? ''}&sort=${column.key}`}
-            className={`flex min-h-11 shrink-0 items-center rounded-md px-3 text-sm font-bold ${
+            className={`flex min-h-11 shrink-0 items-center rounded-lg px-3 text-sm font-bold ${
               column.key === sort ? 'bg-brand text-white' : 'bg-white'
             }`}
           >
@@ -75,7 +75,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
       </div>
       <ul className="mt-3 flex flex-col gap-2">
         {rows.map((row) => (
-          <li key={row.memberId} className="rounded-md bg-white p-3">
+          <li key={row.memberId} className="rounded-lg bg-white p-3">
             <p className="font-bold">{names[row.memberId] ?? 'Thành viên'}</p>
             <p className="text-sm text-muted">
               Tham gia {row.joined} · Hoàn thành {row.completed} · Chuỗi dài nhất {row.longestStreak} tháng · Chuỗi hiện

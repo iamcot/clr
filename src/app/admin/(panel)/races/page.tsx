@@ -32,7 +32,7 @@ export default async function AdminRacesPage({ searchParams }: { searchParams: P
       </a>
       <ul className="mt-4 flex flex-col gap-3">
         {results.map((result) => (
-          <li key={result.id} className="rounded-md bg-white p-3">
+          <li key={result.id} className="rounded-lg bg-white p-3">
             <p className="font-bold">{result.display_name}</p>
             <p className="text-sm">
               {result.race_name} · {result.distance_label} · {formatDuration(result.chip_time_s ?? 0)}
@@ -50,7 +50,7 @@ export default async function AdminRacesPage({ searchParams }: { searchParams: P
             <ActionForm action={verifyRaceResult} className="mt-2">
               <input type="hidden" name="result_id" value={result.id ?? ''} />
               <input type="hidden" name="verified" value={showVerified ? 'false' : 'true'} />
-              <button type="submit" className="min-h-11 rounded-md border border-line px-4 font-bold">
+              <button type="submit" className="min-h-11 rounded-lg border border-hairline px-4 font-bold">
                 {showVerified ? 'Bỏ xác minh' : 'Xác minh'}
               </button>
             </ActionForm>

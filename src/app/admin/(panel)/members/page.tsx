@@ -2,6 +2,7 @@ import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
 import AdminCard from '@/components/admin/AdminCard'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
 import Badge from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
 import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
@@ -41,22 +42,12 @@ async function loadMembers(filter: MemberFilter) {
 type MemberRow = Awaited<ReturnType<typeof loadMembers>>[number]
 
 function StatusTabs({ filter }: { filter: MemberFilter }) {
-  return (
-    <nav className="flex gap-2 overflow-x-auto pb-1">
-      {MEMBER_STATUSES.map((status) => (
-        <Link
-          key={status}
-          href={`/admin/members?status=${status}`}
-          aria-current={status === filter.status ? 'page' : undefined}
-          className={`flex min-h-11 shrink-0 items-center rounded-full px-4 font-bold ${
-            status === filter.status ? 'bg-deep text-white' : 'border border-line bg-white text-ink'
-          }`}
-        >
-          {MEMBER_STATUS_LABELS[status]}
-        </Link>
-      ))}
-    </nav>
-  )
+  const items = MEMBER_STATUSES.map((status) => ({
+    href: `/admin/members?status=${status}`,
+    label: MEMBER_STATUS_LABELS[status],
+    active: status === filter.status,
+  }))
+  return <AdminTabs items={items} />
 }
 
 function FilterForm({ filter }: { filter: MemberFilter }) {
@@ -133,7 +124,7 @@ function memberColumns(selectable: boolean): DataTableColumn<MemberRow>[] {
 
 function CreateAdminForm() {
   return (
-    <details className="mb-3 rounded-md border border-line bg-white p-3">
+    <details className="mb-3 rounded-lg border border-hairline bg-white p-3">
       <summary className="flex min-h-9 cursor-pointer items-center text-sm font-bold">
         Tạo tài khoản admin riêng (không cần Strava)
       </summary>

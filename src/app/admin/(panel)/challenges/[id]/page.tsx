@@ -25,8 +25,8 @@ import { loadChallenge, loadEntries, type CategoryRow, type EntryWithMember } fr
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
-const BUTTON_CLASS = 'min-h-11 rounded-md border border-line bg-white px-4 font-bold'
+const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
+const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
 const ENTRY_LIST_LIMIT = 100
 const MEMBER_PICKER_LIMIT = 800
 
@@ -45,7 +45,7 @@ function ChallengeActions({ challengeId, status }: { challengeId: string; status
           {hidden}
           <button
             type="submit"
-            className="min-h-12 w-full rounded-md bg-brand font-bold text-white active:bg-brand-dark"
+            className="min-h-12 w-full rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
           >
             Công bố
           </button>
@@ -101,7 +101,7 @@ function EntryRow({
     </>
   )
   return (
-    <li className={`rounded-md p-3 ${entry.excluded ? 'bg-line' : 'bg-white'}`}>
+    <li className={`rounded-lg p-3 ${entry.excluded ? 'bg-line' : 'bg-white'}`}>
       <p className="font-bold">
         {entry.rank ? `#${entry.rank} ` : ''}
         {entry.displayName}
@@ -228,7 +228,7 @@ export default async function AdminChallengeDetailPage({
       )}
 
       {challenge.status !== 'draft' && challenge.status !== 'closed' && (
-        <ActionForm action={addEntry} className="mt-6 flex flex-col gap-2 rounded-md bg-white p-4">
+        <ActionForm action={addEntry} className="mt-6 flex flex-col gap-2 rounded-lg bg-white p-4">
           <h3 className="font-black">Thêm người vào challenge</h3>
           <input type="hidden" name="challenge_id" value={id} />
           <select name="member_id" className={INPUT_CLASS} defaultValue="">

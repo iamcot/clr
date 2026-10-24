@@ -171,7 +171,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         <StatCard label="Đã miễn" value={formatVndCompact(totals.waived)} />
       </div>
 
-      <details className="mt-4 rounded-md border border-line bg-white p-4">
+      <details className="mt-4 rounded-lg border border-hairline bg-white p-4">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Thêm phạt tay</summary>
         <ActionForm action={addManualPenalties} className="flex flex-col gap-2 pb-2">
           <select name="member_ids" multiple size={8} className={INPUT_CLASS} aria-label="Chọn thành viên">
@@ -204,7 +204,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         </ActionForm>
       </details>
 
-      <details className="mt-2 rounded-md border border-line bg-white p-4">
+      <details className="mt-2 rounded-lg border border-hairline bg-white p-4">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Tài khoản nhận phạt</summary>
         <ActionForm action={saveFundSettings} className="flex flex-col gap-2 pb-2">
           <input name="bank_name" defaultValue={fund.bankName} placeholder="Ngân hàng" className={INPUT_CLASS} />

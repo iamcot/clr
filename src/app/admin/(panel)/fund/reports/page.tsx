@@ -26,17 +26,17 @@ const TYPE_TABS: { type: ReportPeriodType; label: string }[] = [
   { type: 'year', label: 'Năm' },
 ]
 
-const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
-const BUTTON_CLASS = 'min-h-11 rounded-md border border-line bg-white px-4 font-bold'
+const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
+const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
 
 function tabClass(active: boolean): string {
-  return `flex min-h-11 flex-1 items-center justify-center rounded-md text-sm font-bold ${active ? 'bg-brand text-white' : 'border border-line bg-white'}`
+  return `flex min-h-11 flex-1 items-center justify-center rounded-lg text-sm font-bold ${active ? 'bg-brand text-white' : 'border border-hairline bg-white'}`
 }
 
 function LockSection({ monthKey, lock, closable }: { monthKey: string; lock: Awaited<ReturnType<typeof loadMonthLock>>; closable: boolean }) {
   if (lock) {
     return (
-      <div className="mt-6 rounded-md bg-white p-3">
+      <div className="mt-6 rounded-lg bg-white p-3">
         <p className="font-bold text-brand-dark">Đã chốt sổ lúc {formatDateTimeVi(lock.lockedAt)}</p>
         {lock.note && <p className="text-sm text-muted">{lock.note}</p>}
         <p className="mt-1 text-sm text-muted">Không thêm hay huỷ giao dịch trong tháng này được nữa.</p>
@@ -54,7 +54,7 @@ function LockSection({ monthKey, lock, closable }: { monthKey: string; lock: Awa
     return <p className="mt-6 text-sm text-muted">Chỉ chốt sổ được các tháng đã qua.</p>
   }
   return (
-    <ActionForm action={lockFundMonth} className="mt-6 flex flex-col gap-2 rounded-md bg-white p-3">
+    <ActionForm action={lockFundMonth} className="mt-6 flex flex-col gap-2 rounded-lg bg-white p-3">
       <input type="hidden" name="month" value={monthKey} />
       <p className="font-bold">Chốt sổ tháng này</p>
       <p className="text-sm text-muted">Sau khi chốt, không thêm hay huỷ giao dịch của tháng này được nữa (trừ khi mở khoá có lý do).</p>
@@ -120,7 +120,7 @@ export default async function FundReportsPage({ searchParams }: { searchParams: 
           ['Còn nợ', formatVnd(penalties.outstandingAmount)],
           ['Đã miễn', formatVnd(penalties.waivedAmount)],
         ].map(([label, value]) => (
-          <li key={label} className="rounded-md bg-white p-3">
+          <li key={label} className="rounded-lg bg-white p-3">
             <p className="text-xs text-muted">{label}</p>
             <p className="font-black">{value}</p>
           </li>
@@ -138,7 +138,7 @@ export default async function FundReportsPage({ searchParams }: { searchParams: 
 
       {monthStart && <LockSection monthKey={period.key} lock={lock} closable={closable} />}
 
-      <ActionForm action={setFundCloseAutopost} className="mt-6 flex items-center gap-3 rounded-md bg-white p-3">
+      <ActionForm action={setFundCloseAutopost} className="mt-6 flex items-center gap-3 rounded-lg bg-white p-3">
         <input type="checkbox" name="enabled" defaultChecked={autopost} className="size-5 accent-brand" />
         <span className="flex-1 text-sm">Khi chốt sổ tự đăng bài tóm tắt quỹ lên bảng tin</span>
         <button type="submit" className={BUTTON_CLASS}>
