@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
@@ -113,11 +112,6 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
             {drawnCount < totalSlots ? 'Quay giải tiếp theo' : 'Kết thúc và công bố kết quả'}
           </button>
         </ActionForm>
-      )}
-      {draw.status === 'done' && (
-        <Link href={`/draws/${draw.id}`} className="mt-4 flex min-h-11 items-center font-bold text-brand-dark underline">
-          Xem trang công khai
-        </Link>
       )}
       {!finalStatus && (
         <ActionForm action={cancelDraw} className="mt-6 flex flex-col gap-2">
