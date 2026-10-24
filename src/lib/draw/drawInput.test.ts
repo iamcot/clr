@@ -27,7 +27,7 @@ describe('parsePrizeLines', () => {
 })
 
 describe('parseDrawInput', () => {
-  const valid = { title: 'Quay số tháng 10', source_type: 'challenge_completed', challenge_id: SOURCE_ID, prizes: 'Giày | 1' }
+  const valid = { title: 'Quay số tháng 10', source_type: 'challenge_completed', challenge_id: SOURCE_ID, style: 'race', prizes: 'Giày | 1' }
 
   it('nhận dữ liệu hợp lệ', () => {
     expect(parseDrawInput(form(valid))).toEqual({
@@ -36,6 +36,7 @@ describe('parseDrawInput', () => {
         title: 'Quay số tháng 10',
         sourceType: 'challenge_completed',
         sourceId: SOURCE_ID,
+        style: 'race',
         prizes: [{ name: 'Giày', quantity: 1 }],
       },
     })
@@ -56,5 +57,6 @@ describe('parseDrawInput', () => {
     expect(parseDrawInput(form({ ...valid, source_type: 'abc' })).ok).toBe(false)
     expect(parseDrawInput(form({ ...valid, challenge_id: '' })).ok).toBe(false)
     expect(parseDrawInput(form({ ...valid, prizes: '' })).ok).toBe(false)
+    expect(parseDrawInput(form({ ...valid, style: 'bingo' })).ok).toBe(false)
   })
 })

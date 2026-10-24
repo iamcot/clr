@@ -5,7 +5,7 @@ import DrawLive from '@/components/DrawLive'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { cancelDraw, drawNext, finishDraw, lockDraw, setParticipant, startDraw } from '@/lib/draw/adminActions'
-import { loadDrawDetail, type DrawDetail } from '@/lib/draw/loadDraw'
+import { loadDrawDetail, loadDrawState, type DrawDetail } from '@/lib/draw/loadDraw'
 import { countPrizeSlots } from '@/lib/draw/pick'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -65,7 +65,9 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
   await requireBcn()
   const { id } = await params
   const draw = await loadDrawDetail(id)
-  if (!draw) notFound()
+  const state = draw ? await loadDrawState(id) : null
+  if (!draw || !state) notFound()
+  const drawnCount = state.completed.length + (state.spinning ? 1 : 0)
   const members = draw.status === 'draft' && !draw.seedCommit ? await loadMemberOptions() : []
   const totalSlots = countPrizeSlots(draw.prizes)
   const finalStatus = draw.status === 'done' || draw.status === 'cancelled'
@@ -77,21 +79,14 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
       </Link>
       <h1 className="mt-2 text-2xl font-black">{draw.title}</h1>
       <p className="text-sm text-muted">
-        {DRAW_STATUS_LABELS[draw.status]} · {draw.results.length}/{totalSlots} giải đã quay
+        {DRAW_STATUS_LABELS[draw.status]} · {drawnCount}/{totalSlots} giải đã quay
       </p>
       {draw.seedCommit && (
         <p className="mt-2 rounded-lg bg-white p-3 font-mono text-xs break-all shadow-sm">Mã commit: {draw.seedCommit}</p>
       )}
       {draw.cancelReason && <p className="mt-2 rounded-lg bg-danger/10 p-3 text-danger">Đã huỷ: {draw.cancelReason}</p>}
 
-      <DrawLive
-        drawId={draw.id}
-        status={draw.status}
-        prizes={draw.prizes}
-        participantNames={draw.participants.map((participant) => participant.name)}
-        results={draw.results}
-        serverNowMs={draw.serverNowMs}
-      />
+      <DrawLive drawId={draw.id} initial={state} prizes={draw.prizes} participants={draw.participants} />
 
       {draw.status === 'draft' && !draw.seedCommit && (
         <>
@@ -113,10 +108,10 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
         </ActionForm>
       )}
       {draw.status === 'live' && (
-        <ActionForm action={draw.results.length < totalSlots ? drawNext : finishDraw} className="mt-4">
+        <ActionForm action={drawnCount < totalSlots ? drawNext : finishDraw} className="mt-4">
           <DrawIdField drawId={draw.id} />
           <button type="submit" className={PRIMARY_CLASS}>
-            {draw.results.length < totalSlots ? 'Quay giải tiếp theo' : 'Kết thúc và công bố kết quả'}
+            {drawnCount < totalSlots ? 'Quay giải tiếp theo' : 'Kết thúc và công bố kết quả'}
           </button>
         </ActionForm>
       )}

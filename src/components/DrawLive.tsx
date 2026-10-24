@@ -2,128 +2,132 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { DRAW_POLL_INTERVAL_MS, REEL_ANIMATION_MS, REEL_ITEM_HEIGHT_PX, REEL_NAME_COUNT, type DrawStatus } from '@/config/draw'
-import type { DrawDetail } from '@/lib/draw/loadDraw'
+import DrawRaceStage from '@/components/DrawRaceStage'
+import DrawReelStage from '@/components/DrawReelStage'
+import DrawWaiting from '@/components/DrawWaiting'
+import { DRAW_POLL_FAST_MS, DRAW_POLL_FAST_WINDOW_MS, DRAW_POLL_IDLE_MS } from '@/config/draw'
 import { estimateClockOffset, pickBetterOffset } from '@/lib/draw/clockOffset'
-import { buildReelNames, easeOutCubic, reelProgress } from '@/lib/draw/reel'
-
-type DrawResultView = DrawDetail['results'][number]
+import type { DrawDetail, DrawState } from '@/lib/draw/loadDraw'
 
 type DrawLiveProps = {
   drawId: string
-  status: DrawStatus
+  initial: DrawState
   prizes: DrawDetail['prizes']
-  participantNames: string[]
-  results: DrawResultView[]
-  serverNowMs: number
+  participants: { memberId: string; name: string }[]
 }
 
-const FRAME_INTERVAL_MS = 50
-
-type Snapshot = { status: DrawStatus; results: DrawResultView[] }
 type ClockEstimate = { offsetMs: number; roundTripMs: number }
+type WinnerSeen = { order: number; atMs: number }
 
-// Hỏi trạng thái định kỳ khi đang quay; mỗi lần hỏi cũng cập nhật độ lệch đồng hồ với server
-// nên mọi máy dừng hiệu ứng cùng lúc (không phụ thuộc Realtime)
-function useLiveDraw(drawId: string, initial: DrawLiveProps) {
+const FRAME_INTERVAL_MS = 33
+
+// Hỏi trạng thái theo chu kỳ thích ứng (thưa lúc rảnh, dồn dập khi sắp lộ người trúng) và bù chênh lệch đồng hồ với server
+// ở mỗi lần hỏi, nên mọi máy chạy cùng một dòng thời gian và dừng cùng lúc
+function useLiveDraw(drawId: string, initial: DrawState) {
   const router = useRouter()
-  const [snapshot, setSnapshot] = useState<Snapshot>({ status: initial.status, results: initial.results })
-  const [now, setNow] = useState(initial.serverNowMs)
+  const [state, setState] = useState(initial)
+  const [nowMs, setNowMs] = useState(initial.serverNowMs)
+  const [winnerSeen, setWinnerSeen] = useState<WinnerSeen | null>(
+    initial.spinning?.winner ? { order: initial.spinning.order, atMs: initial.serverNowMs } : null,
+  )
   const clock = useRef<ClockEstimate | null>(null)
-  const knownStatus = useRef(initial.status)
-  const polling = snapshot.status === 'live'
+  const latest = useRef(initial)
+  const polling = state.status === 'live' || state.status === 'draft'
 
   useEffect(() => {
     // Trước lần hỏi đầu tiên, dùng mốc thời gian lúc server dựng trang
     clock.current ??= { offsetMs: initial.serverNowMs - Date.now(), roundTripMs: Infinity }
-    const tick = () => setNow(Date.now() + (clock.current?.offsetMs ?? 0))
+    const tick = () => setNowMs(Date.now() + (clock.current?.offsetMs ?? 0))
     tick()
     const timer = setInterval(tick, FRAME_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [initial.serverNowMs])
 
   useEffect(() => {
+    if (!polling) return
     let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    function nextDelay(): number {
+      const spinning = latest.current.spinning
+      if (!spinning || spinning.winner) return DRAW_POLL_IDLE_MS
+      const serverNow = Date.now() + (clock.current?.offsetMs ?? 0)
+      return spinning.revealAtMs - serverNow <= DRAW_POLL_FAST_WINDOW_MS ? DRAW_POLL_FAST_MS : DRAW_POLL_IDLE_MS
+    }
+
     async function poll() {
       const sentAt = Date.now()
       const response = await fetch(`/api/draws/${drawId}/state`, { cache: 'no-store' }).catch(() => null)
-      if (cancelled || !response?.ok) return
-      const state = (await response.json()) as { status: DrawStatus; results: DrawResultView[]; serverNowMs: number }
-      const receivedAt = Date.now()
-      clock.current = pickBetterOffset(clock.current, {
-        offsetMs: estimateClockOffset(state.serverNowMs, sentAt, receivedAt),
-        roundTripMs: receivedAt - sentAt,
-      })
-      setSnapshot({ status: state.status, results: state.results })
-      if (state.status !== knownStatus.current) {
-        knownStatus.current = state.status
-        router.refresh()
+      if (!cancelled && response?.ok) {
+        const next = (await response.json()) as DrawState
+        const receivedAt = Date.now()
+        clock.current = pickBetterOffset(clock.current, {
+          offsetMs: estimateClockOffset(next.serverNowMs, sentAt, receivedAt),
+          roundTripMs: receivedAt - sentAt,
+        })
+        const previous = latest.current
+        latest.current = next
+        setState(next)
+        if (next.spinning?.winner && !(previous.spinning?.order === next.spinning.order && previous.spinning.winner)) {
+          setWinnerSeen({ order: next.spinning.order, atMs: receivedAt + (clock.current?.offsetMs ?? 0) })
+        }
+        const finishedSpin = next.completed.length !== previous.completed.length
+        if (next.status !== previous.status || finishedSpin) router.refresh()
       }
+      if (!cancelled) timer = setTimeout(() => void poll(), nextDelay())
     }
-    void poll()
-    if (!polling) {
-      return () => {
-        cancelled = true
-      }
-    }
-    const timer = setInterval(() => void poll(), DRAW_POLL_INTERVAL_MS)
+
+    timer = setTimeout(() => void poll(), nextDelay())
     return () => {
       cancelled = true
-      clearInterval(timer)
+      clearTimeout(timer)
     }
   }, [drawId, polling, router])
 
-  return { snapshot, now }
+  return { state, nowMs, winnerSeen }
 }
 
-function Reel({ result, names, now }: { result: DrawResultView; names: string[]; now: number }) {
-  const reel = buildReelNames(names, result.memberName, result.order, REEL_NAME_COUNT)
-  const finalOffset = (reel.length - 1) * REEL_ITEM_HEIGHT_PX
-  const offset = easeOutCubic(reelProgress(now, result.revealAt, REEL_ANIMATION_MS)) * finalOffset
+function Stage({ state, nowMs, winnerSeen, participants }: { state: DrawState; nowMs: number; winnerSeen: WinnerSeen | null; participants: DrawLiveProps['participants'] }) {
+  const { spinning } = state
+  if (state.status === 'draft') return <DrawWaiting text="Chờ BCN mở quay số" />
+  if (!spinning) {
+    if (state.status !== 'live') return null
+    return <DrawWaiting text={state.completed.length === 0 ? 'Chờ BCN quay giải đầu tiên' : 'Chờ BCN quay giải tiếp theo'} />
+  }
+  const winnerSeenAtMs = winnerSeen?.order === spinning.order ? winnerSeen.atMs : null
   return (
-    <div
-      className="relative mx-auto mt-3 overflow-hidden rounded-2xl bg-deep text-white"
-      style={{ height: REEL_ITEM_HEIGHT_PX * 3 }}
-      aria-live="polite"
-    >
-      <div style={{ transform: `translateY(${-offset}px)` }}>
-        {[' ', ...reel, ' '].map((name, index) => (
-          <p
-            key={index}
-            className="flex items-center justify-center truncate px-3 text-xl font-bold"
-            style={{ height: REEL_ITEM_HEIGHT_PX }}
-          >
-            {name}
-          </p>
-        ))}
-      </div>
-      <div
-        className="pointer-events-none absolute inset-x-0 border-y-2 border-lime"
-        style={{ top: REEL_ITEM_HEIGHT_PX, height: REEL_ITEM_HEIGHT_PX }}
-      />
+    <div className="mt-4">
+      <p className="mb-2 text-center text-sm text-muted">Đang quay: {spinning.prizeName}</p>
+      {state.style === 'reel' ? (
+        <DrawReelStage
+          spinning={spinning}
+          names={participants.map((participant) => participant.name)}
+          nowMs={nowMs}
+          winnerSeenAtMs={winnerSeenAtMs}
+        />
+      ) : (
+        <DrawRaceStage
+          kind={state.style === 'duck' ? 'duck' : 'runner'}
+          spinning={spinning}
+          racers={participants}
+          nowMs={nowMs}
+          winnerSeenAtMs={winnerSeenAtMs}
+        />
+      )}
     </div>
   )
 }
 
-export default function DrawLive(props: DrawLiveProps) {
-  const { drawId, prizes, participantNames } = props
-  const { snapshot, now } = useLiveDraw(drawId, props)
-  const { status, results } = snapshot
-
-  const revealed = results.filter((result) => result.revealAt <= now)
-  const spinning = results.find((result) => result.revealAt > now)
-  const winnersByPrize = new Map<string, DrawResultView[]>()
-  for (const result of revealed) winnersByPrize.set(result.prizeId, [...(winnersByPrize.get(result.prizeId) ?? []), result])
+export default function DrawLive({ drawId, initial, prizes, participants }: DrawLiveProps) {
+  const { state, nowMs, winnerSeen } = useLiveDraw(drawId, initial)
+  const winnersByPrize = new Map<string, string[]>()
+  for (const result of state.completed) {
+    winnersByPrize.set(result.prizeId, [...(winnersByPrize.get(result.prizeId) ?? []), result.memberName])
+  }
 
   return (
     <div>
-      {spinning && (
-        <div className="mt-4">
-          <p className="text-center text-sm text-muted">Đang quay: {spinning.prizeName}</p>
-          <Reel result={spinning} names={participantNames} now={now} />
-        </div>
-      )}
-      {!spinning && status === 'live' && <p className="mt-4 text-center text-muted">Chờ BCN quay giải tiếp theo…</p>}
+      <Stage state={state} nowMs={nowMs} winnerSeen={winnerSeen} participants={participants} />
       <ul className="mt-4 flex flex-col gap-2">
         {prizes.map((prize) => {
           const winners = winnersByPrize.get(prize.id) ?? []
@@ -132,9 +136,7 @@ export default function DrawLive(props: DrawLiveProps) {
               <p className="font-bold">
                 {prize.name} <span className="text-sm font-normal text-muted">({winners.length}/{prize.quantity})</span>
               </p>
-              {winners.length > 0 && (
-                <p className="mt-1 text-brand-dark">{winners.map((winner) => winner.memberName).join(', ')}</p>
-              )}
+              {winners.length > 0 && <p className="mt-1 text-brand-dark">{winners.join(', ')}</p>}
             </li>
           )
         })}

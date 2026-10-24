@@ -22,14 +22,29 @@ export const ONE_PRIZE_PER_MEMBER = true
 
 export const DEFAULT_PARTICIPANT_WEIGHT = 1
 
-// reveal_at = lúc bấm quay + REVEAL_DELAY_MS; hiệu ứng cuộn tên chạy REEL_ANIMATION_MS cuối cùng trước mốc đó,
-// chừa thời gian cho các máy nhận thông báo realtime
-export const REVEAL_DELAY_MS = 8000
-export const REEL_ANIMATION_MS = 5000
-export const REEL_NAME_COUNT = 40
+export const DRAW_STYLES = ['reel', 'race', 'duck'] as const
+export type DrawStyle = (typeof DRAW_STYLES)[number]
+
+// Hiệu ứng chạy từ lúc bấm quay tới reveal_at = bấm quay + durationMs
+export const DRAW_STYLE_CONFIG: Record<DrawStyle, { label: string; durationMs: number }> = {
+  reel: { label: 'Cuộn tên', durationMs: 10_000 },
+  race: { label: 'Thi chạy bộ', durationMs: 15_000 },
+  duck: { label: 'Đua vịt', durationMs: 15_000 },
+}
+
+// Người trúng chỉ được server trả về trong khoảng này trước reveal_at (và RLS chặn đọc trước reveal_at)
+export const WINNER_REVEAL_LEAD_MS = 1500
+
+// Đủ ít người thì hiện tên từng làn; nhiều người thì chỉ hiện tên nhóm đang dẫn đầu
+export const FULL_NAMES_MAX_FIELD = 8
+export const LEADER_LABEL_COUNT = 6
+
 export const REEL_ITEM_HEIGHT_PX = 56
+export const REEL_SPEED_PX_PER_MS = 1.4
 
 export const SEED_BYTES = 32
 
-// Người xem hỏi trạng thái quay số theo chu kỳ này khi đợt quay đang diễn ra (không phụ thuộc Realtime)
-export const DRAW_POLL_INTERVAL_MS = 1500
+// Hỏi trạng thái thưa lúc rảnh, dồn dập khi sắp tới lúc lộ người trúng
+export const DRAW_POLL_IDLE_MS = 2000
+export const DRAW_POLL_FAST_MS = 400
+export const DRAW_POLL_FAST_WINDOW_MS = 4000

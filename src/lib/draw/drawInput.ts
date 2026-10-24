@@ -1,4 +1,4 @@
-import { DRAW_SOURCE_TYPES, type DrawSourceType } from '@/config/draw'
+import { DRAW_SOURCE_TYPES, DRAW_STYLES, type DrawSourceType, type DrawStyle } from '@/config/draw'
 import { isUuid } from '@/lib/storage/uploadRules'
 
 export type PrizeInput = { name: string; quantity: number }
@@ -7,6 +7,7 @@ export type DrawInput = {
   title: string
   sourceType: DrawSourceType
   sourceId: string | null
+  style: DrawStyle
   prizes: PrizeInput[]
 }
 
@@ -42,7 +43,9 @@ export function parseDrawInput(formData: FormData): DrawInputParse {
   if (!sourceType) return { ok: false, message: 'Nguồn danh sách không hợp lệ' }
   const sourceId = text(formData, sourceType === 'event_checked_in' ? 'event_id' : 'challenge_id')
   if (sourceType !== 'manual' && !isUuid(sourceId)) return { ok: false, message: 'Hãy chọn challenge hoặc event' }
+  const style = DRAW_STYLES.find((item) => item === text(formData, 'style'))
+  if (!style) return { ok: false, message: 'Hãy chọn hình thức quay số' }
   const prizes = parsePrizeLines(text(formData, 'prizes'))
   if (!prizes) return { ok: false, message: 'Mỗi giải một dòng, dạng “Tên giải | số lượng”' }
-  return { ok: true, value: { title, sourceType, sourceId: sourceType === 'manual' ? null : sourceId, prizes } }
+  return { ok: true, value: { title, sourceType, sourceId: sourceType === 'manual' ? null : sourceId, style, prizes } }
 }

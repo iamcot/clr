@@ -437,14 +437,14 @@ isOneToOne: false
                   ]
                 },"draws": {
                   Row: {
-                    "cancel_reason": string | null,"created_at": string,"created_by": string | null,"finished_at": string | null,"id": string,"seed_commit": string | null,"seed_reveal": string | null,"source_id": string | null,"source_type": string,"started_at": string | null,"status": string,"title": string
+                    "cancel_reason": string | null,"created_at": string,"created_by": string | null,"finished_at": string | null,"id": string,"seed_commit": string | null,"seed_reveal": string | null,"source_id": string | null,"source_type": string,"started_at": string | null,"status": string,"style": string,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type": string,"started_at"?: string | null,"status"?: string,"title": string
+                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type": string,"started_at"?: string | null,"status"?: string,"style"?: string,"title": string
                   }
                   Update: {
-                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type"?: string,"started_at"?: string | null,"status"?: string,"title"?: string
+                    "cancel_reason"?: string | null,"created_at"?: string,"created_by"?: string | null,"finished_at"?: string | null,"id"?: string,"seed_commit"?: string | null,"seed_reveal"?: string | null,"source_id"?: string | null,"source_type"?: string,"started_at"?: string | null,"status"?: string,"style"?: string,"title"?: string
                   }
                   Relationships: [
                     {

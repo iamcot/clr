@@ -3,13 +3,14 @@ import { notFound } from 'next/navigation'
 import DrawLive from '@/components/DrawLive'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
 import { requireActiveMember } from '@/lib/auth/currentMember'
-import { loadDrawDetail } from '@/lib/draw/loadDraw'
+import { loadDrawDetail, loadDrawState } from '@/lib/draw/loadDraw'
 
 export default async function DrawPage({ params }: { params: Promise<{ id: string }> }) {
   await requireActiveMember()
   const { id } = await params
   const draw = await loadDrawDetail(id)
-  if (!draw || draw.status === 'draft') notFound()
+  const state = draw ? await loadDrawState(id) : null
+  if (!draw || !state) notFound()
 
   return (
     <section>
@@ -23,14 +24,7 @@ export default async function DrawPage({ params }: { params: Promise<{ id: strin
       {draw.status === 'cancelled' && (
         <p className="mt-3 rounded-lg bg-danger/10 p-3 text-danger">Đã huỷ. Lý do: {draw.cancelReason}</p>
       )}
-      <DrawLive
-        drawId={draw.id}
-        status={draw.status}
-        prizes={draw.prizes}
-        participantNames={draw.participants.map((participant) => participant.name)}
-        results={draw.results}
-        serverNowMs={draw.serverNowMs}
-      />
+      <DrawLive drawId={draw.id} initial={state} prizes={draw.prizes} participants={draw.participants} />
       <div className="mt-4 rounded-lg bg-white p-3 text-sm shadow-sm">
         <p className="text-muted">Mã commit (công bố trước khi quay)</p>
         <p className="font-mono break-all">{draw.seedCommit}</p>
