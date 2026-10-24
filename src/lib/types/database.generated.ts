@@ -121,16 +121,54 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
-                },"members": {
+                },"follows": {
                   Row: {
-                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number,"strava_connected": boolean,"updated_at": string
+                    "created_at": string,"followee_id": string,"follower_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id": number,"strava_connected"?: boolean,"updated_at"?: string
+                    "created_at"?: string,"followee_id": string,"follower_id": string
                   }
                   Update: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number,"strava_connected"?: boolean,"updated_at"?: string
+                    "created_at"?: string,"followee_id"?: string,"follower_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "follows_followee_id_fkey"
+      columns: ["followee_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "follows_followee_id_fkey"
+      columns: ["followee_id"]
+isOneToOne: false
+      referencedRelation: "members_public"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "follows_follower_id_fkey"
+      columns: ["follower_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "follows_follower_id_fkey"
+      columns: ["follower_id"]
+isOneToOne: false
+      referencedRelation: "members_public"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"members": {
+                  Row: {
+                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"rejection_reason": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number,"strava_connected": boolean,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id": number,"strava_connected"?: boolean,"updated_at"?: string
+                  }
+                  Update: {
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number,"strava_connected"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -248,14 +286,14 @@ isOneToOne: false
                   ]
                 },"members_public": {
                   Row: {
-                    "avatar_url": string | null,"display_name": string | null,"gender": string | null,"id": string,"member_type": string | null
+                    "avatar_url": string | null,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"member_type": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                           "avatar_url"?: string | null,"display_name"?: string | null,"gender"?: string | null,"id"?: string | null,"member_type"?: string | null
+                           "avatar_url"?: string | null,"display_name"?: string | null,"gender"?: string | null,"id"?: string | null,"joined_at"?: string | null,"member_type"?: string | null
                          }
                         Update: {
-                           "avatar_url"?: string | null,"display_name"?: string | null,"gender"?: string | null,"id"?: string | null,"member_type"?: string | null
+                           "avatar_url"?: string | null,"display_name"?: string | null,"gender"?: string | null,"id"?: string | null,"joined_at"?: string | null,"member_type"?: string | null
                          }
                         Relationships: [
                     
@@ -263,11 +301,20 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "is_bcn":
+            "admin_review_members":
+{ Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
+                           },
+"admin_update_member":
+{ Args: { "p_member_id": string,"p_member_type": string,"p_role": string,"p_status": string }; Returns: undefined
+                           },
+"is_bcn":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "is_treasurer":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"log_audit":
+{ Args: { "p_action": string,"p_after": Json,"p_before": Json,"p_target_id": string,"p_target_table": string }; Returns: undefined
                            },
 "set_activity_flag":
 { Args: { "p_activity_id": number,"p_flagged": boolean,"p_reason": string }; Returns: undefined

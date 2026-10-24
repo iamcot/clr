@@ -1,6 +1,7 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto'
 
-const AUTHORIZE_URL = 'https://www.strava.com/oauth/authorize'
+// Trên điện thoại, đường dẫn này mở app Strava nếu đã cài, không thì rơi về trang web
+const AUTHORIZE_URL = 'https://www.strava.com/oauth/mobile/authorize'
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const REQUESTED_SCOPE = 'read,activity:read_all'
 const REQUIRED_SCOPE = 'activity:read_all'

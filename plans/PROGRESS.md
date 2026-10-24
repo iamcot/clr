@@ -63,10 +63,20 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Biến môi trường mới: `STRAVA_WEBHOOK_VERIFY_TOKEN`, `CRON_SECRET`; secret GitHub mới: `APP_URL`, `CRON_SECRET`. Script `npm run strava:subscribe -- create|list|delete <id>`.
 
 ### 04 – Thành viên
-- [ ] 4.1 Khung /admin
-- [ ] 4.2 Duyệt và quản lý thành viên
-- [ ] 4.3 Danh bạ + theo dõi nhau
-- [ ] 4.4 Cài đặt cá nhân
+- [~] 4.1 Khung /admin
+- [~] 4.2 Duyệt và quản lý thành viên
+- [~] 4.3 Danh bạ + theo dõi nhau
+- [~] 4.4 Cài đặt cá nhân
+
+> Ghi chú task 4 (làm 4.1 → 4.4 trong một phiên; đã chạy typecheck/lint/test/build và thử migration `0005` bằng Postgres 16 cục bộ với auth giả, **chưa** test tay trên app thật nên Nghiệm thu chưa tick):
+> - Migration `0005_members_admin.sql`: cột `members.rejection_reason` (thêm vào nhóm cột chỉ BCN sửa), `members_public` thêm `joined_at`, policy BCN đọc `audit_logs`, hàm `log_audit`, `admin_review_members` (duyệt/từ chối nhiều người), `admin_update_member` (đổi loại/vai trò/trạng thái), bảng `follows` + RLS. Mọi thay đổi dữ liệu người khác đi qua hàm security definer kiểm `is_bcn()` và ghi `audit_logs` cùng giao dịch; BCN không tự đổi vai trò hoặc trạng thái của chính mình (tránh khoá mất BCN cuối).
+> - `database.generated.ts` được sửa tay theo migration 0005 vì máy làm việc không có Docker; chạy `npm run db:types` để sinh lại khi có DB.
+> - `/admin` (4.1): người không phải BCN nhận 404 (đúng plan; `requireBcn` dùng `notFound()`, route CSV tự trả 404). Menu ở `src/config/adminNav.ts` (mục chưa làm `enabled: false`), mobile là ngăn kéo. Tổng quan đếm thành viên active, chờ duyệt, hoạt động 7 ngày được tính (qua `activities_review`, không gồm hoạt động riêng tư). `logAudit` (TS) dùng cho xuất CSV; các thao tác duyệt/đổi thành viên ghi audit ngay trong hàm SQL.
+> - `member_code` đã được sinh lúc người đó đăng nhập lần đầu (migration 0002), nên duyệt không sinh lại; mã có thể nhảy số nếu có người bị từ chối.
+> - Thành viên bị `inactive` bị đưa về `/pending` với dòng "Tài khoản đã ngưng". Người bị từ chối thấy lý do ở `/pending`.
+> - Xuất CSV chứa SĐT và năm sinh; ô bắt đầu bằng `= + - @` được thêm dấu `'` để tránh công thức Excel (số `+84...` cũng thành `'+84...`). Mỗi lần xuất ghi một dòng audit.
+> - 4.3: khối "Bạn bè gần đây" ở trang chủ chỉ hiện khi `settings.club_display_mode = 'full_opt_in'` (mặc định `self_only`, chưa chốt câu hỏi #9) và chỉ lấy từ `activities_club` (người đã bật chia sẻ). Hồ sơ công khai `/members/[id]` mới có tên, loại, ngày vào, số người theo dõi; phần còn lại chờ task 5.4. Danh bạ chưa có level (chờ task 6.2).
+> - 4.4: `/me/settings` thêm tick cộng hoạt động riêng tư vào tổng (`share_private_in_totals`) và khối mã thành viên, loại, ngày vào. CoT đã trả lời câu hỏi BCN: BCN tự nhấn nút đổi loại (đã có ở trang chi tiết), không cần tự đề xuất; chưa chia nhóm/đội.
 
 ### 05 – Hồ sơ, PR, thành tích giải
 - [ ] 5.1 PR tự động
@@ -160,7 +170,7 @@ Gom từ mục "Câu hỏi cho BCN" của các file plan. Trả lời xong thì 
 | 1 | Tên miền, tài khoản đứng tên Vercel/Supabase/Cloudflare/Strava | 01, 02 | 1.4, 2.2 | |
 | 2 | Bắt buộc có Strava mới dùng được app? | 02 | 2.2 | |
 | 3 | Challenge có tính chạy máy, đi bộ không? | 03, 07 | 3.5 | |
-| 4 | Điều kiện lên thành viên chính thức | 04 | 4.2 | |
+| 4 | Điều kiện lên thành viên chính thức | 04 | 4.2 | Có điều kiện, nhưng BCN tự xét và nhấn nút đổi loại; app không cần tự đề xuất (CoT, 2026-10-24) |
 | 5 | Công thức level | 06 | 6.2 | |
 | 6 | Luật challenge tháng hiện tại (gửi mẫu) | 07 | 7.2 | |
 | 7 | Mức phạt từng lỗi, có công khai danh sách nợ không | 08 | 8.1 | |
