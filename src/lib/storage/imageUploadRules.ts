@@ -1,14 +1,14 @@
 import { MAX_PHOTO_BYTES, UPLOAD_CONTENT_TYPES } from '@/config/uploads'
 
-export const IMAGE_PURPOSES = ['cover', 'certificate'] as const
+export const IMAGE_PURPOSES = ['cover', 'certificate', 'receipt'] as const
 export type ImagePurpose = (typeof IMAGE_PURPOSES)[number]
 
 export type ImageUploadRequest = { purpose: ImagePurpose; bytes: number }
 export type ImageUploadParse = { ok: true; value: ImageUploadRequest } | { ok: false; message: string }
 
-const KEY_PREFIX: Record<ImagePurpose, string> = { cover: 'covers', certificate: 'certificates' }
+const KEY_PREFIX: Record<ImagePurpose, string> = { cover: 'covers', certificate: 'certificates', receipt: 'receipts' }
 
-// Ảnh bìa do BCN đăng; giấy chứng nhận thì thành viên tự tải lên
+// Ảnh bìa và hoá đơn chi do BCN tải lên; giấy chứng nhận thì thành viên tự tải lên
 export function canUploadPurpose(purpose: ImagePurpose, isBcn: boolean): boolean {
   return purpose === 'certificate' || isBcn
 }

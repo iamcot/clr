@@ -1,8 +1,12 @@
+import Link from 'next/link'
 import CopyButton from '@/components/CopyButton'
+import PayPenaltiesForm from '@/components/PayPenaltiesForm'
+import { INTENT_STATUS_LABELS, type IntentStatus } from '@/config/fund'
 import { PENALTY_STATUS_LABELS, REWARD_STATUS_LABELS, type PenaltyStatus } from '@/config/penalties'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { formatVnd } from '@/lib/format/money'
+import { effectiveIntentStatus } from '@/lib/fund/loadPayment'
 import { currentMonthVn, monthRangeVn, summarizePenalties, transferNote } from '@/lib/penalties/calc'
 import { loadFundSettings } from '@/lib/penalties/fundSettings'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -16,6 +20,23 @@ async function loadMyPenalties(memberId: string) {
     .order('created_at', { ascending: false })
     .limit(100)
   return data ?? []
+}
+
+async function loadOpenIntents(memberId: string, now: Date) {
+  const supabase = await createSupabaseServerClient()
+  const { data } = await supabase
+    .from('payment_intents')
+    .select('id, ref, amount, method, status, expires_at')
+    .eq('member_id', memberId)
+    .in('status', ['pending', 'cash_pending', 'mismatch'])
+    .order('created_at', { ascending: false })
+  return (data ?? []).filter((intent) => effectiveIntentStatus(intent.status, intent.expires_at, now) !== 'expired')
+}
+
+async function hasReceivingAccount(): Promise<boolean> {
+  const supabase = await createSupabaseServerClient()
+  const { data } = await supabase.rpc('get_fund_receiving_account')
+  return (data?.length ?? 0) > 0
 }
 
 async function loadMyRewards(memberId: string) {
@@ -56,11 +77,13 @@ export default async function FundPage() {
   const member = await requireActiveMember()
   const now = new Date()
   const month = currentMonthVn(now)
-  const [penalties, rewards, fund, totals] = await Promise.all([
+  const [penalties, rewards, fund, totals, openIntents, qrReady] = await Promise.all([
     loadMyPenalties(member.id),
     loadMyRewards(member.id),
     loadFundSettings(),
     loadMonthTotals(month),
+    loadOpenIntents(member.id, now),
+    hasReceivingAccount(),
   ])
   const owed = summarizePenalties(
     penalties.map((penalty) => ({
@@ -69,6 +92,14 @@ export default async function FundPage() {
     })),
   ).outstanding
   const hasAccount = fund.accountNumber !== ''
+  const unpaid = penalties
+    .filter((penalty) => penalty.status === 'unpaid')
+    .map((penalty) => ({
+      id: penalty.id,
+      title: penalty.penalty_types?.name ?? 'Khoản phạt',
+      reason: penalty.reason,
+      amount: Number(penalty.amount),
+    }))
 
   return (
     <section>
@@ -78,7 +109,25 @@ export default async function FundPage() {
         <p className={`text-4xl font-black ${owed > 0 ? 'text-danger' : 'text-brand-dark'}`}>{formatVnd(owed)}</p>
       </div>
 
-      {owed > 0 && (
+      {openIntents.length > 0 && (
+        <ul className="mt-3 flex flex-col gap-2">
+          {openIntents.map((intent) => (
+            <li key={intent.id}>
+              <Link href={`/fund/pay/${intent.id}`} className="flex min-h-12 items-center justify-between gap-2 rounded-lg border border-brand/30 bg-brand/10 p-3">
+                <span className="font-bold text-brand-dark">
+                  {intent.method === 'cash' ? 'Nộp tiền mặt' : 'Tiếp tục nộp VietQR'} · {formatVnd(Number(intent.amount))}
+                </span>
+                <span className="text-xs text-muted">
+                  {INTENT_STATUS_LABELS[effectiveIntentStatus(intent.status, intent.expires_at, now) as IntentStatus]}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {owed > 0 && qrReady && <PayPenaltiesForm penalties={unpaid} />}
+      {owed > 0 && !qrReady && (
         <div className="mt-3 flex flex-col gap-3 rounded-lg bg-white shadow-sm p-3">
           <p className="font-bold">Cách nộp</p>
           {hasAccount ? (

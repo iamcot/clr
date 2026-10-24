@@ -213,11 +213,20 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 ## V3
 
 ### 16 – Quỹ + VietQR
-- [ ] 16.1 Sổ quỹ
-- [ ] 16.2 Mã VietQR
-- [ ] 16.3 Webhook ngân hàng + đối soát ⚠️
-- [ ] 16.4 Màn nộp phạt
-- [ ] 16.5 Admin quỹ
+- [~] 16.1 Sổ quỹ
+- [~] 16.2 Mã VietQR
+- [~] 16.3 Webhook ngân hàng + đối soát ⚠️
+- [~] 16.4 Màn nộp phạt
+- [~] 16.5 Admin quỹ
+
+> Ghi chú task 16 (làm 16.1 → 16.5 trong một PR; đã chạy typecheck/lint/test/build, thử migration `0022` và các hàm trên Postgres 16 cục bộ: nộp đủ tiền chuyển khoản, webhook gửi lại không cộng hai lần, thành viên không đọc được sổ quỹ, giao dịch không sửa số tiền hay xoá được, huỷ giao dịch có lý do, số dư đúng; **chưa** chuyển tiền thật, chưa quét bằng app ngân hàng, chưa test tay trên app nên Nghiệm thu chưa tick):
+> - Migration `0022_fund_vietqr.sql`: `fund_accounts` (seed 1 quỹ tiền mặt, 1 tài khoản ngân hàng chưa điền), `fund_categories` (seed theo plan), `fund_transactions` (trigger chặn xoá và sửa số tiền, chiều thu chi, tài khoản, thời điểm; huỷ bằng `voided_at` kèm lý do), view `fund_balances`, `payment_intents`, `bank_webhook_events` (unique `provider, provider_txn_id`), `fund_reconciliations`. Mọi bảng bật RLS, chỉ BCN/thủ quỹ (`can_manage_fund`) đọc sổ quỹ; thành viên chỉ đọc lần nộp của mình. Ghi qua hàm `security definer` (có ghi `audit_logs`) hoặc service role. `database.generated.ts` sửa tay, cần `npm run db:types` khi có DB.
+> - Mã VietQR: `src/lib/vietqr/payload.ts` (EMVCo Napas 247, CRC16-CCITT; test kiểm giá trị chuẩn `123456789` = `29B1`, cấu trúc trường, CRC cuối chuỗi) và vẽ bằng `qrcode` ở trình duyệt. **Chưa có mẫu đã quét bằng app ngân hàng thật** như plan yêu cầu: cần quét thử một mã thật rồi thêm vào test. Nội dung chuyển khoản `CLR0123 AB3K9X` (mã thành viên + mã nộp 6 ký tự không có O, 0, I, 1; tối đa 25 ký tự theo chuẩn).
+> - Nộp phạt: `create_payment_intent` tính số tiền từ DB, chỉ nhận khoản phạt chưa nộp của chính người gọi, tái dùng lần nộp còn hạn cùng các khoản; hết hạn sau 24 giờ. Đối soát: `src/lib/vietqr/match.ts` (hàm thuần có test: tiền tố ngân hàng, hoa thường, thiếu khoảng trắng, dấu gạch, chuyển hai lần cùng mã, gợi ý theo mã thành viên) rồi `settle_payment_intent` đặt khoản phạt `paid` (`paid_method = vietqr`) và phân loại giao dịch quỹ "Phạt". Khớp mã nhưng lệch tiền, nộp trùng, chỉ có mã thành viên, không khớp gì đều vào hàng chờ ở `/admin/fund`; giao dịch tiền vào luôn được ghi vào sổ ngay khi webhook về (danh mục "Khác") nên số dư không bị hụt. Tiền ra (`out`) chỉ ghi sổ, không đối soát.
+> - Webhook: `POST /api/bank/webhook/sepay` kiểm `Authorization: Apikey <SEPAY_API_KEY>` (sai hoặc thiếu trả 401, không ghi gì), trả `{ "success": true }`; lỗi xử lý trả 500 để SePay gửi lại. Định dạng body và header theo hiểu biết về tài liệu SePay, cần đối chiếu lại với tài liệu khi cấu hình.
+> - Màn nộp: `/fund` chọn khoản (mặc định tất cả) rồi "Nộp bằng VietQR" hoặc "Tôi đã nộp tiền mặt" (thủ quỹ xác nhận ở `/admin/fund`); `/fund/pay/[id]` hiện mã QR, số tiền, tài khoản, nội dung (nút sao chép), "Lưu ảnh QR" (chia sẻ file trên điện thoại, tải về nếu không hỗ trợ), đếm ngược hết hạn. Màn chờ **hỏi trạng thái mỗi 3 giây** (`/api/fund/intents/[id]`) thay cho Supabase Realtime như plan, vì chưa xác minh Realtime tới được phía thành viên. Khi chưa cài tài khoản nhận tiền vẫn hiện cách chuyển khoản tay cũ từ `settings`. Chưa gửi thông báo đẩy khi nhận tiền (chờ task 14).
+> - Admin `/admin/fund`: số dư từng tài khoản, hàng chờ xử lý (ghép tay với lần nộp, phân loại khoản thu, xác nhận tiền mặt), giao dịch gần đây (huỷ có lý do), thêm thu chi tay kèm ảnh hoá đơn (mục đích ảnh mới `receipt`, thư mục `receipts/` trên R2), đối chiếu số dư theo sao kê, form tài khoản nhận tiền (danh sách BIN các ngân hàng ở `src/config/fund.ts`). Trang `/admin` vẫn chỉ cho `role = bcn`, thủ quỹ chưa có cổng vào.
+> - Ghi chú huỷ giao dịch: huỷ một giao dịch "Phạt" đã khớp chỉ trừ số dư, khoản phạt vẫn là đã nộp; muốn đổi lại thì dùng "huỷ trạng thái nộp" ở `/admin/penalties`.
 
 ### 17 – Báo cáo tài chính
 - [ ] 17.1 Tổng hợp
