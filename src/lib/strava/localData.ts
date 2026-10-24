@@ -13,6 +13,10 @@ export async function removeStravaData(db: ServiceClient, memberId: string) {
   throwOnError(activities.error, 'Không xoá được hoạt động')
   const job = await db.from('backfill_jobs').update({ status: 'done' }).eq('member_id', memberId)
   throwOnError(job.error, 'Không dừng được job kéo lịch sử')
+  const stats = await db.from('member_stats_period').delete().eq('member_id', memberId)
+  throwOnError(stats.error, 'Không xoá được thống kê')
+  const level = await db.from('members').update({ level: 1, club_points: 0 }).eq('id', memberId)
+  throwOnError(level.error, 'Không đặt lại level')
 }
 
 // Điều khoản Strava: người dùng thu hồi quyền thì phải xoá dữ liệu đã lấy về

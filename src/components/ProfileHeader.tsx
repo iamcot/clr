@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
+import { levelName } from '@/lib/stats/level'
 import type { MemberType } from '@/lib/types/database'
 
 type ProfileHeaderProps = {
@@ -8,6 +9,7 @@ type ProfileHeaderProps = {
   memberType: MemberType | null
   memberCode?: string | null
   followerCount: number
+  level?: number
 }
 
 export default function ProfileHeader({
@@ -16,6 +18,7 @@ export default function ProfileHeader({
   memberType,
   memberCode,
   followerCount,
+  level,
 }: ProfileHeaderProps) {
   return (
     <div className="flex items-center gap-4 rounded-xl bg-deep p-4 text-white">
@@ -31,7 +34,7 @@ export default function ProfileHeader({
           {memberCode && ` · ${memberCode}`}
         </p>
         <p className="text-sm text-white/80">
-          <strong className="text-white">{followerCount}</strong> người theo dõi · Level: chưa có
+          <strong className="text-white">{followerCount}</strong> người theo dõi{level !== undefined && ` · Level ${level} ${levelName(level)}`}
         </p>
       </div>
     </div>

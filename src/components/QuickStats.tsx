@@ -1,5 +1,5 @@
 import { formatKm, formatPace } from '@/lib/stats/format'
-import type { ActivitySummary } from '@/lib/stats/activitySummary'
+import type { PeriodStats } from '@/lib/stats/loadStatsPeriods'
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -10,12 +10,12 @@ function Stat({ label, value }: { label: string; value: string }) {
   )
 }
 
-export default function QuickStats({ month, year }: { month: ActivitySummary; year: ActivitySummary }) {
+export default function QuickStats({ month, year }: { month: PeriodStats; year: PeriodStats }) {
   return (
     <section className="mt-4 grid grid-cols-2 gap-2">
       <Stat label="Km tháng này" value={formatKm(month.distanceMeters)} />
       <Stat label="Km năm nay" value={formatKm(year.distanceMeters)} />
-      <Stat label="Số buổi tháng này" value={String(month.sessions)} />
+      <Stat label="Số buổi tháng này" value={String(month.activityCount)} />
       <Stat label="Pace TB tháng này" value={formatPace(month.distanceMeters, month.movingTimeSeconds)} />
     </section>
   )

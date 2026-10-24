@@ -9,7 +9,7 @@ Thứ tự: 3.0 → 3.1 → 3.2 → 3.3 → 3.4 → 3.5 → 3.6.
 ## Giới hạn Strava cần nhớ (kiểm lại docs lúc làm, số có thể đổi)
 
 - Rate limit mặc định theo app: khoảng **200 request / 15 phút, 2.000 / ngày** tổng, riêng request đọc khoảng **100 / 15 phút, 1.000 / ngày**. Strava trả header `X-RateLimit-Limit`, `X-RateLimit-Usage` (và `X-ReadRateLimit-*`): **luôn đọc header**, không tự đếm đoán.
-- App chưa duyệt: chỉ **1 athlete** kết nối được. Xin duyệt để nâng giới hạn người dùng và rate limit.
+- App chưa duyệt: chỉ **1 athlete** kết nối được (CoT đã nâng lên 10 VĐV ngày 2026-10-24; cần Strava duyệt để lên 600; code đọc rate limit thật từ header nên không phải sửa). Xin duyệt để nâng giới hạn người dùng và rate limit.
 - Webhook: mỗi app **một subscription**. Event chỉ có `object_id`, `owner_id`, `aspect_type` (`create`/`update`/`delete`), `updates`, `event_time`. Phải trả 200 trong **2 giây**, xử lý sau.
 - `best_efforts` (PR 400m, 1K, 5K, 10K, HM, FM...) chỉ có ở **chi tiết** hoạt động (`GET /activities/{id}`), không có ở danh sách.
 - Access token hết hạn sau ~6 giờ, làm mới bằng refresh token. Refresh token có thể đổi sau mỗi lần làm mới: luôn lưu cái mới.

@@ -161,17 +161,37 @@ isOneToOne: false
                   ]
                 },"members": {
                   Row: {
-                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"rejection_reason": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number,"strava_connected": boolean,"updated_at": string
+                    "avatar_url": string | null,"birth_year": number | null,"city": string | null,"created_at": string,"display_name": string | null,"gender": string | null,"id": string,"joined_at": string | null,"level": number,"level_updated_at": string | null,"club_points": number,"member_code": string,"member_type": string | null,"phone": string | null,"profile_onboarded_at": string | null,"rejection_reason": string | null,"role": string,"share_private_in_totals": boolean,"share_stats_with_club": boolean,"status": string,"strava_athlete_id": number,"strava_connected": boolean,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id": number,"strava_connected"?: boolean,"updated_at"?: string
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id": string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id": number,"strava_connected"?: boolean,"updated_at"?: string
                   }
                   Update: {
-                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number,"strava_connected"?: boolean,"updated_at"?: string
+                    "avatar_url"?: string | null,"birth_year"?: number | null,"city"?: string | null,"created_at"?: string,"display_name"?: string | null,"gender"?: string | null,"id"?: string,"joined_at"?: string | null,"level"?: number,"level_updated_at"?: string | null,"club_points"?: number,"member_code"?: string,"member_type"?: string | null,"phone"?: string | null,"profile_onboarded_at"?: string | null,"rejection_reason"?: string | null,"role"?: string,"share_private_in_totals"?: boolean,"share_stats_with_club"?: boolean,"status"?: string,"strava_athlete_id"?: number,"strava_connected"?: boolean,"updated_at"?: string
                   }
                   Relationships: [
                     
+                  ]
+                },"member_stats_period": {
+                  Row: {
+                    "activity_count": number,"active_days": number,"distance_m": number,"elevation_gain_m": number,"longest_m": number,"member_id": string,"moving_time_s": number,"period_start": string,"period_type": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_count": number,"active_days": number,"distance_m": number,"elevation_gain_m": number,"longest_m": number,"member_id": string,"moving_time_s": number,"period_start": string,"period_type": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "activity_count"?: number,"active_days"?: number,"distance_m"?: number,"elevation_gain_m"?: number,"longest_m"?: number,"member_id"?: string,"moving_time_s"?: number,"period_start"?: string,"period_type"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "member_stats_period_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"pr_overrides": {
                   Row: {
@@ -356,6 +376,14 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"club_rankings": {
+                  Row: {
+                    "avatar_url": string | null,"club_points": number | null,"display_name": string | null,"gender": string | null,"level": number | null,"member_id": string | null,"member_type": string | null,"month_distance_m": number | null,"year_distance_m": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"member_prs": {
                   Row: {
                     "activity_id": number | null,"distance_name": string | null,"elapsed_time_s": number | null,"member_id": string | null,"start_date": string | null
@@ -397,7 +425,13 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "admin_review_members":
+            "refresh_all_member_stats":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"refresh_member_stats":
+{ Args: { "p_member_id": string }; Returns: undefined
+                           },
+"admin_review_members":
 { Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
                            },
 "admin_verify_race_result":

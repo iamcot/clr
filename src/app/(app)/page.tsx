@@ -14,6 +14,9 @@ export default async function HomePage() {
       <Link href="/members" className="mt-4 flex min-h-11 items-center font-bold text-brand-dark underline">
         Danh bạ thành viên
       </Link>
+      <Link href="/rankings" className="flex min-h-11 items-center font-bold text-brand-dark underline">
+        Bảng xếp hạng
+      </Link>
       {friendActivities.length > 0 && (
         <div className="mt-6">
           <h2 className="text-lg font-black">Bạn bè gần đây</h2>

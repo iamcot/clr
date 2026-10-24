@@ -6,19 +6,19 @@ import RaceResultsList from '@/components/RaceResultsList'
 import RecentActivities from '@/components/RecentActivities'
 import { RECENT_RACES_ON_PROFILE } from '@/config/prDistances'
 import { requireActiveMember } from '@/lib/auth/currentMember'
+import { loadOwnMonthAndYear } from '@/lib/stats/loadStatsPeriods'
 import { countFollowers } from '@/lib/members/followerCount'
 import { addActivitySuggestions, loadRaceResults } from '@/lib/races/loadRaces'
 import { loadOwnPersonalRecords } from '@/lib/records/loadPersonalRecords'
 import { loadOwnRecentActivities } from '@/lib/strava/recentActivities'
 import { getBackfillStatusText } from '@/lib/strava/syncStatus'
-import { loadOwnMonthAndYearSummary } from '@/lib/strava/yearSummary'
 
 export default async function MePage() {
   const member = await requireActiveMember()
   const [backfillStatus, activities, summary, records, races, followerCount] = await Promise.all([
     getBackfillStatusText(member.id),
     loadOwnRecentActivities(member.id),
-    loadOwnMonthAndYearSummary(member.id),
+    loadOwnMonthAndYear(member.id, new Date()),
     loadOwnPersonalRecords(member.id),
     loadRaceResults(member.id, RECENT_RACES_ON_PROFILE),
     countFollowers(member.id),
@@ -33,9 +33,13 @@ export default async function MePage() {
         memberType={member.member_type}
         memberCode={member.member_code}
         followerCount={followerCount}
+        level={member.level}
       />
       {backfillStatus && <p className="mt-4 rounded-lg bg-white p-3 text-sm text-muted">{backfillStatus}</p>}
       <QuickStats month={summary.month} year={summary.year} />
+      <Link href="/me/stats" className="mt-2 flex min-h-11 items-center font-bold text-brand-dark underline">
+        Thống kê chi tiết
+      </Link>
       <PersonalRecordsCard records={records} editable />
       <div className="mt-6">
         <h2 className="text-lg font-black">Giải đã chạy</h2>

@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: '*/5 * * * *'
     - cron: '7,22,37,52 * * * *'
+    - cron: '0 19 * * *'
   workflow_dispatch:
 
 jobs:
@@ -23,6 +24,16 @@ jobs:
     steps:
       - run: |
           curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/backfill"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
+  stats-nightly:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 19 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl --fail --silent --show-error --max-time 300 -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/stats"
         env:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
