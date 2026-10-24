@@ -184,8 +184,8 @@ Gom từ mục "Câu hỏi cho BCN" của các file plan. Trả lời xong thì 
 | 7 | Mức phạt từng lỗi, có công khai danh sách nợ không | 08 | 8.1 | |
 | 8 | Ngân hàng của tài khoản quỹ, ai là thủ quỹ | 16 | 16.1 | |
 | 9 | Chọn cách hiển thị số liệu Strava cho người khác (A–E trong task 3.0), ai gửi email xin phép Strava | 03 | 6.4, 7.4 | |
-| 10 | Ngoài 5 cự ly PR (1K, 5K, 10K, 21K, 42K) có cần 3K, 15K, ultra? | 05 | 5.1 | |
-| 11 | PR cho bảng vàng dùng thời gian Strava hay thời gian chip chính thức? | 05 | 12.1 | |
+| 10 | Ngoài 5 cự ly PR (1K, 5K, 10K, 21K, 42K) có cần 3K, 15K, ultra? | 05 | 5.1 | Không cần thêm cự ly (CoT, 2026-10-24) |
+| 11 | PR cho bảng vàng dùng thời gian Strava hay thời gian chip chính thức? | 05 | 12.1 | Dùng thời gian Strava (CoT, 2026-10-24) |
 
 ---
 
