@@ -5,13 +5,17 @@ describe('describeBackfillStatus', () => {
   it('đang kéo: hiện số hoạt động và mốc tháng', () => {
     expect(
       describeBackfillStatus({ status: 'pending', activityCount: 312, cursorBefore: '2025-03-15T05:00:00Z' }),
-    ).toBe('Đang đồng bộ lịch sử: đã có 312 hoạt động, đến 03/2025')
+    ).toContain('Đang đồng bộ lịch sử: đã có 312 hoạt động, đến 03/2025')
   })
 
   it('chưa bắt đầu', () => {
-    expect(describeBackfillStatus({ status: 'pending', activityCount: 0, cursorBefore: null })).toBe(
+    expect(describeBackfillStatus({ status: 'pending', activityCount: 0, cursorBefore: null })).toContain(
       'Đang chờ đồng bộ lịch sử hoạt động',
     )
+  })
+
+  it('đang kéo: nhắc người dùng có thể phải chờ', () => {
+    expect(describeBackfillStatus({ status: 'pending', activityCount: 0, cursorBefore: null })).toContain('vài phút')
   })
 
   it('đã xong: không hiện gì', () => {
