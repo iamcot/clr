@@ -2,7 +2,7 @@ import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import { REWARD_STATUS_LABELS } from '@/config/penalties'
 import { formatDateVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import { markRewardGiven } from '@/lib/penalties/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -24,14 +24,14 @@ export default async function AdminRewardsPage() {
       <h1 className="mt-2 text-2xl font-black">Thưởng</h1>
       <ul className="mt-3 flex flex-col gap-2">
         {rewards.map((reward) => (
-          <li key={reward.id} className="rounded-lg bg-white shadow-sm p-3">
+          <li key={reward.id} className="rounded-md bg-white p-3">
             <p className="font-bold">
               {reward.members?.display_name ?? 'Thành viên'}{' '}
               <span className="font-normal text-muted">{reward.members?.member_code}</span>
             </p>
             <p className="text-sm">
               {reward.title}
-              {reward.amount ? ` · ${formatVnd(Number(reward.amount))}` : ''}
+              {reward.amount ? ` · ${formatVndCompact(Number(reward.amount))}` : ''}
             </p>
             <p className="text-xs text-muted">
               {formatDateVi(reward.created_at)} ·{' '}
@@ -40,7 +40,7 @@ export default async function AdminRewardsPage() {
             {reward.status === 'pending' && (
               <ActionForm action={markRewardGiven} className="mt-1">
                 <input type="hidden" name="id" value={reward.id} />
-                <button type="submit" className="min-h-11 rounded-lg border border-line px-4 font-bold">
+                <button type="submit" className="min-h-11 rounded-md border border-line px-4 font-bold">
                   Đã trao
                 </button>
               </ActionForm>

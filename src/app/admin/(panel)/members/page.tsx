@@ -15,6 +15,7 @@ import {
 } from '@/config/members'
 import { GENDER_OPTIONS } from '@/config/profile'
 import { formatDateVi } from '@/lib/format/dateTime'
+import { createAdminAccount } from '@/lib/members/adminLoginActions'
 import { reviewMembers } from '@/lib/members/adminActions'
 import { parseMemberFilter, toLikePattern, type MemberFilter } from '@/lib/members/memberFilter'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -130,6 +131,39 @@ function memberColumns(selectable: boolean): DataTableColumn<MemberRow>[] {
   return [checkbox, ...columns]
 }
 
+function CreateAdminForm() {
+  return (
+    <details className="mb-3 rounded-md border border-line bg-white p-3">
+      <summary className="flex min-h-9 cursor-pointer items-center text-sm font-bold">
+        Tạo tài khoản admin riêng (không cần Strava)
+      </summary>
+      <ActionForm action={createAdminAccount} className="mt-2 grid gap-2 md:grid-cols-4">
+        <input name="display_name" placeholder="Tên hiển thị" required maxLength={60} className={INPUT_CLASS} />
+        <input
+          name="username"
+          placeholder="Tên đăng nhập"
+          required
+          autoCapitalize="none"
+          autoComplete="off"
+          className={INPUT_CLASS}
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Mật khẩu (từ 10 ký tự)"
+          required
+          minLength={10}
+          autoComplete="new-password"
+          className={INPUT_CLASS}
+        />
+        <button type="submit" className={adminButtonClass('primary')}>
+          Tạo tài khoản
+        </button>
+      </ActionForm>
+    </details>
+  )
+}
+
 function ReviewControls() {
   return (
     <AdminCard className="mt-4 flex flex-col gap-2">
@@ -169,6 +203,7 @@ export default async function AdminMembersPage({ searchParams }: { searchParams:
           </Link>
         }
       />
+      <CreateAdminForm />
       <StatusTabs filter={filter} />
       <FilterForm filter={filter} />
       <ActionForm action={reviewMembers}>

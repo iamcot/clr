@@ -8,7 +8,7 @@ import StatCard from '@/components/admin/StatCard'
 import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import { PAYMENT_METHOD_LABELS, PENALTY_STATUS_LABELS, PENALTY_TYPES, type PenaltyStatus } from '@/config/penalties'
 import { formatDateVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import {
   addManualPenalties,
   applyPenaltySelection,
@@ -54,7 +54,7 @@ const BASE_COLUMNS: DataTableColumn<PenaltyListRow>[] = [
   { key: 'type', header: 'Loại', hideBelowMd: true, cell: (row) => row.typeName },
   { key: 'reason', header: 'Lý do', hideBelowMd: true, cell: (row) => row.reason || '—' },
   { key: 'date', header: 'Ngày', hideBelowMd: true, cell: (row) => formatDateVi(row.createdAt) },
-  { key: 'amount', header: 'Số tiền', align: 'right', cell: (row) => <b>{formatVnd(row.amount)}</b> },
+  { key: 'amount', header: 'Số tiền', align: 'right', cell: (row) => <b>{formatVndCompact(row.amount)}</b> },
 ]
 
 const OPEN_COLUMNS: DataTableColumn<PenaltyListRow>[] = [
@@ -75,7 +75,7 @@ function closedDetail(row: PenaltyListRow): string {
 
 const CLOSED_COLUMNS: DataTableColumn<PenaltyListRow>[] = [
   ...BASE_COLUMNS.slice(0, 4),
-  { key: 'amount', header: 'Số tiền', align: 'right', cell: (row) => <b>{formatVnd(row.amount)}</b> },
+  { key: 'amount', header: 'Số tiền', align: 'right', cell: (row) => <b>{formatVndCompact(row.amount)}</b> },
   {
     key: 'status',
     header: 'Trạng thái',
@@ -166,12 +166,12 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
       </form>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatCard label="Đã thu" value={formatVnd(totals.collected)} />
-        <StatCard label="Còn nợ" value={formatVnd(totals.outstanding)} tone="alert" />
-        <StatCard label="Đã miễn" value={formatVnd(totals.waived)} />
+        <StatCard label="Đã thu" value={formatVndCompact(totals.collected)} />
+        <StatCard label="Còn nợ" value={formatVndCompact(totals.outstanding)} tone="alert" />
+        <StatCard label="Đã miễn" value={formatVndCompact(totals.waived)} />
       </div>
 
-      <details className="mt-4 rounded-xl border border-line bg-white p-4 shadow-sm">
+      <details className="mt-4 rounded-md border border-line bg-white p-4">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Thêm phạt tay</summary>
         <ActionForm action={addManualPenalties} className="flex flex-col gap-2 pb-2">
           <select name="member_ids" multiple size={8} className={INPUT_CLASS} aria-label="Chọn thành viên">
@@ -204,7 +204,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         </ActionForm>
       </details>
 
-      <details className="mt-2 rounded-xl border border-line bg-white p-4 shadow-sm">
+      <details className="mt-2 rounded-md border border-line bg-white p-4">
         <summary className="flex min-h-11 cursor-pointer items-center font-bold">Tài khoản nhận phạt</summary>
         <ActionForm action={saveFundSettings} className="flex flex-col gap-2 pb-2">
           <input name="bank_name" defaultValue={fund.bankName} placeholder="Ngân hàng" className={INPUT_CLASS} />

@@ -35,8 +35,8 @@ function NavGroup({ group, onNavigate }: { group: AdminNavGroup; onNavigate: () 
                 href={item.href}
                 onClick={onNavigate}
                 aria-current={current ? 'page' : undefined}
-                className={`flex min-h-11 items-center rounded-lg px-3 font-bold md:min-h-10 ${
-                  current ? 'bg-white text-deep' : 'text-white/85 active:bg-white/10 md:hover:bg-white/10'
+                className={`flex min-h-11 items-center rounded-md px-3 text-sm font-bold md:min-h-9 ${
+                  current ? 'bg-brand text-white' : 'text-white/85 active:bg-white/10 md:hover:bg-white/10'
                 }`}
               >
                 {item.label}
@@ -117,7 +117,7 @@ export default function AdminMenu() {
           <SidebarContent onNavigate={close} />
         </div>
       </div>
-      <aside className="hidden w-64 shrink-0 bg-deep text-white md:block print:hidden">
+      <aside className="hidden w-56 shrink-0 bg-deep text-white md:block print:hidden">
         <div className="sticky top-0 flex max-h-dvh flex-col overflow-y-auto p-3">
           <div className="px-3 py-3">
             <Brand />

@@ -6,7 +6,7 @@ import FundQueue from '@/components/FundQueue'
 import FundTransactionsList from '@/components/FundTransactionsList'
 import { BankAccountForm, ManualTransactionForm, ReconciliationForm } from '@/components/FundForms'
 import { requireBcn } from '@/lib/auth/requireBcn'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import { loadAdminFund } from '@/lib/fund/loadAdminFund'
 
 export default async function AdminFundPage() {
@@ -27,9 +27,9 @@ export default async function AdminFundPage() {
         }
       />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Tổng số dư" value={formatVnd(total)} />
+        <StatCard label="Tổng số dư" value={formatVndCompact(total)} />
         {data.balances.map((balance) => (
-          <StatCard key={balance.accountId} label={balance.name} value={formatVnd(balance.balance)} />
+          <StatCard key={balance.accountId} label={balance.name} value={formatVndCompact(balance.balance)} />
         ))}
       </div>
       <FundQueue queue={data.queue} openIntents={data.openIntents} cashRequests={data.cashRequests} categories={data.categories} />

@@ -10,7 +10,7 @@ import { loadDrawDetail, loadDrawState, type DrawDetail } from '@/lib/draw/loadD
 import { countPrizeSlots } from '@/lib/draw/pick'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-line bg-white px-4 font-bold'
+const BUTTON_CLASS = 'min-h-11 rounded-md border border-line bg-white px-4 font-bold'
 const PRIMARY_CLASS = 'min-h-12 w-full rounded-full bg-brand font-bold text-white'
 
 async function loadMemberOptions() {
@@ -45,7 +45,7 @@ function ParticipantEditor({ draw, members }: { draw: DrawDetail; members: { id:
       </ActionForm>
       <ul className="mt-2 flex flex-col gap-1">
         {draw.participants.map((participant) => (
-          <li key={participant.memberId} className="flex items-center justify-between gap-2 rounded-lg bg-white px-3 shadow-sm">
+          <li key={participant.memberId} className="flex items-center justify-between gap-2 rounded-md bg-white px-3">
             <span className="truncate">{participant.name}</span>
             <ActionForm action={setParticipant}>
               <DrawIdField drawId={draw.id} />
@@ -81,9 +81,9 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
         {DRAW_STATUS_LABELS[draw.status]} · {drawnCount}/{totalSlots} giải đã quay
       </p>
       {draw.seedCommit && (
-        <p className="mt-2 rounded-lg bg-white p-3 font-mono text-xs break-all shadow-sm">Mã commit: {draw.seedCommit}</p>
+        <p className="mt-2 rounded-md bg-white p-3 font-mono text-xs break-all">Mã commit: {draw.seedCommit}</p>
       )}
-      {draw.cancelReason && <p className="mt-2 rounded-lg bg-danger/10 p-3 text-danger">Đã huỷ: {draw.cancelReason}</p>}
+      {draw.cancelReason && <p className="mt-2 rounded-md bg-danger/10 p-3 text-danger">Đã huỷ: {draw.cancelReason}</p>}
 
       <DrawLive drawId={draw.id} initial={state} prizes={draw.prizes} participants={draw.participants} />
 
@@ -121,7 +121,7 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
             name="reason"
             required
             placeholder="Lý do huỷ (hiện công khai)"
-            className="min-h-11 w-full rounded-lg border border-line bg-white px-3"
+            className="min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8"
           />
           <button type="submit" className={`${BUTTON_CLASS} text-danger`}>
             Huỷ đợt quay số

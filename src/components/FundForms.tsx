@@ -2,11 +2,11 @@ import ActionForm from '@/components/ActionForm'
 import ImageField from '@/components/ImageField'
 import { BANKS, FUND_DIRECTION_LABELS } from '@/config/fund'
 import { formatDateVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 import { addFundTransaction, recordFundReconciliation, saveFundAccount } from '@/lib/fund/adminActions'
 import type { FundAccount, FundCategory, ReconciliationRow } from '@/lib/fund/loadAdminFund'
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
 const SUBMIT_CLASS = 'min-h-12 rounded-full bg-brand font-bold text-white'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -20,7 +20,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export function BankAccountForm({ account }: { account: FundAccount | undefined }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3 shadow-sm" open={!account?.accountNo}>
+    <details className="mt-6 rounded-md bg-white p-3" open={!account?.accountNo}>
       <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Tài khoản nhận tiền của quỹ</summary>
       <ActionForm action={saveFundAccount} className="flex flex-col gap-3">
         <Field label="Ngân hàng">
@@ -51,7 +51,7 @@ export function BankAccountForm({ account }: { account: FundAccount | undefined 
 
 export function ManualTransactionForm({ accounts, categories }: { accounts: FundAccount[]; categories: FundCategory[] }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3 shadow-sm">
+    <details className="mt-6 rounded-md bg-white p-3">
       <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Thêm thu, chi thủ công</summary>
       <ActionForm action={addFundTransaction} className="flex flex-col gap-3">
         <Field label="Tài khoản">
@@ -108,7 +108,7 @@ export function ManualTransactionForm({ accounts, categories }: { accounts: Fund
 
 export function ReconciliationForm({ accounts, history }: { accounts: FundAccount[]; history: ReconciliationRow[] }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3 shadow-sm">
+    <details className="mt-6 rounded-md bg-white p-3">
       <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Đối chiếu với sao kê</summary>
       <ActionForm action={recordFundReconciliation} className="flex flex-col gap-3">
         <Field label="Tài khoản">
@@ -141,7 +141,7 @@ export function ReconciliationForm({ accounts, history }: { accounts: FundAccoun
                 {formatDateVi(`${row.asOf}T00:00:00+07:00`)} · {row.accountName}
               </span>
               <span className={row.difference === 0 ? 'font-bold text-brand-dark' : 'font-bold text-danger'}>
-                {row.difference === 0 ? 'Khớp' : `Lệch ${formatVnd(Math.abs(row.difference))}`}
+                {row.difference === 0 ? 'Khớp' : `Lệch ${formatVndCompact(Math.abs(row.difference))}`}
               </span>
             </li>
           ))}

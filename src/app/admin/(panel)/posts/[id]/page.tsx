@@ -29,14 +29,14 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           <input type="hidden" name="post_id" value={id} />
           <button
             type="submit"
-            className="min-h-12 w-full rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
+            className="min-h-12 w-full rounded-md bg-brand font-bold text-white active:bg-brand-dark"
           >
             Đăng ngay
           </button>
         </ActionForm>
       )}
       {stats && (
-        <div className="mb-4 rounded-lg bg-white shadow-sm p-3">
+        <div className="mb-4 rounded-md bg-white p-3">
           <p className="font-bold">Xác nhận đã đọc</p>
           <p className="text-sm text-muted">
             Đã xác nhận {stats.ackedCount}/{stats.activeMembers} · đã mở đọc {stats.readCount} · chưa xác nhận{' '}
@@ -75,7 +75,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
       />
       <ActionForm action={deletePost} className="mt-6">
         <input type="hidden" name="post_id" value={id} />
-        <button type="submit" className="min-h-11 w-full rounded-lg border border-danger font-bold text-danger">
+        <button type="submit" className="min-h-11 w-full rounded-md border border-danger font-bold text-danger">
           Xoá bài
         </button>
       </ActionForm>

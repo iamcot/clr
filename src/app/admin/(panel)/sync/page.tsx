@@ -43,7 +43,7 @@ async function loadSyncState() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg bg-white shadow-sm p-3">
+    <div className="rounded-md bg-white p-3">
       <h2 className="font-black">{title}</h2>
       <div className="mt-1 text-sm">{children}</div>
     </div>
@@ -85,7 +85,7 @@ export default async function AdminSyncPage() {
               {event.object_type} {event.object_id} ({event.aspect_type})
             </p>
             <p className="text-danger">{event.error}</p>
-            <button type="submit" className="mt-1 min-h-11 rounded-lg border border-line px-4 font-bold">
+            <button type="submit" className="mt-1 min-h-11 rounded-md border border-line px-4 font-bold">
               Thử lại
             </button>
           </ActionForm>

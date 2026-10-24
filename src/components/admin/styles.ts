@@ -1,5 +1,5 @@
 export const ADMIN_INPUT_CLASS =
-  'min-h-11 w-full rounded-lg border border-line bg-white px-3 focus:border-brand focus:outline-none'
+  'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm focus:border-brand focus:outline-none md:min-h-8'
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger'
 
@@ -10,5 +10,5 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
 }
 
 export function adminButtonClass(variant: ButtonVariant = 'secondary'): string {
-  return `inline-flex min-h-11 items-center justify-center rounded-lg px-4 font-bold ${BUTTON_VARIANTS[variant]}`
+  return `inline-flex min-h-10 items-center justify-center rounded-md px-3 text-sm font-bold md:min-h-8 ${BUTTON_VARIANTS[variant]}`
 }

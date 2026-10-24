@@ -6,7 +6,7 @@ import { adminButtonClass } from '@/components/admin/styles'
 import { OVERVIEW_ACTIVITY_DAYS } from '@/config/members'
 import { loadAdminOverview, type AdminOverview } from '@/lib/admin/overview'
 import { formatDateVi } from '@/lib/format/dateTime'
-import { formatVnd } from '@/lib/format/money'
+import { formatVndCompact } from '@/lib/format/money'
 
 type TodoItem = { label: string; count: number; href: string }
 
@@ -63,14 +63,14 @@ export default async function AdminHomePage() {
           href="/admin/activities?show=counted"
         />
         <StatCard label="Challenge đang chạy" value={overview.runningChallenges} href="/admin/challenges" />
-        <StatCard label="Quỹ CLB" value={formatVnd(overview.fundBalance)} href="/admin/fund" />
+        <StatCard label="Quỹ CLB" value={formatVndCompact(overview.fundBalance)} href="/admin/fund" />
       </div>
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <AdminCard title="Cần xử lý">
           <TodoList items={todoItems(overview)} />
         </AdminCard>
         <AdminCard title="Phạt chưa nộp">
-          <p className="text-3xl font-black">{formatVnd(overview.unpaidPenaltyAmount)}</p>
+          <p className="text-3xl font-black">{formatVndCompact(overview.unpaidPenaltyAmount)}</p>
           <p className="mt-1 text-sm text-muted">{overview.unpaidPenaltyCount} khoản · nộp qua VietQR tự gạch nợ</p>
           <Link href="/admin/penalties" className={`${adminButtonClass('secondary')} mt-3 w-full sm:w-auto`}>
             Xem thưởng phạt

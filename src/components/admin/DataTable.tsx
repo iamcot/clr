@@ -20,19 +20,19 @@ type DataTableProps<Row> = {
 function cellClass<Row>(column: DataTableColumn<Row>, extra = ''): string {
   const visibility = column.hideBelowMd ? 'hidden md:table-cell' : ''
   const align = column.align === 'right' ? 'text-right' : 'text-left'
-  return `${visibility} ${align} px-3 py-2 align-middle ${extra}`
+  return `${visibility} ${align} px-3 py-1.5 align-middle ${extra}`
 }
 
 export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyText }: DataTableProps<Row>) {
   if (rows.length === 0) {
-    return <p className="rounded-xl border border-dashed border-line bg-white p-6 text-center text-muted">{emptyText ?? 'Chưa có dữ liệu.'}</p>
+    return <p className="rounded-md border border-dashed border-line bg-white p-6 text-center text-muted">{emptyText ?? 'Chưa có dữ liệu.'}</p>
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-md border border-line bg-white">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-line bg-surface text-xs font-bold tracking-wide text-muted uppercase">
+          <tr className="border-b border-line bg-surface text-xs font-bold text-muted">
             {columns.map((column) => (
               <th key={column.key} scope="col" className={cellClass(column, 'font-bold')}>
                 {column.header}
@@ -48,7 +48,7 @@ export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyTe
                 {columns.map((column) => (
                   <td key={column.key} className={cellClass(column)}>
                     {column.isLink && href ? (
-                      <Link href={href} className="flex min-h-9 items-center font-bold">
+                      <Link href={href} className="flex min-h-8 items-center font-bold">
                         {column.cell(row)}
                       </Link>
                     ) : (

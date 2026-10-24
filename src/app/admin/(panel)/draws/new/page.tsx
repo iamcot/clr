@@ -6,7 +6,7 @@ import { requireBcn } from '@/lib/auth/requireBcn'
 import { createDraw } from '@/lib/draw/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
 const SOURCE_LIST_LIMIT = 50
 
 async function loadSources() {

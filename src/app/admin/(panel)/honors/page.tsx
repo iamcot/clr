@@ -7,8 +7,8 @@ import { addSpecialHonor, announceRecords, deleteHonor, generateHonors, setHonor
 import { loadHonors, type HonorView } from '@/lib/hallOfFame/loadHonors'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-line bg-white px-4 font-bold'
+const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
+const BUTTON_CLASS = 'min-h-11 rounded-md border border-line bg-white px-4 font-bold'
 
 async function loadMemberOptions() {
   const supabase = await createSupabaseServerClient()
@@ -18,7 +18,7 @@ async function loadMemberOptions() {
 
 function HonorRow({ honor }: { honor: HonorView }) {
   return (
-    <li className="rounded-lg bg-white p-3 shadow-sm">
+    <li className="rounded-md bg-white p-3">
       <p className="font-bold">
         {HONOR_KIND_ICONS[honor.kind]} {honor.memberName}
       </p>

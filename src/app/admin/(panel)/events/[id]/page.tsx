@@ -31,13 +31,13 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       <div className="mb-4 flex gap-2">
         <Link
           href={`/events/${id}`}
-          className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-line bg-white font-bold"
+          className="flex min-h-11 flex-1 items-center justify-center rounded-md border border-line bg-white font-bold"
         >
           Xem như thành viên
         </Link>
         <Link
           href={`/admin/events/${id}/photos`}
-          className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-line bg-white font-bold"
+          className="flex min-h-11 flex-1 items-center justify-center rounded-md border border-line bg-white font-bold"
         >
           Quản lý ảnh
         </Link>
@@ -51,7 +51,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       <EventForm defaults={eventFormDefaults(event)} />
       <h2 className="mt-8 text-lg font-black">Người đăng ký ({attendees.filter((a) => a.status === 'going').length})</h2>
       <form method="post" action={`/admin/events/${id}/link-activities`} className="mt-2">
-        <button type="submit" className="min-h-11 w-full rounded-lg border border-line bg-white font-bold">
+        <button type="submit" className="min-h-11 w-full rounded-md border border-line bg-white font-bold">
           Quét hoạt động Strava khớp với event
         </button>
       </form>
@@ -59,7 +59,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       {past && event.absentPenalty && (
         <ActionForm action={createAbsentPenalties} className="mt-4">
           <input type="hidden" name="event_id" value={id} />
-          <button type="submit" className="min-h-12 w-full rounded-lg border border-danger font-bold text-danger">
+          <button type="submit" className="min-h-12 w-full rounded-md border border-danger font-bold text-danger">
             Sinh phạt cho {absentCount} người vắng
           </button>
         </ActionForm>

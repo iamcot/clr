@@ -39,7 +39,7 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
       <BackLink href={`/admin/challenges/${id}`}>{challenge.title}</BackLink>
       <h1 className="mt-2 text-2xl font-black">Sửa challenge</h1>
       {isLive && (
-        <p className="mt-2 rounded-lg bg-gold/30 p-3 text-sm">
+        <p className="mt-2 rounded-md bg-gold/30 p-3 text-sm">
           Challenge đã công bố. Sau khi lưu, bấm &quot;Tính lại tất cả&quot; ở trang chi tiết để áp luật mới cho mọi
           người.
         </p>

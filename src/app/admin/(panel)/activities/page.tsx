@@ -7,7 +7,7 @@ import type { Database } from '@/lib/types/database'
 type ReviewRow = Database['public']['Views']['activities_review']['Row']
 
 const PAGE_SIZE = 100
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = 'min-h-10 w-full rounded-md border border-line bg-white px-2.5 text-sm md:min-h-8'
 
 async function loadActivities(showCounted: boolean): Promise<ReviewRow[]> {
   const supabase = await createSupabaseServerClient()
@@ -42,7 +42,7 @@ function FlagForm({ activity }: { activity: ReviewRow }) {
       <input type="hidden" name="activity_id" value={activity.id ?? ''} />
       <input type="hidden" name="flagged" value={flagged ? 'false' : 'true'} />
       {!flagged && <input name="reason" placeholder="Lý do" required maxLength={200} className={INPUT_CLASS} />}
-      <button type="submit" className="min-h-11 rounded-lg border border-line px-4 font-bold">
+      <button type="submit" className="min-h-11 rounded-md border border-line px-4 font-bold">
         {flagged ? 'Bỏ đánh dấu không hợp lệ' : 'Đánh dấu không hợp lệ'}
       </button>
     </ActionForm>
@@ -68,7 +68,7 @@ export default async function AdminActivitiesPage({ searchParams }: { searchPara
       </a>
       <ul className="mt-4 flex flex-col gap-3">
         {activities.map((activity) => (
-          <li key={activity.id} className="rounded-lg bg-white shadow-sm p-3">
+          <li key={activity.id} className="rounded-md bg-white p-3">
             <p className="font-bold">{activity.display_name}</p>
             <p className="text-sm">
               {activity.name} · {activity.sport_type} · {formatDistanceKm(activity.distance_m)} ·{' '}

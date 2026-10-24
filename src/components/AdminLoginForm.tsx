@@ -3,7 +3,7 @@
 import { useActionState } from 'react'
 import { signInAdmin, type AdminSignInState } from '@/lib/auth/adminSignIn'
 
-const INPUT_CLASS = 'min-h-12 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = 'min-h-12 w-full rounded-md border border-line bg-white px-3'
 
 export default function AdminLoginForm({ next }: { next: string | null }) {
   const [state, formAction, pending] = useActionState<AdminSignInState, FormData>(signInAdmin, null)
@@ -12,7 +12,7 @@ export default function AdminLoginForm({ next }: { next: string | null }) {
     <form action={formAction} className="flex w-full flex-col gap-3 text-left">
       {next && <input type="hidden" name="next" value={next} />}
       {state && (
-        <p role="alert" className="rounded-lg border border-danger px-4 py-3 text-sm text-danger">
+        <p role="alert" className="rounded-md border border-danger px-4 py-3 text-sm text-danger">
           {state.error}
         </p>
       )}
@@ -39,7 +39,7 @@ export default function AdminLoginForm({ next }: { next: string | null }) {
       <button
         type="submit"
         disabled={pending}
-        className="min-h-12 rounded-lg bg-brand font-bold text-white active:bg-brand-dark disabled:opacity-60"
+        className="min-h-12 rounded-md bg-brand font-bold text-white active:bg-brand-dark disabled:opacity-60"
       >
         {pending ? 'Đang đăng nhập…' : 'Đăng nhập'}
       </button>

@@ -17,7 +17,7 @@ export default async function AdminDrawsPage() {
       <ul className="mt-4 flex flex-col gap-2">
         {draws.map((draw) => (
           <li key={draw.id}>
-            <Link href={`/admin/draws/${draw.id}`} className="block rounded-lg bg-white p-3 shadow-sm">
+            <Link href={`/admin/draws/${draw.id}`} className="block rounded-md bg-white p-3">
               <p className="font-bold">{draw.title}</p>
               <p className="text-sm text-muted">
                 {DRAW_STATUS_LABELS[draw.status]} · {formatDateTimeVi(draw.createdAt)}

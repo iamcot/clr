@@ -18,14 +18,14 @@ export default async function AdminPostsPage() {
       <h1 className="text-2xl font-black">Bài viết</h1>
       <Link
         href="/admin/posts/new"
-        className="mt-3 flex min-h-12 items-center justify-center rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
+        className="mt-3 flex min-h-12 items-center justify-center rounded-md bg-brand font-bold text-white active:bg-brand-dark"
       >
         Soạn bài mới
       </Link>
       <ul className="mt-4 flex flex-col gap-2">
         {posts.map((post) => (
           <li key={post.id}>
-            <Link href={`/admin/posts/${post.id}`} className="block rounded-lg bg-white shadow-sm p-3">
+            <Link href={`/admin/posts/${post.id}`} className="block rounded-md bg-white p-3">
               <p className="font-bold">
                 {post.pinned && '📌 '}
                 {post.title}

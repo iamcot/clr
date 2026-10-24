@@ -10,10 +10,10 @@ export default function AdminCard({
   className?: string
 }) {
   return (
-    <section className={`rounded-xl border border-line bg-white p-4 shadow-sm ${className}`}>
+    <section className={`rounded-md border border-line bg-white p-3 md:p-4 ${className}`}>
       {(title || action) && (
-        <div className="mb-3 flex items-center justify-between gap-3">
-          {title && <h2 className="text-lg font-black">{title}</h2>}
+        <div className="mb-2 flex items-center justify-between gap-3">
+          {title && <h2 className="text-base font-black">{title}</h2>}
           {action}
         </div>
       )}
