@@ -74,7 +74,7 @@ async function loadUnpaid(memberId: string): Promise<{ amount: number; reason: s
 }
 
 async function loadOwnClubRank(memberId: string): Promise<number | null> {
-  const rows = await loadClubRankingRows()
+  const rows = await loadClubRankingRows(false)
   const page = buildRankingPage(rows, 'level', { gender: null, memberType: null }, memberId, 1, 1)
   return page.rows.find((row) => row.memberId === memberId)?.rank ?? page.ownRow?.rank ?? null
 }

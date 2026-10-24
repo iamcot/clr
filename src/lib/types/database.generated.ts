@@ -951,6 +951,14 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"club_rankings_masked": {
+                  Row: {
+                    "avatar_url": string | null,"club_points": number | null,"display_name": string | null,"gender": string | null,"level": number | null,"member_id": string | null,"member_type": string | null,"month_distance_m": number | null,"year_distance_m": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"club_rankings_levels": {
                   Row: {
                     "avatar_url": string | null,"club_points": number | null,"display_name": string | null,"gender": string | null,"level": number | null,"member_id": string | null,"member_type": string | null
