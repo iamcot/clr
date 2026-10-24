@@ -93,6 +93,10 @@ export function ManualTransactionForm({ accounts, categories }: { accounts: Fund
         <div>
           <p className="text-sm font-bold">Ảnh hoá đơn</p>
           <ImageField name="receipt_url" purpose="receipt" />
+          <label className="mt-2 flex min-h-11 items-center gap-3">
+            <input type="checkbox" name="receipt_public" className="size-5 accent-brand" />
+            <span className="text-sm">Cho thành viên xem ảnh hoá đơn này</span>
+          </label>
         </div>
         <button type="submit" className={SUBMIT_CLASS}>
           Ghi giao dịch

@@ -533,14 +533,28 @@ isOneToOne: false
                   ]
                 },"fund_transactions": {
                   Row: {
-                    "id": string,"account_id": string,"direction": string,"amount": number,"category_id": string | null,"occurred_at": string,"description": string,"member_id": string | null,"penalty_id": string | null,"event_id": string | null,"intent_id": string | null,"bank_event_id": string | null,"receipt_url": string | null,"created_by": string | null,"created_at": string,"voided_at": string | null,"void_reason": string | null
+                    "id": string,"account_id": string,"direction": string,"amount": number,"category_id": string | null,"occurred_at": string,"description": string,"member_id": string | null,"penalty_id": string | null,"event_id": string | null,"intent_id": string | null,"bank_event_id": string | null,"receipt_url": string | null,"created_by": string | null,"created_at": string,"voided_at": string | null,"void_reason": string | null,"receipt_public": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: string,"account_id": string,"direction": string,"amount": number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null
+                    "id"?: string,"account_id": string,"direction": string,"amount": number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null,"receipt_public"?: boolean
                   }
                   Update: {
-                    "id"?: string,"account_id"?: string,"direction"?: string,"amount"?: number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null
+                    "id"?: string,"account_id"?: string,"direction"?: string,"amount"?: number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null,"receipt_public"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"fund_period_locks": {
+                  Row: {
+                    "id": string,"month": string,"locked_at": string,"locked_by": string | null,"note": string,"unlocked_at": string | null,"unlocked_by": string | null,"unlock_reason": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"month": string,"locked_at"?: string,"locked_by"?: string | null,"note"?: string,"unlocked_at"?: string | null,"unlocked_by"?: string | null,"unlock_reason"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"month"?: string,"locked_at"?: string,"locked_by"?: string | null,"note"?: string,"unlocked_at"?: string | null,"unlocked_by"?: string | null,"unlock_reason"?: string | null
                   }
                   Relationships: [
                     
@@ -1206,7 +1220,28 @@ isOneToOne: false
 { Args: { "p_intent_id": string }; Returns: undefined
                            },
 "add_fund_transaction":
-{ Args: { "p_account_id": string; "p_direction": string; "p_amount": number; "p_category_id": string | null; "p_occurred_at": string; "p_description": string; "p_member_id": string | null; "p_event_id": string | null; "p_receipt_url": string | null }; Returns: string
+{ Args: { "p_account_id": string; "p_direction": string; "p_amount": number; "p_category_id": string | null; "p_occurred_at": string; "p_description": string; "p_member_id": string | null; "p_event_id": string | null; "p_receipt_url": string | null; "p_receipt_public": boolean }; Returns: string
+                           },
+"set_fund_receipt_public":
+{ Args: { "p_id": string; "p_public": boolean }; Returns: undefined
+                           },
+"lock_fund_month":
+{ Args: { "p_month": string; "p_note": string }; Returns: undefined
+                           },
+"unlock_fund_month":
+{ Args: { "p_month": string; "p_reason": string }; Returns: undefined
+                           },
+"fund_report_rows":
+{ Args: { "p_from": string; "p_to": string }; Returns: { kind: string; direction: string | null; category: string | null; amount: number }[]
+                           },
+"fund_penalty_report":
+{ Args: { "p_from": string; "p_to": string }; Returns: { issued_count: number; issued_amount: number; collected_amount: number; outstanding_amount: number; waived_amount: number }[]
+                           },
+"fund_monthly":
+{ Args: { "p_months": number }; Returns: { month: string; income: number; expense: number }[]
+                           },
+"fund_public_expenses":
+{ Args: { "p_from": string; "p_to": string }; Returns: { id: string; occurred_at: string; description: string; amount: number; category: string; receipt_url: string | null }[]
                            },
 "void_fund_transaction":
 { Args: { "p_id": string; "p_reason": string }; Returns: undefined

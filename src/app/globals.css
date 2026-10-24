@@ -121,3 +121,8 @@ body {
     transform: translateY(260px) rotate(360deg);
   }
 }
+
+@page {
+  size: A4;
+  margin: 15mm;
+}

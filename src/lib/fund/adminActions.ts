@@ -68,6 +68,7 @@ export async function addFundTransaction(formData: FormData): Promise<ActionResu
     p_member_id: null,
     p_event_id: null,
     p_receipt_url: receiptUrl,
+    p_receipt_public: formData.get('receipt_public') === 'on',
   })
   if (error) return actionError('Không ghi được giao dịch')
   refreshFundPages()
