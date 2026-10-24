@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Be_Vietnam_Pro } from 'next/font/google'
+import { Suspense } from 'react'
+import NavigationProgress from '@/components/NavigationProgress'
 import ToastProvider from '@/components/ToastProvider'
 import './globals.css'
 
@@ -23,6 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi" className={beVietnamPro.variable}>
       <body className="antialiased">
+        <Suspense>
+          <NavigationProgress />
+        </Suspense>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
