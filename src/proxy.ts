@@ -24,6 +24,9 @@ export async function proxy(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims()
   if (!data?.claims && !isPublicPath(request.nextUrl.pathname)) {
+    if (request.nextUrl.pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 })
+    }
     return NextResponse.redirect(new URL('/login', request.url))
   }
   return response

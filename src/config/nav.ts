@@ -10,7 +10,7 @@ export type NavTab = {
 export const NAV_TABS: NavTab[] = [
   { href: '/', label: 'Trang chủ', icon: 'home', enabled: true },
   { href: '/challenges', label: 'Challenge', icon: 'challenge', enabled: true },
-  { href: '/events', label: 'Event', icon: 'event', enabled: false },
+  { href: '/events', label: 'Event', icon: 'event', enabled: true },
   { href: '/fund', label: 'Quỹ', icon: 'fund', enabled: true },
   { href: '/me', label: 'Tôi', icon: 'me', enabled: true },
 ]

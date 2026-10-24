@@ -42,3 +42,22 @@ Vercel: preview cho mỗi PR, production từ `main`. Biến môi trường khai
 
 1. Điền `STRAVA_WEBHOOK_VERIFY_TOKEN` và `CRON_SECRET` trên Vercel (Production và Preview), thêm secret `APP_URL` và `CRON_SECRET` vào GitHub Actions để workflow `Strava cron` gọi `/api/cron/*`.
 2. Sau khi deploy, đăng ký webhook một lần: `npm run strava:subscribe -- create` (đọc `.env.local`; Strava gọi `GET /api/strava/webhook` để xác thực). `list` xem subscription, `delete <id>` xoá. Mỗi app Strava chỉ có một subscription.
+
+## Ảnh event (Cloudflare R2)
+
+1. Tạo bucket R2, bật truy cập công khai qua custom domain (ví dụ `img.clr.vn`), tạo API token quyền Object Read & Write cho đúng bucket.
+2. Điền `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL` trên Vercel (Production và Preview).
+3. Trình duyệt PUT thẳng lên R2 nên bucket cần CORS cho domain của app (Settings > CORS policy):
+
+```json
+[
+  {
+    "AllowedOrigins": ["https://<domain-app>", "http://localhost:3000"],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedHeaders": ["Content-Type"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Ảnh event nằm dưới `events/{eventId}/`; ảnh giấy chứng nhận (task 5.2) sẽ dùng prefix riêng.

@@ -265,6 +265,135 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"events": {
+                  Row: {
+                    "absent_penalty": boolean,"capacity": number | null,"cover_url": string | null,"created_at": string,"created_by": string | null,"description_md": string,"ends_at": string,"fee": number | null,"id": string,"kind": string,"location_lat": number | null,"location_lng": number | null,"location_name": string,"race_id": string | null,"registration_closes_at": string | null,"route_distance_m": number | null,"starts_at": string,"status": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "absent_penalty"?: boolean,"capacity"?: number | null,"cover_url"?: string | null,"created_at"?: string,"created_by"?: string | null,"description_md"?: string,"ends_at": string,"fee"?: number | null,"id"?: string,"kind"?: string,"location_lat"?: number | null,"location_lng"?: number | null,"location_name"?: string,"race_id"?: string | null,"registration_closes_at"?: string | null,"route_distance_m"?: number | null,"starts_at": string,"status"?: string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "absent_penalty"?: boolean,"capacity"?: number | null,"cover_url"?: string | null,"created_at"?: string,"created_by"?: string | null,"description_md"?: string,"ends_at"?: string,"fee"?: number | null,"id"?: string,"kind"?: string,"location_lat"?: number | null,"location_lng"?: number | null,"location_name"?: string,"race_id"?: string | null,"registration_closes_at"?: string | null,"route_distance_m"?: number | null,"starts_at"?: string,"status"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "events_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "events_race_id_fkey"
+      columns: ["race_id"]
+isOneToOne: false
+      referencedRelation: "races"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"event_attendees": {
+                  Row: {
+                    "activity_id": number | null,"checked_in_at": string | null,"checked_in_by": string | null,"created_at": string,"event_id": string,"member_id": string,"note": string,"status": string,"status_changed_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_id"?: number | null,"checked_in_at"?: string | null,"checked_in_by"?: string | null,"created_at"?: string,"event_id": string,"member_id": string,"note"?: string,"status": string,"status_changed_at"?: string
+                  }
+                  Update: {
+                    "activity_id"?: number | null,"checked_in_at"?: string | null,"checked_in_by"?: string | null,"created_at"?: string,"event_id"?: string,"member_id"?: string,"note"?: string,"status"?: string,"status_changed_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "event_attendees_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_attendees_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_attendees_checked_in_by_fkey"
+      columns: ["checked_in_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_attendees_activity_id_fkey"
+      columns: ["activity_id"]
+isOneToOne: false
+      referencedRelation: "activities"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"event_photos": {
+                  Row: {
+                    "bytes": number,"caption": string,"created_at": string,"event_id": string,"height": number,"hidden": boolean,"id": string,"object_key": string,"taken_at": string | null,"thumb_key": string,"uploaded_by": string | null,"width": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bytes": number,"caption"?: string,"created_at"?: string,"event_id": string,"height": number,"hidden"?: boolean,"id"?: string,"object_key": string,"taken_at"?: string | null,"thumb_key": string,"uploaded_by"?: string | null,"width": number
+                  }
+                  Update: {
+                    "bytes"?: number,"caption"?: string,"created_at"?: string,"event_id"?: string,"height"?: number,"hidden"?: boolean,"id"?: string,"object_key"?: string,"taken_at"?: string | null,"thumb_key"?: string,"uploaded_by"?: string | null,"width"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "event_photos_event_id_fkey"
+      columns: ["event_id"]
+isOneToOne: false
+      referencedRelation: "events"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_photos_uploaded_by_fkey"
+      columns: ["uploaded_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"event_photo_tags": {
+                  Row: {
+                    "created_at": string,"member_id": string,"photo_id": string,"tagged_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"member_id": string,"photo_id": string,"tagged_by"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"member_id"?: string,"photo_id"?: string,"tagged_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "event_photo_tags_photo_id_fkey"
+      columns: ["photo_id"]
+isOneToOne: false
+      referencedRelation: "event_photos"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_photo_tags_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },
+    {
+      foreignKeyName: "event_photo_tags_tagged_by_fkey"
+      columns: ["tagged_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"challenges": {
                   Row: {
                     "activity_filter": Json,"closed_at": string | null,"closed_by": string | null,"cover_url": string | null,"created_at": string,"created_by": string | null,"description": string,"ends_at": string,"goal_type": string,"id": string,"participation": string,"penalty_rule": Json,"ranking": string,"registration_closes_at": string | null,"reward_rule": Json,"starts_at": string,"status": string,"title": string,"updated_at": string
@@ -660,6 +789,14 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"event_counts": {
+                  Row: {
+                    "event_id": string | null,"going_count": number | null,"maybe_count": number | null,"photo_count": number | null,"waitlist_count": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"member_prs": {
                   Row: {
                     "activity_id": number | null,"distance_name": string | null,"elapsed_time_s": number | null,"member_id": string | null,"start_date": string | null
@@ -763,6 +900,27 @@ isOneToOne: false
                            },
 "admin_update_member":
 { Args: { "p_member_id": string,"p_member_type": string,"p_role": string,"p_status": string }; Returns: undefined
+                           },
+"set_event_attendance":
+{ Args: { "p_event_id": string,"p_note"?: string,"p_status": string }; Returns: string
+                           },
+"promote_event_waitlist_bcn":
+{ Args: { "p_event_id": string }; Returns: string[]
+                           },
+"event_checkin_code":
+{ Args: { "p_event_id": string }; Returns: { code: string; expires_in_s: number }[]
+                           },
+"self_check_in":
+{ Args: { "p_event_id": string,"p_code": string }; Returns: string
+                           },
+"event_run_summary":
+{ Args: { "p_event_id": string }; Returns: { attended_count: number; runner_count: number; total_distance_m: number; total_moving_time_s: number }[]
+                           },
+"admin_event_stats":
+{ Args: { "p_from": string,"p_to": string }; Returns: { event_id: string; title: string; starts_at: string; registered_count: number; attended_count: number; total_distance_m: number }[]
+                           },
+"admin_event_top_attendees":
+{ Args: { "p_from": string,"p_limit": number,"p_to": string }; Returns: { member_id: string; display_name: string | null; event_count: number }[]
                            },
 "is_bcn":
 { Args: Record<PropertyKey, never>; Returns: boolean

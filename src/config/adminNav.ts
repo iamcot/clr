@@ -20,6 +20,6 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/challenges', label: 'Challenge', description: 'Tạo và theo dõi challenge', enabled: true },
   { href: '/admin/penalties', label: 'Thưởng phạt', description: 'Thưởng và phạt thành viên', enabled: true },
   { href: '/admin/posts', label: 'Bài viết', description: 'Đăng thông báo và theo dõi xác nhận', enabled: true },
-  { href: '/admin/events', label: 'Event', description: 'Quản lý event và album', enabled: false },
+  { href: '/admin/events', label: 'Event', description: 'Quản lý event và album', enabled: true },
   { href: '/admin/fund', label: 'Quỹ', description: 'Sổ quỹ và đối soát', enabled: false },
 ]

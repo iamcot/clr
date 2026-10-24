@@ -14,11 +14,16 @@ export function formatDuration(totalSeconds: number): string {
   return `${pad2(minutes)}:${pad2(rest)}`
 }
 
-export function formatPace(distanceMeters: number, timeSeconds: number): string {
+export function formatPaceValue(distanceMeters: number, timeSeconds: number): string {
   if (distanceMeters <= 0 || timeSeconds <= 0) return '--'
   const secondsPerKm = Math.round(timeSeconds / (distanceMeters / 1000))
   const minutes = Math.floor(secondsPerKm / SECONDS_PER_MINUTE)
-  return `${minutes}:${pad2(secondsPerKm % SECONDS_PER_MINUTE)}/km`
+  return `${minutes}:${pad2(secondsPerKm % SECONDS_PER_MINUTE)}`
+}
+
+export function formatPace(distanceMeters: number, timeSeconds: number): string {
+  const value = formatPaceValue(distanceMeters, timeSeconds)
+  return value === '--' ? value : `${value}/km`
 }
 
 export function formatKm(distanceMeters: number): string {

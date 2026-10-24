@@ -15,6 +15,13 @@ export const FLASH_TOASTS = {
   },
   post_saved: { kind: 'success', text: 'Đã lưu bài viết' },
   post_deleted: { kind: 'success', text: 'Đã xoá bài viết' },
+  event_saved: { kind: 'success', text: 'Đã lưu event' },
+  activities_linked: { kind: 'success', text: 'Đã quét và gắn hoạt động cho người tham gia' },
+  checkin_done: { kind: 'success', text: 'Điểm danh thành công' },
+  checkin_already: { kind: 'success', text: 'Bạn đã điểm danh rồi' },
+  checkin_expired: { kind: 'error', text: 'Mã điểm danh đã hết hạn, hãy quét lại mã mới trên máy BCN' },
+  checkin_closed: { kind: 'error', text: 'Chưa tới hoặc đã quá giờ điểm danh của event này' },
+  checkin_failed: { kind: 'error', text: 'Không điểm danh được, vui lòng thử lại' },
   race_saved: { kind: 'success', text: 'Đã lưu kết quả giải' },
   strava_disconnected: {
     kind: 'success',

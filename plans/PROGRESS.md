@@ -173,12 +173,21 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Bài tự sinh: khi BCN chốt challenge tạo bài `result` (số người hoàn thành mỗi hạng mục, top 3); tên người chỉ có khi `club_display_mode = full_opt_in` và người đó bật chia sẻ, nếu không bài chỉ có số lượng. Job tuần (GitHub Actions Chủ nhật 18:00 UTC = 01:00 thứ Hai giờ VN, `GET /api/cron/digest`) tạo một bài "Chúc mừng các thành viên lên level tuần này", cũng chỉ khi `full_opt_in` và chỉ gồm người đã bật chia sẻ. Chống trùng bằng `posts.source_key`. `settings.auto_posts_publish = false` thì bài tự sinh thành bản nháp để BCN sửa rồi đăng ở `/admin/posts`.
 
 ### 11 – Event + album
-- [ ] 11.1 Schema
-- [ ] 11.2 Màn event
-- [ ] 11.3 Điểm danh + gắn hoạt động
-- [ ] 11.4 Upload ảnh R2 ⚠️
-- [ ] 11.5 Album
-- [ ] 11.6 Thống kê event
+- [~] 11.1 Schema
+- [~] 11.2 Màn event
+- [~] 11.3 Điểm danh + gắn hoạt động
+- [~] 11.4 Upload ảnh R2 ⚠️
+- [~] 11.5 Album
+- [~] 11.6 Thống kê event
+
+> Ghi chú task 11 (đã chạy typecheck/lint/test/build; **chưa** chạy migration vì máy không có Docker, **chưa** test tay, chưa có bucket R2 thật nên Nghiệm thu chưa tick):
+> - Migration `0011_events.sql` (bảng `events`, `event_attendees`, `event_photos`, RLS, view `event_counts`, hàm `set_event_attendance` xử lý hạn đăng ký, hết chỗ → `waitlist`, người huỷ thì người chờ đầu tiên lên `going`; `event_run_summary`, `admin_event_stats`, `admin_event_top_attendees`), `0012_event_checkin.sql` (khoá bí mật theo event trong `event_secrets`, mã điểm danh là HMAC theo khoảng 30 giây tính trong Postgres, `self_check_in` nhận mã của khoảng hiện tại và khoảng liền trước nên link sống 30–60 giây), `0013_event_photo_tags.sql`. `database.generated.ts` sửa tay, cần `npm run db:types` khi có DB.
+> - Thành viên đăng ký chỉ qua RPC (không có policy insert trực tiếp) để kiểm hạn/chỗ/hàng chờ trong một transaction. Chưa gửi thông báo khi người chờ được lên `going` (chờ task 14), hàm trả về danh sách người vừa lên để task 14 dùng.
+> - Tự gắn hoạt động: `src/lib/events/matchActivity.ts` (khung ±1 giờ, bán kính 3 km từ `start_latlng`, mỗi người lấy buổi dài nhất, bỏ hoạt động riêng tư nếu chủ chưa đồng ý cộng vào số liệu tổng). Event không có toạ độ thì không tự gắn. Job `GET /api/cron/event-activities` (chạy cùng nhịp 15 phút trong workflow Strava cron) và nút "Quét hoạt động" ở `/admin/events/[id]`. Hoạt động khớp mà chưa điểm danh chỉ hiện gợi ý cho BCN, không tự điểm danh.
+> - Upload ảnh: `POST /api/uploads` cấp 2 link PUT ký sẵn (ảnh + thumbnail, độ dài file nằm trong chữ ký), `POST /api/uploads/complete` đọc lại object trên R2, kiểm kích thước và chữ ký JPEG (file `.exe` đổi đuôi bị xoá và từ chối) rồi mới ghi `event_photos`. Client nén bằng canvas (2048px/0,82, thumbnail 480px) nên EXIF/GPS không còn; ngày chụp đọc từ EXIF của file gốc. Chưa có HEIC (báo lỗi rõ). `proxy.ts`: request chưa đăng nhập tới `/api/*` (không công khai) trả 401 thay vì chuyển hướng.
+> - Cần điền `R2_*` (xem `.env.example`) và cấu hình CORS cho bucket (README, mục Ảnh event) trước khi thử upload. Chưa có việc chuyển ảnh cũ (chờ trả lời câu hỏi cho BCN).
+> - Chưa có mã QR: CLAUDE.md cấm thêm thư viện ngoài danh sách. Màn BCN hiện link điểm danh đổi mỗi 30 giây (có nút chép) thay cho QR; cần chốt thêm thư viện QR hoặc cách khác (xem câu hỏi ở báo cáo).
+> - Task 11.2 không nêu màn tạo event cho BCN nên thêm tối thiểu `/admin/events` (danh sách, tạo/sửa, điểm danh tay, phạt vắng dùng loại `event_absent` của 8.1, quản lý ảnh: ẩn, xoá, chọn ảnh bìa) và bật tab Event, mục Event ở `/admin`.
 
 ### 12 – Bảng vàng
 - [ ] 12.1 Kỷ lục CLB
@@ -245,6 +254,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 - Nội dung góp ý...
   → Đã xử lý: sửa plans/07-challenges.md task 7.2 (...)
 ```
+
+### 2026-10-24 – CoT (lần 3)
+- Trang chủ chưa theo mockup; header nền trắng đúng nhưng khi mở dạng PWA phần trên header bị nền xám; làm tiếp step 11.
+  → Đã xử lý: làm lại trang chủ theo mockup (lời chào theo giờ, thẻ xanh đậm km tháng/level/pace/hạng CLB/tiến độ challenge, thẻ nợ quỹ, "Tin ghim", "Bảng tin" với thẻ bài bo tròn); header có thêm dòng "Celadon Running Club". Phần xám phía trên khi mở PWA: giả định do `html` không có nền riêng nên vùng status bar lấy màu `body` (xám); đặt `html` nền trắng, `body` giữ nền xám, và `background_color` của manifest thành trắng. Chưa kiểm trên iPhone thật. Còn thiếu so với mockup: chuông thông báo (chờ task 14), top 3 trong thẻ kết quả challenge và số "đã xác nhận 412/598" (bài là markdown, chưa có dữ liệu cấu trúc), thẻ event có ô ngày (chờ liên kết bài với event). Step 11 làm xong phần code, xem ghi chú task 11.
 
 ### 2026-10-24 – CoT (lần 2)
 - Chuyển trang chậm, không biết web đang chạy; toast nên ở cạnh dưới trên bottom bar; hoạt động có ở /admin/activities nhưng không thấy ở trang cá nhân.

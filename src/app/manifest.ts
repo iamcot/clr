@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     start_url: '/?source=pwa',
     scope: '/',
-    background_color: '#f4f5f7',
+    background_color: '#ffffff',
     theme_color: '#ffffff',
     icons: [
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

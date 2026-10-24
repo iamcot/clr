@@ -6,12 +6,12 @@ import { loadMoreFeed } from '@/lib/posts/memberActions'
 import type { FeedPostView } from '@/lib/posts/loadFeed'
 
 type PostFeedProps = {
-  pinned: FeedPostView[]
+  pinnedIds: string[]
   initialPosts: FeedPostView[]
   initialCursor: string | null
 }
 
-export default function PostFeed({ pinned, initialPosts, initialCursor }: PostFeedProps) {
+export default function PostFeed({ pinnedIds, initialPosts, initialCursor }: PostFeedProps) {
   const [posts, setPosts] = useState(initialPosts)
   const [cursor, setCursor] = useState(initialCursor)
   const [loading, startLoading] = useTransition()
@@ -20,10 +20,7 @@ export default function PostFeed({ pinned, initialPosts, initialCursor }: PostFe
   function loadMore() {
     if (!cursor || loading) return
     startLoading(async () => {
-      const page = await loadMoreFeed(
-        cursor,
-        pinned.map((post) => post.id),
-      )
+      const page = await loadMoreFeed(cursor, pinnedIds)
       setPosts((current) => [...current, ...page.posts])
       setCursor(page.nextCursor)
     })
@@ -41,12 +38,11 @@ export default function PostFeed({ pinned, initialPosts, initialCursor }: PostFe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor, loading])
 
-  const visible = [...pinned, ...posts]
   return (
     <div>
-      {visible.length === 0 && <p className="text-sm text-muted">Chưa có bài viết nào.</p>}
+      {posts.length === 0 && <p className="text-sm text-muted">Chưa có bài viết nào.</p>}
       <ul className="flex flex-col gap-3">
-        {visible.map((post) => (
+        {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
       </ul>
