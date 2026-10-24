@@ -44,7 +44,7 @@ export default async function HomePage() {
       ) : (
         <GuestSummaryCard monthNumber={monthNumberAt(now)} viewerKind={viewer.kind === 'member' ? 'pending' : viewer.kind} />
       )}
-      <HomeQuickLinks isMember={viewer.kind === 'member'} />
+      <HomeQuickLinks />
       {pinned.length > 0 && (
         <>
           <h2 className="mt-4 text-xl font-black">Tin ghim</h2>

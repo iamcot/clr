@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import ClubRecordsView from '@/components/ClubRecordsView'
 import { AGE_GROUPS, HONOR_KIND_LABELS, type HonorKind } from '@/config/hallOfFame'
-import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { loadHonors, type HonorView } from '@/lib/hallOfFame/loadHonors'
 import { loadVerifiedRecordResults } from '@/lib/hallOfFame/loadRecords'
@@ -41,7 +40,6 @@ function tabClass(active: boolean): string {
 }
 
 export default async function HallOfFamePage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  await requireActiveMember()
   const params = await searchParams
   const tab = parseTab(params.tab)
   const year = params.year

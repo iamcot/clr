@@ -1,11 +1,9 @@
 import Link from 'next/link'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
-import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadDrawList } from '@/lib/draw/loadDraw'
 
 export default async function DrawsPage() {
-  await requireActiveMember()
   const draws = await loadDrawList()
 
   return (

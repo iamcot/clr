@@ -39,7 +39,6 @@ const QUICK_LINKS: QuickLink[] = [
   },
   {
     href: '/hall-of-fame',
-    memberOnly: true,
     label: 'Bảng vàng',
     iconClass: 'bg-lime/25 text-deep',
     icon: (
@@ -48,7 +47,6 @@ const QUICK_LINKS: QuickLink[] = [
   },
   {
     href: '/draws',
-    memberOnly: true,
     label: 'Quay số',
     iconClass: 'bg-danger/10 text-danger',
     icon: (
@@ -60,11 +58,10 @@ const QUICK_LINKS: QuickLink[] = [
   },
 ]
 
-export default function HomeQuickLinks({ isMember }: { isMember: boolean }) {
-  const links = QUICK_LINKS.filter((link) => isMember || !link.memberOnly)
+export default function HomeQuickLinks() {
   return (
     <ul className="mt-3 grid grid-cols-4 gap-2">
-      {links.map((link) => (
+      {QUICK_LINKS.map((link) => (
         <li key={link.href}>
           <Link href={link.href} className="flex flex-col items-center gap-1 rounded-xl py-2 active:bg-line/50">
             <span className={`flex size-12 items-center justify-center rounded-2xl ${link.iconClass}`}>{link.icon}</span>

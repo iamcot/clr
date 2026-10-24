@@ -967,6 +967,30 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"hall_of_fame_members": {
+                  Row: {
+                    "avatar_url": string | null,"display_name": string | null,"id": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"hall_of_fame_records": {
+                  Row: {
+                    "age_at_race": number | null,"avatar_url": string | null,"chip_time_s": number | null,"display_name": string | null,"distance_m": number | null,"gender": string | null,"id": string | null,"member_id": string | null,"race_date": string | null,"race_name": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"draw_members": {
+                  Row: {
+                    "display_name": string | null,"id": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"event_counts": {
                   Row: {
                     "event_id": string | null,"going_count": number | null,"maybe_count": number | null,"photo_count": number | null,"waitlist_count": number | null

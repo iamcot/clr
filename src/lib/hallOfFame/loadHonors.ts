@@ -30,14 +30,15 @@ export async function loadHonors({ approvedOnly, memberId }: HonorFilter): Promi
   const { data: rows } = await query
   if (!rows || rows.length === 0) return []
 
+  // Bảng vàng công khai nên đọc tên từ view riêng, người chưa được duyệt cũng không bị che
   const { data: members } = await supabase
-    .from('members_public')
+    .from(approvedOnly ? 'hall_of_fame_members' : 'members_public')
     .select('id, display_name, avatar_url')
     .in(
       'id',
       [...new Set(rows.map((row) => row.member_id))],
     )
-  const memberById = new Map((members ?? []).map((member) => [member.id, member]))
+  const memberById = new Map((members ?? []).flatMap((member) => (member.id ? [[member.id, member] as const] : [])))
 
   return rows.flatMap((row) => {
     const kind = HONOR_KINDS.find((item) => item === row.kind)

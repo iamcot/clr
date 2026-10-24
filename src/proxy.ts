@@ -2,10 +2,10 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getSupabasePublishableKey, getSupabaseUrl } from '@/lib/supabase/env'
 
-// Trang đọc được khi chưa đăng nhập (trang chủ, challenge, event, thành viên, xếp hạng, bài viết, đăng nhập);
+// Trang đọc được khi chưa đăng nhập (trang chủ, challenge, event, thành viên, xếp hạng, bảng vàng, quay số, bài viết, đăng nhập);
 // các trang khác và mọi API phải có phiên, trừ những API công khai dưới đây
-const PUBLIC_API_PREFIXES = ['/api/auth', '/api/strava/webhook', '/api/cron', '/dev']
-const LOGIN_REQUIRED_PAGE_PREFIXES = ['/me', '/fund', '/admin', '/welcome', '/pending', '/draws', '/photos', '/hall-of-fame']
+const PUBLIC_API_PREFIXES = ['/api/auth', '/api/strava/webhook', '/api/cron', '/api/draws', '/dev']
+const LOGIN_REQUIRED_PAGE_PREFIXES = ['/me', '/fund', '/admin', '/welcome', '/pending', '/photos']
 
 function matchesPrefix(pathname: string, prefixes: string[]) {
   return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
