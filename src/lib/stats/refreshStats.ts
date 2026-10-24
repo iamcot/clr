@@ -42,9 +42,40 @@ async function loadPrNames(db: ServiceClient, memberIds: string[]): Promise<Map<
   return namesByMember
 }
 
-async function saveLevel(db: ServiceClient, memberId: string, level: number, clubPoints: number, levelChanged: boolean) {
+// Challenge đã chốt trong cửa sổ level mà thành viên hoàn thành và không bị loại
+async function loadCompletedChallengeCounts(
+  db: ServiceClient,
+  memberIds: string[],
+  windowStart: string,
+): Promise<Map<string, number>> {
+  const { data, error } = await db
+    .from('challenge_entries')
+    .select('member_id, challenges!inner(status, starts_at)')
+    .in('member_id', memberIds)
+    .eq('completed', true)
+    .eq('excluded', false)
+    .eq('challenges.status', 'closed')
+    .gte('challenges.starts_at', windowStart)
+  throwOnError(error, 'Không đọc được challenge đã hoàn thành')
+
+  const counts = new Map<string, number>()
+  for (const row of data ?? []) counts.set(row.member_id, (counts.get(row.member_id) ?? 0) + 1)
+  return counts
+}
+
+async function saveLevel(
+  db: ServiceClient,
+  memberId: string,
+  level: number,
+  clubPoints: number,
+  levelChanged: boolean,
+) {
   const update = levelChanged
-    ? { level, club_points: clubPoints, level_updated_at: new Date().toISOString() }
+    ? {
+        level,
+        club_points: clubPoints,
+        level_updated_at: new Date().toISOString(),
+      }
     : { club_points: clubPoints }
   const { error } = await db.from('members').update(update).eq('id', memberId)
   throwOnError(error, 'Không lưu được level')
@@ -54,15 +85,22 @@ async function saveLevel(db: ServiceClient, memberId: string, level: number, clu
 export async function recomputeLevels(db: ServiceClient, memberIds: string[]): Promise<void> {
   if (memberIds.length === 0) return
   const windowStart = levelWindowStart(new Date(), LEVEL_WINDOW_MONTHS)
-  const [monthRows, prNames, members] = await Promise.all([
+  const [monthRows, prNames, completedChallenges, members] = await Promise.all([
     loadMonthRows(db, memberIds, windowStart),
     loadPrNames(db, memberIds),
+    loadCompletedChallengeCounts(db, memberIds, windowStart),
     db.from('members').select('id, level, club_points').in('id', memberIds),
   ])
   throwOnError(members.error, 'Không đọc được thành viên')
 
   for (const member of members.data ?? []) {
-    const input = buildLevelInput(member.id, monthRows, prNames.get(member.id) ?? [], windowStart, 0)
+    const input = buildLevelInput(
+      member.id,
+      monthRows,
+      prNames.get(member.id) ?? [],
+      windowStart,
+      completedChallenges.get(member.id) ?? 0,
+    )
     const level = computeLevel(input)
     const clubPoints = computeClubPoints(input)
     if (level === member.level && clubPoints === member.club_points) continue
@@ -71,7 +109,9 @@ export async function recomputeLevels(db: ServiceClient, memberIds: string[]): P
 }
 
 export async function refreshMemberStatsAndLevel(db: ServiceClient, memberId: string): Promise<void> {
-  const refreshed = await db.rpc('refresh_member_stats', { p_member_id: memberId })
+  const refreshed = await db.rpc('refresh_member_stats', {
+    p_member_id: memberId,
+  })
   throwOnError(refreshed.error, 'Không tính lại thống kê')
   await recomputeLevels(db, [memberId])
 }

@@ -28,6 +28,16 @@ jobs:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
+  challenges:
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '7,22,37,52 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl --fail --silent --show-error --max-time 300 -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/challenges"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
   stats-nightly:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 19 * * *'
     runs-on: ubuntu-latest

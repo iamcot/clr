@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
+import ClearOfflineCache from '@/components/ClearOfflineCache'
 import { getCurrentMember } from '@/lib/auth/currentMember'
 import { LOGIN_ERROR_MESSAGES } from '@/config/loginErrors'
 
@@ -12,6 +13,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-6 px-6 text-center">
+      <ClearOfflineCache />
       <Image src="/brand/clr-logo.jpg" alt="Logo CLR" width={96} height={96} className="rounded-full" priority />
       <h1 className="text-2xl font-black">CLB chạy bộ CLR</h1>
       {errorMessage && (

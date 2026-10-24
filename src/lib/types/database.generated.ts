@@ -265,6 +265,158 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"challenges": {
+                  Row: {
+                    "activity_filter": Json,"closed_at": string | null,"closed_by": string | null,"cover_url": string | null,"created_at": string,"created_by": string | null,"description": string,"ends_at": string,"goal_type": string,"id": string,"participation": string,"penalty_rule": Json,"ranking": string,"registration_closes_at": string | null,"reward_rule": Json,"starts_at": string,"status": string,"title": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_filter"?: Json,"closed_at"?: string | null,"closed_by"?: string | null,"cover_url"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string,"ends_at": string,"goal_type": string,"id"?: string,"participation"?: string,"penalty_rule"?: Json,"ranking"?: string,"registration_closes_at"?: string | null,"reward_rule"?: Json,"starts_at": string,"status"?: string,"title": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "activity_filter"?: Json,"closed_at"?: string | null,"closed_by"?: string | null,"cover_url"?: string | null,"created_at"?: string,"created_by"?: string | null,"description"?: string,"ends_at"?: string,"goal_type"?: string,"id"?: string,"participation"?: string,"penalty_rule"?: Json,"ranking"?: string,"registration_closes_at"?: string | null,"reward_rule"?: Json,"starts_at"?: string,"status"?: string,"title"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "challenges_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"challenge_categories": {
+                  Row: {
+                    "challenge_id": string,"gender": string | null,"goal_value": number,"id": string,"member_type": string | null,"name": string,"sort": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "challenge_id": string,"gender"?: string | null,"goal_value": number,"id"?: string,"member_type"?: string | null,"name": string,"sort"?: number
+                  }
+                  Update: {
+                    "challenge_id"?: string,"gender"?: string | null,"goal_value"?: number,"id"?: string,"member_type"?: string | null,"name"?: string,"sort"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "challenge_categories_challenge_id_fkey"
+      columns: ["challenge_id"]
+isOneToOne: false
+      referencedRelation: "challenges"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"challenge_entries": {
+                  Row: {
+                    "category_id": string,"challenge_id": string,"completed": boolean,"completed_at": string | null,"excluded": boolean,"excluded_reason": string | null,"joined_at": string,"last_activity_at": string | null,"member_id": string,"penalty_waived": boolean,"progress_pct": number,"rank": number | null,"updated_at": string,"value": number,"waived_reason": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"challenge_id": string,"completed"?: boolean,"completed_at"?: string | null,"excluded"?: boolean,"excluded_reason"?: string | null,"joined_at"?: string,"last_activity_at"?: string | null,"member_id": string,"penalty_waived"?: boolean,"progress_pct"?: number,"rank"?: number | null,"updated_at"?: string,"value"?: number,"waived_reason"?: string | null
+                  }
+                  Update: {
+                    "category_id"?: string,"challenge_id"?: string,"completed"?: boolean,"completed_at"?: string | null,"excluded"?: boolean,"excluded_reason"?: string | null,"joined_at"?: string,"last_activity_at"?: string | null,"member_id"?: string,"penalty_waived"?: boolean,"progress_pct"?: number,"rank"?: number | null,"updated_at"?: string,"value"?: number,"waived_reason"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "challenge_entries_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "challenge_categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "challenge_entries_challenge_id_fkey"
+      columns: ["challenge_id"]
+isOneToOne: false
+      referencedRelation: "challenges"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "challenge_entries_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"challenge_entry_activities": {
+                  Row: {
+                    "activity_id": number,"challenge_id": string,"counted_value": number,"member_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_id": number,"challenge_id": string,"counted_value": number,"member_id": string
+                  }
+                  Update: {
+                    "activity_id"?: number,"challenge_id"?: string,"counted_value"?: number,"member_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "challenge_entry_activities_activity_id_fkey"
+      columns: ["activity_id"]
+isOneToOne: false
+      referencedRelation: "activities"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"penalty_types": {
+                  Row: {
+                    "id": string,"code": string,"name": string,"default_amount": number,"active": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"code": string,"name": string,"default_amount"?: number,"active"?: boolean
+                  }
+                  Update: {
+                    "id"?: string,"code"?: string,"name"?: string,"default_amount"?: number,"active"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"penalties": {
+                  Row: {
+                    "id": string,"member_id": string,"type_id": string,"amount": number,"reason": string,"source_type": string | null,"source_id": string | null,"status": string,"created_by": string | null,"created_at": string,"paid_at": string | null,"paid_method": string | null,"confirmed_by": string | null,"waived_reason": string | null,"payment_ref": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"member_id": string,"type_id": string,"amount": number,"reason"?: string,"source_type"?: string | null,"source_id"?: string | null,"status"?: string,"created_by"?: string | null,"created_at"?: string,"paid_at"?: string | null,"paid_method"?: string | null,"confirmed_by"?: string | null,"waived_reason"?: string | null,"payment_ref"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"member_id"?: string,"type_id"?: string,"amount"?: number,"reason"?: string,"source_type"?: string | null,"source_id"?: string | null,"status"?: string,"created_by"?: string | null,"created_at"?: string,"paid_at"?: string | null,"paid_method"?: string | null,"confirmed_by"?: string | null,"waived_reason"?: string | null,"payment_ref"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "penalties_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "penalties_type_id_fkey"
+      columns: ["type_id"]
+isOneToOne: false
+      referencedRelation: "penalty_types"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"rewards": {
+                  Row: {
+                    "id": string,"member_id": string,"title": string,"amount": number | null,"item": string | null,"source_type": string | null,"source_id": string | null,"status": string,"given_at": string | null,"created_by": string | null,"created_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"member_id": string,"title": string,"amount"?: number | null,"item"?: string | null,"source_type"?: string | null,"source_id"?: string | null,"status"?: string,"given_at"?: string | null,"created_by"?: string | null,"created_at"?: string
+                  }
+                  Update: {
+                    "id"?: string,"member_id"?: string,"title"?: string,"amount"?: number | null,"item"?: string | null,"source_type"?: string | null,"source_id"?: string | null,"status"?: string,"given_at"?: string | null,"created_by"?: string | null,"created_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "rewards_member_id_fkey"
+      columns: ["member_id"]
+isOneToOne: false
+      referencedRelation: "members"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"settings": {
                   Row: {
                     "key": string,"updated_at": string,"value": NonNullable<Json>
@@ -430,6 +582,45 @@ isOneToOne: false
                            },
 "refresh_member_stats":
 { Args: { "p_member_id": string }; Returns: undefined
+                           },
+"advance_challenge_statuses":
+{ Args: Record<PropertyKey, never>; Returns: string[]
+                           },
+"auto_enroll_member":
+{ Args: { "p_member_id": string }; Returns: undefined
+                           },
+"join_challenge":
+{ Args: { "p_category_id": string,"p_challenge_id": string }; Returns: undefined
+                           },
+"pick_challenge_category":
+{ Args: { "p_challenge_id": string,"p_gender": string,"p_member_type": string }; Returns: string
+                           },
+"publish_challenge":
+{ Args: { "p_challenge_id": string }; Returns: undefined
+                           },
+"rank_challenge":
+{ Args: { "p_challenge_id": string }; Returns: undefined
+                           },
+"can_view_member_stats":
+{ Args: { "p_member_id": string }; Returns: boolean
+                           },
+"is_active_member":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"can_manage_fund":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"mark_penalties_paid":
+{ Args: { "p_ids": string[]; "p_method": string; "p_ref": string }; Returns: number
+                           },
+"waive_penalties":
+{ Args: { "p_ids": string[]; "p_reason": string }; Returns: number
+                           },
+"unmark_penalty_paid":
+{ Args: { "p_id": string; "p_reason": string }; Returns: undefined
+                           },
+"penalty_totals":
+{ Args: { "p_from": string; "p_to": string }; Returns: { member_id: string; display_name: string | null; total_amount: number; unpaid_amount: number }[]
                            },
 "admin_review_members":
 { Args: { "p_approve": boolean,"p_member_ids": string[],"p_member_type": string,"p_reason": string }; Returns: number
