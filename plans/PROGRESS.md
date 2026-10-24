@@ -76,7 +76,7 @@ Cuối file là mục **Feedback**: người dùng ghi góp ý, Claude đọc tr
 > - Thành viên bị `inactive` bị đưa về `/pending` với dòng "Tài khoản đã ngưng". Người bị từ chối thấy lý do ở `/pending`.
 > - Xuất CSV chứa SĐT và năm sinh; ô bắt đầu bằng `= + - @` được thêm dấu `'` để tránh công thức Excel (số `+84...` cũng thành `'+84...`). Mỗi lần xuất ghi một dòng audit.
 > - 4.3: khối "Bạn bè gần đây" ở trang chủ chỉ hiện khi `settings.club_display_mode = 'full_opt_in'` (mặc định `self_only`, chưa chốt câu hỏi #9) và chỉ lấy từ `activities_club` (người đã bật chia sẻ). Hồ sơ công khai `/members/[id]` mới có tên, loại, ngày vào, số người theo dõi; phần còn lại chờ task 5.4. Danh bạ chưa có level (chờ task 6.2).
-> - 4.4: `/me/settings` thêm tick cộng hoạt động riêng tư vào tổng (`share_private_in_totals`) và khối mã thành viên, loại, ngày vào. Chưa làm: câu hỏi BCN về điều kiện lên chính thức (tự đề xuất "đủ điều kiện").
+> - 4.4: `/me/settings` thêm tick cộng hoạt động riêng tư vào tổng (`share_private_in_totals`) và khối mã thành viên, loại, ngày vào. CoT đã trả lời câu hỏi BCN: BCN tự nhấn nút đổi loại (đã có ở trang chi tiết), không cần tự đề xuất; chưa chia nhóm/đội.
 
 ### 05 – Hồ sơ, PR, thành tích giải
 - [ ] 5.1 PR tự động
@@ -170,7 +170,7 @@ Gom từ mục "Câu hỏi cho BCN" của các file plan. Trả lời xong thì 
 | 1 | Tên miền, tài khoản đứng tên Vercel/Supabase/Cloudflare/Strava | 01, 02 | 1.4, 2.2 | |
 | 2 | Bắt buộc có Strava mới dùng được app? | 02 | 2.2 | |
 | 3 | Challenge có tính chạy máy, đi bộ không? | 03, 07 | 3.5 | |
-| 4 | Điều kiện lên thành viên chính thức | 04 | 4.2 | |
+| 4 | Điều kiện lên thành viên chính thức | 04 | 4.2 | Có điều kiện, nhưng BCN tự xét và nhấn nút đổi loại; app không cần tự đề xuất (CoT, 2026-10-24) |
 | 5 | Công thức level | 06 | 6.2 | |
 | 6 | Luật challenge tháng hiện tại (gửi mẫu) | 07 | 7.2 | |
 | 7 | Mức phạt từng lỗi, có công khai danh sách nợ không | 08 | 8.1 | |
