@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Avatar from '@/components/Avatar'
 import { formatDateVi } from '@/lib/format/dateTime'
 import type { RecordTable } from '@/lib/hallOfFame/records'
 import { formatDuration } from '@/lib/stats/format'
@@ -7,11 +7,7 @@ function RecordRow({ entry }: { entry: RecordTable['entries'][number] }) {
   return (
     <li className="flex items-center gap-3 rounded-lg bg-white p-3 shadow-sm">
       <span className="w-6 text-center font-black">{entry.rank}</span>
-      {entry.avatarUrl ? (
-        <Image src={entry.avatarUrl} alt="" width={36} height={36} className="rounded-full" unoptimized />
-      ) : (
-        <span className="size-9 rounded-full bg-line" />
-      )}
+      <Avatar url={entry.avatarUrl} size={36} />
       <div className="min-w-0 flex-1">
         <p className="truncate font-bold">{entry.displayName}</p>
         <p className="truncate text-xs text-muted">

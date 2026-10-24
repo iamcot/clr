@@ -1,14 +1,16 @@
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import ClearOfflineCache from '@/components/ClearOfflineCache'
+import StravaLoginButton from '@/components/StravaLoginButton'
 import { getCurrentMember } from '@/lib/auth/currentMember'
+import { safeNextPath } from '@/lib/auth/nextPath'
 import { LOGIN_ERROR_MESSAGES } from '@/config/loginErrors'
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
   const member = await getCurrentMember()
-  if (member) redirect(member.status === 'active' ? '/' : '/pending')
+  if (member) redirect('/')
 
-  const { error } = await searchParams
+  const { error, next } = await searchParams
   const errorMessage = error ? LOGIN_ERROR_MESSAGES[error] : undefined
 
   return (
@@ -21,9 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           {errorMessage}
         </p>
       )}
-      <a href="/api/auth/strava/start" className="flex min-h-12 items-center justify-center">
-        <Image src="/strava/btn_strava.png" alt="Connect with Strava" width={193} height={48} priority />
-      </a>
+      <StravaLoginButton next={safeNextPath(next) ?? undefined} />
       <p className="text-sm text-muted">
         CLR đọc hồ sơ và hoạt động chạy của bạn trên Strava (kể cả hoạt động riêng tư) để thống kê và tính challenge.
         Bạn có thể ngắt kết nối bất cứ lúc nào.

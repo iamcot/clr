@@ -5,9 +5,9 @@ import FeedEntryCard from '@/components/FeedEntryCard'
 import type { FeedEntry, HomeFeedPage } from '@/lib/feed/mergeFeed'
 import { loadMoreFeed } from '@/lib/posts/memberActions'
 
-type HomeFeedProps = { pinnedIds: string[]; initial: HomeFeedPage }
+type HomeFeedProps = { pinnedIds: string[]; initial: HomeFeedPage; memberView: boolean }
 
-export default function HomeFeed({ pinnedIds, initial }: HomeFeedProps) {
+export default function HomeFeed({ pinnedIds, initial, memberView }: HomeFeedProps) {
   const [entries, setEntries] = useState<FeedEntry[]>(initial.entries)
   const [cursor, setCursor] = useState(initial.nextCursor)
   const [loading, startLoading] = useTransition()
@@ -26,7 +26,7 @@ export default function HomeFeed({ pinnedIds, initial }: HomeFeedProps) {
       {entries.length === 0 && <p className="text-sm text-muted">Chưa có gì trong bảng tin.</p>}
       <ul className="flex flex-col gap-3">
         {entries.map((entry) => (
-          <FeedEntryCard key={entry.id} entry={entry} />
+          <FeedEntryCard key={entry.id} entry={entry} memberView={memberView} />
         ))}
       </ul>
       {cursor && (

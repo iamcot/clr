@@ -1,29 +1,31 @@
 import Link from 'next/link'
 import { UpcomingEventCard } from '@/components/EventCardView'
 import HomeFeed from '@/components/HomeFeed'
+import GuestSummaryCard from '@/components/GuestSummaryCard'
 import HomeQuickLinks from '@/components/HomeQuickLinks'
 import HomeSummaryCard from '@/components/HomeSummaryCard'
 import InstallPrompt from '@/components/InstallPrompt'
 import PostCard from '@/components/PostCard'
 import UnpaidFundBanner from '@/components/UnpaidFundBanner'
-import { requireActiveMember } from '@/lib/auth/currentMember'
+import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { HOME_EVENT_LIMIT } from '@/config/members'
 import { pickHomeEvents } from '@/lib/events/eventTime'
 import { loadEventCards } from '@/lib/events/loadEvents'
-import { formatWeekdayDate, givenName, greetingAt } from '@/lib/home/greeting'
+import { formatWeekdayDate, givenName, greetingAt, monthNumberAt } from '@/lib/home/greeting'
 import { loadHomeSummary } from '@/lib/home/loadHomeSummary'
 import { loadHomeFeedPage } from '@/lib/feed/loadHomeFeed'
 import { loadPinnedPosts } from '@/lib/posts/loadFeed'
 
 export default async function HomePage() {
-  const member = await requireActiveMember()
+  const viewer = await getViewer()
+  const member = activeMemberOf(viewer)
   const now = new Date()
-  const pinned = await loadPinnedPosts(member.id, now)
+  const pinned = await loadPinnedPosts(member?.id ?? null, now)
   const pinnedIds = pinned.map((post) => post.id)
   const [summary, feed, eventCards] = await Promise.all([
-    loadHomeSummary(member, now),
-    loadHomeFeedPage(member.id, now, null, pinnedIds),
-    loadEventCards(member.id),
+    member ? loadHomeSummary(member, now) : null,
+    loadHomeFeedPage(member?.id ?? null, now, null, pinnedIds),
+    loadEventCards(member?.id ?? null),
   ])
   const homeEvents = pickHomeEvents(eventCards, now, HOME_EVENT_LIMIT)
 
@@ -32,17 +34,23 @@ export default async function HomePage() {
       <InstallPrompt />
       <p className="text-sm text-muted">{formatWeekdayDate(now)}</p>
       <h1 className="mb-4 truncate text-xl font-bold">
-        {greetingAt(now)}, {givenName(member.display_name)}
+        {viewer.member ? `${greetingAt(now)}, ${givenName(viewer.member.display_name)}` : greetingAt(now)}
       </h1>
-      <HomeSummaryCard summary={summary} />
-      {summary.unpaidAmount > 0 && <UnpaidFundBanner amount={summary.unpaidAmount} reason={summary.unpaidReason} />}
-      <HomeQuickLinks />
+      {summary ? (
+        <>
+          <HomeSummaryCard summary={summary} />
+          {summary.unpaidAmount > 0 && <UnpaidFundBanner amount={summary.unpaidAmount} reason={summary.unpaidReason} />}
+        </>
+      ) : (
+        <GuestSummaryCard monthNumber={monthNumberAt(now)} viewerKind={viewer.kind === 'member' ? 'pending' : viewer.kind} />
+      )}
+      <HomeQuickLinks isMember={viewer.kind === 'member'} />
       {pinned.length > 0 && (
         <>
           <h2 className="mt-4 text-xl font-black">Tin ghim</h2>
           <ul className="mt-3 flex flex-col gap-3">
             {pinned.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} memberView={viewer.kind === 'member'} />
             ))}
           </ul>
         </>
@@ -57,14 +65,14 @@ export default async function HomePage() {
           </div>
           <ul className="mt-3 flex flex-col gap-3">
             {homeEvents.events.map((event) => (
-              <UpcomingEventCard key={event.id} event={event} now={now} />
+              <UpcomingEventCard key={event.id} event={event} now={now} viewerKind={viewer.kind} />
             ))}
           </ul>
         </div>
       )}
       <h2 className="mt-6 text-xl font-black">Bảng tin</h2>
       <div className="mt-3">
-        <HomeFeed pinnedIds={pinnedIds} initial={feed} />
+        <HomeFeed pinnedIds={pinnedIds} initial={feed} memberView={viewer.kind === 'member'} />
       </div>
     </section>
   )

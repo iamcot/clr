@@ -42,8 +42,8 @@ function SmallEntry({ icon, memberId, memberName, text, at }: { icon: string; me
   )
 }
 
-export default function FeedEntryCard({ entry }: { entry: FeedEntry }) {
-  if (entry.kind === 'post') return <PostCard post={entry.post} />
+export default function FeedEntryCard({ entry, memberView }: { entry: FeedEntry; memberView: boolean }) {
+  if (entry.kind === 'post') return <PostCard post={entry.post} memberView={memberView} />
   const { highlight } = entry
   return (
     <SmallEntry

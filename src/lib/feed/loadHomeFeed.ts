@@ -8,7 +8,7 @@ function isBefore(iso: string, cursor: string | null): boolean {
   return cursor === null || Date.parse(iso) < Date.parse(cursor)
 }
 
-async function loadPostSource(memberId: string, now: Date, cursor: string | null, pinnedIds: string[]): Promise<FeedSource> {
+async function loadPostSource(memberId: string | null, now: Date, cursor: string | null, pinnedIds: string[]): Promise<FeedSource> {
   const page = await loadFeedPage(memberId, now, cursor, pinnedIds)
   return {
     entries: page.posts.map((post) => ({ kind: 'post' as const, id: `post-${post.id}`, at: post.publishedAt, post })),
@@ -16,7 +16,8 @@ async function loadPostSource(memberId: string, now: Date, cursor: string | null
   }
 }
 
-async function loadHighlightSource(memberId: string, now: Date, cursor: string | null): Promise<FeedSource> {
+async function loadHighlightSource(memberId: string | null, now: Date, cursor: string | null): Promise<FeedSource> {
+  if (!memberId) return { entries: [], hasMore: false }
   const items = (await loadFollowingHighlights(memberId, now)).filter((item) => isBefore(item.date, cursor))
   return {
     entries: items.slice(0, FEED_PAGE_SIZE).map((highlight) => ({
@@ -31,7 +32,7 @@ async function loadHighlightSource(memberId: string, now: Date, cursor: string |
 
 // Bài viết và tin của người đang theo dõi gộp một dòng thời gian, mới nhất trước
 export async function loadHomeFeedPage(
-  memberId: string,
+  memberId: string | null,
   now: Date,
   cursor: string | null,
   pinnedIds: string[],
