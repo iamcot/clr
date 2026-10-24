@@ -1,3 +1,4 @@
+import ActionForm from '@/components/ActionForm'
 import { EVENT_QUEUE } from '@/config/strava'
 import { currentUsage, type RateWindowName } from '@/lib/strava/rateLimit'
 import { retryStravaEvent } from '@/lib/strava/adminActions'
@@ -78,7 +79,7 @@ export default async function AdminSyncPage() {
       <Card title="Event lỗi">
         {state.failedEvents.length === 0 && <p className="text-muted">Không có.</p>}
         {state.failedEvents.map((event) => (
-          <form key={event.id} action={retryStravaEvent} className="mt-2 border-t border-line pt-2">
+          <ActionForm key={event.id} action={retryStravaEvent} className="mt-2 border-t border-line pt-2">
             <input type="hidden" name="event_id" value={event.id} />
             <p>
               {event.object_type} {event.object_id} ({event.aspect_type})
@@ -87,7 +88,7 @@ export default async function AdminSyncPage() {
             <button type="submit" className="mt-1 min-h-11 rounded-lg border border-line px-4 font-bold">
               Thử lại
             </button>
-          </form>
+          </ActionForm>
         ))}
       </Card>
       <Card title="Thành viên mất kết nối Strava">

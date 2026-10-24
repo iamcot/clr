@@ -14,6 +14,11 @@ export default async function MePage() {
       <Link href="/me/settings" className="mt-6 flex min-h-11 items-center font-bold text-brand-dark underline">
         Cài đặt hồ sơ
       </Link>
+      {member.role === 'bcn' && (
+        <Link href="/admin" className="flex min-h-11 items-center font-bold text-brand-dark underline">
+          Trang quản trị BCN
+        </Link>
+      )}
       <form action="/api/auth/logout" method="post" className="mt-2">
         <button type="submit" className="min-h-11 rounded-lg border border-line px-4 font-bold">
           Đăng xuất

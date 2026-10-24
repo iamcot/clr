@@ -1,3 +1,4 @@
+import ActionForm from '@/components/ActionForm'
 import { setActivityFlag } from '@/lib/strava/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/types/database'
@@ -36,14 +37,14 @@ function exclusionNote(activity: ReviewRow): string {
 function FlagForm({ activity }: { activity: ReviewRow }) {
   const flagged = activity.flagged_invalid === true
   return (
-    <form action={setActivityFlag} className="mt-2 flex flex-col gap-2">
+    <ActionForm action={setActivityFlag} className="mt-2 flex flex-col gap-2">
       <input type="hidden" name="activity_id" value={activity.id ?? ''} />
       <input type="hidden" name="flagged" value={flagged ? 'false' : 'true'} />
       {!flagged && <input name="reason" placeholder="Lý do" required maxLength={200} className={INPUT_CLASS} />}
       <button type="submit" className="min-h-11 rounded-lg border border-line px-4 font-bold">
         {flagged ? 'Bỏ đánh dấu không hợp lệ' : 'Đánh dấu không hợp lệ'}
       </button>
-    </form>
+    </ActionForm>
   )
 }
 

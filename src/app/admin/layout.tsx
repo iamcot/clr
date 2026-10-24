@@ -1,10 +1,6 @@
 import Link from 'next/link'
+import { ADMIN_LINKS } from '@/config/adminNav'
 import { requireBcn } from '@/lib/auth/requireBcn'
-
-const ADMIN_LINKS = [
-  { href: '/admin/activities', label: 'Hoạt động' },
-  { href: '/admin/sync', label: 'Đồng bộ' },
-]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireBcn()

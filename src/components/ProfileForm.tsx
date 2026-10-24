@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useToast } from '@/components/ToastProvider'
 import { GENDER_OPTIONS } from '@/config/profile'
 import { saveProfile, skipProfile } from '@/lib/members/profileActions'
 import { EMPTY_PROFILE_FORM_STATE } from '@/lib/members/profileFormState'
@@ -32,7 +33,13 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 
 export default function ProfileForm({ defaults, redirectTo, canSkip = false }: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(saveProfile, EMPTY_PROFILE_FORM_STATE)
+  const toast = useToast()
   const value = (field: keyof ProfileFormDefaults) => state.values[field] ?? defaults[field]
+
+  useEffect(() => {
+    if (state.errors.form) toast({ kind: 'error', text: state.errors.form })
+    else if (Object.keys(state.errors).length > 0) toast({ kind: 'error', text: 'Vui lòng kiểm tra lại các trường báo lỗi' })
+  }, [state, toast])
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
