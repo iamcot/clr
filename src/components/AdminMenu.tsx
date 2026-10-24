@@ -50,7 +50,7 @@ export default function AdminMenu() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex items-center gap-3 bg-deep px-4 py-2 text-white md:hidden">
+      <header className="sticky top-0 z-20 flex items-center gap-3 bg-deep px-4 pb-2 pt-[calc(0.5rem+env(safe-area-inset-top))] text-white md:hidden">
         <button
           type="button"
           aria-expanded={open}
@@ -66,7 +66,7 @@ export default function AdminMenu() {
         </Link>
       </header>
       {open && (
-        <div className="fixed inset-0 top-14 z-10 bg-white p-3 md:hidden">
+        <div className="fixed inset-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-10 bg-white p-3 md:hidden">
           <MenuItems onNavigate={close} />
         </div>
       )}
