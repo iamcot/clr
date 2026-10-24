@@ -13,6 +13,8 @@ export const FLASH_TOASTS = {
     kind: 'success',
     text: 'Đã tạo bản nháp, kiểm tra lại rồi công bố',
   },
+  post_saved: { kind: 'success', text: 'Đã lưu bài viết' },
+  post_deleted: { kind: 'success', text: 'Đã xoá bài viết' },
   race_saved: { kind: 'success', text: 'Đã lưu kết quả giải' },
   strava_disconnected: {
     kind: 'success',

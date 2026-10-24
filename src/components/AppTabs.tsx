@@ -35,7 +35,7 @@ function TabGlyph({ icon }: { icon: TabIcon }) {
   )
 }
 
-export default function AppTabs() {
+export default function AppTabs({ homeBadge = 0 }: { homeBadge?: number }) {
   const pathname = usePathname()
   const tabs = NAV_TABS.filter((tab) => tab.enabled)
 
@@ -53,7 +53,17 @@ export default function AppTabs() {
                   active ? 'text-brand' : 'text-muted'
                 }`}
               >
-                <TabGlyph icon={tab.icon} />
+                <span className="relative">
+                  <TabGlyph icon={tab.icon} />
+                  {tab.href === '/' && homeBadge > 0 && (
+                    <span
+                      aria-label={`${homeBadge} bài chưa đọc`}
+                      className="absolute -top-1 -right-2 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] leading-4 font-bold text-white"
+                    >
+                      {homeBadge > 9 ? '9+' : homeBadge}
+                    </span>
+                  )}
+                </span>
                 {tab.label}
               </Link>
             </li>

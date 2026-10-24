@@ -4,6 +4,7 @@ import AppTabs from '@/components/AppTabs'
 import OfflineBanner from '@/components/OfflineBanner'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import { requireActiveMember } from '@/lib/auth/currentMember'
+import { countUnreadPosts } from '@/lib/posts/loadPost'
 
 function AppHeader() {
   return (
@@ -18,12 +19,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const member = await requireActiveMember()
   if (!member.profile_onboarded_at) redirect('/welcome')
 
+  const unreadPosts = await countUnreadPosts()
+
   return (
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
       <AppHeader />
       <OfflineBanner />
       <main className="px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">{children}</main>
-      <AppTabs />
+      <AppTabs homeBadge={unreadPosts} />
       <ServiceWorkerRegister />
     </div>
   )

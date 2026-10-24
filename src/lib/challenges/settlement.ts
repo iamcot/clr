@@ -3,6 +3,7 @@ import { MAX_ENTRIES_IN_LIST } from '@/config/challenges'
 import { logAudit } from '@/lib/audit/logAudit'
 import { loadChallenge } from '@/lib/challenges/loadChallenges'
 import { recomputeChallenge } from '@/lib/challenges/recompute'
+import { publishChallengeResultPost } from '@/lib/posts/autoPosts'
 import { recomputeLevels } from '@/lib/stats/refreshStats'
 import { settleChallenge, type SettleEntry, type SettlePlan } from '@/lib/challenges/settle'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -117,6 +118,7 @@ export async function closeChallengeAndSettle(challengeId: string): Promise<Clos
   if (error) return { ok: false, error: 'Không chuyển được trạng thái đã chốt' }
 
   await recomputeLevels(createSupabaseServiceClient(), [...new Set(preview.entryMemberIds)])
+  await publishResultPostSafely(challengeId)
   await logAudit({
     action: 'close_challenge',
     targetTable: 'challenges',
@@ -127,5 +129,14 @@ export async function closeChallengeAndSettle(challengeId: string): Promise<Clos
     ok: true,
     penalties: penaltyRows.length,
     rewards: rewardRows.length,
+  }
+}
+
+// Bài thông báo kết quả lỗi thì challenge vẫn đã chốt; BCN đăng tay được
+async function publishResultPostSafely(challengeId: string) {
+  try {
+    await publishChallengeResultPost(createSupabaseServiceClient(), challengeId, new Date())
+  } catch (error) {
+    console.error('Không tạo được bài kết quả challenge', challengeId, error)
   }
 }
