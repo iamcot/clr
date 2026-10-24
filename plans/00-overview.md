@@ -57,6 +57,7 @@ Quy tắc: xanh là màu của hành động và tiến độ, vàng chỉ dành
 | Lưu ảnh | Cloudflare R2 (API tương thích S3) qua `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` |
 | Dữ liệu chạy | Strava API v3 (OAuth tự viết, webhook) |
 | Web Push (V2) | `web-push` |
+| Mã QR điểm danh (11.3) | `qrcode` (+ `@types/qrcode`), vẽ ở trình duyệt |
 | Test | `vitest` |
 | Lint | `eslint` + `eslint-config-next` |
 
