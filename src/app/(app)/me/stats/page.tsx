@@ -71,17 +71,16 @@ function ChallengePenaltyBlock({ data }: { data: OwnChallengePenalty }) {
 export default async function MyStatsPage({ searchParams }: { searchParams: Promise<{ period?: string }> }) {
   const member = await requireActiveMember()
   const type = parsePeriodType((await searchParams).period)
-  const [periods, challengePenalty] = await Promise.all([
-    loadOwnStatsPeriods(member.id, type, new Date()),
-    loadOwnChallengePenalty(member.id),
-  ])
+  const periods = await loadOwnStatsPeriods(member.id, type, new Date())
   const current = periods[periods.length - 1] as PeriodStats
+  const periodEnd = nextPeriodStart(type, current.periodStart)
+  const challengePenalty = await loadOwnChallengePenalty(member.id, current.periodStart, periodEnd)
   const previous = periods[periods.length - 2]
   const activeDates = await loadOwnActiveDates(
     member.id,
     member.share_private_in_totals,
     current.periodStart,
-    nextPeriodStart(type, current.periodStart),
+    periodEnd,
   )
 
   return (

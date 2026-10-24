@@ -1,11 +1,9 @@
-import type { FriendActivity } from '@/lib/members/friendFeed'
 import type { HighlightItem } from '@/lib/members/highlights'
 import type { FeedPostView } from '@/lib/posts/loadFeed'
 
 export type FeedEntry =
   | { kind: 'post'; id: string; at: string; post: FeedPostView }
   | { kind: 'highlight'; id: string; at: string; highlight: HighlightItem }
-  | { kind: 'run'; id: string; at: string; run: FriendActivity }
 
 export type FeedSource = { entries: FeedEntry[]; hasMore: boolean }
 

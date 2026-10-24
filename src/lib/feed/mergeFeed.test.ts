@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { mergeFeedSources, type FeedEntry, type FeedSource } from '@/lib/feed/mergeFeed'
 
 function entry(id: string, at: string): FeedEntry {
-  return { kind: 'run', id, at, run: { id: 1, friendName: id, distanceMeters: 5000, startDate: at } }
+  return {
+    kind: 'highlight',
+    id,
+    at,
+    highlight: { id, memberId: 'm1', memberName: 'An', kind: 'pr', text: 'đạt PR', date: at },
+  }
 }
 
 const ids = (entries: FeedEntry[]) => entries.map((item) => item.id)
