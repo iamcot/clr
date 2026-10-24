@@ -3,7 +3,7 @@ import type { PreparedImage } from '@/lib/storage/prepareImage'
 
 type SignedUpload = { photoId: string; photoUploadUrl: string; thumbUploadUrl: string }
 
-async function postJson<Result>(url: string, body: unknown): Promise<Result> {
+export async function postJson<Result>(url: string, body: unknown): Promise<Result> {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -15,7 +15,7 @@ async function postJson<Result>(url: string, body: unknown): Promise<Result> {
   throw new Error(message)
 }
 
-function putBlob(url: string, blob: Blob, onProgress: (loaded: number) => void): Promise<void> {
+export function putBlob(url: string, blob: Blob, onProgress: (loaded: number) => void): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest()
     request.open('PUT', url)

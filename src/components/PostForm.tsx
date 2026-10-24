@@ -6,6 +6,7 @@ import Markdown from '@/components/Markdown'
 import { useToast } from '@/components/ToastProvider'
 import { POST_KIND_LABELS, POST_KINDS } from '@/config/posts'
 import { savePost, type PostFormState } from '@/lib/posts/adminActions'
+import ImageField from '@/components/ImageField'
 
 const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
 const EMPTY_STATE: PostFormState = { errors: {}, values: {} }
@@ -84,8 +85,8 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
           <Markdown source={body} />
         </div>
       )}
-      <Field label="Ảnh bìa" hint="Link ảnh https (chưa có tải ảnh lên)" error={state.errors.cover_url}>
-        <input name="cover_url" type="url" defaultValue={value('cover_url')} className={INPUT_CLASS} />
+      <Field label="Ảnh bìa" error={state.errors.cover_url}>
+        <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
       </Field>
       <label className="flex min-h-11 items-center gap-2">
         <input type="checkbox" name="require_ack" defaultChecked={value('require_ack') === 'on'} className="size-5" />

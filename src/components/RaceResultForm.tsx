@@ -7,6 +7,7 @@ import { PR_DISTANCES } from '@/config/prDistances'
 import { CUSTOM_DISTANCE_VALUE } from '@/lib/races/raceInput'
 import { saveRaceResult } from '@/lib/races/raceActions'
 import { EMPTY_RACE_FORM_STATE } from '@/lib/races/raceFormState'
+import ImageField from '@/components/ImageField'
 
 type RaceResultFormProps = {
   defaults: Record<string, string>
@@ -96,8 +97,8 @@ export default function RaceResultForm({ defaults, raceNameSuggestions }: RaceRe
       <Field label="Link giải (không bắt buộc)" error={state.errors.url}>
         <input name="url" defaultValue={value('url')} inputMode="url" className={INPUT_CLASS} />
       </Field>
-      <Field label="Link ảnh giấy chứng nhận (không bắt buộc)" error={state.errors.certificate_url}>
-        <input name="certificate_url" defaultValue={value('certificate_url')} inputMode="url" className={INPUT_CLASS} />
+      <Field label="Ảnh giấy chứng nhận (không bắt buộc)" error={state.errors.certificate_url}>
+        <ImageField name="certificate_url" purpose="certificate" defaultValue={value('certificate_url')} />
       </Field>
       {state.errors.form && <p role="alert" className="text-sm text-danger">{state.errors.form}</p>}
       <button

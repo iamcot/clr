@@ -30,7 +30,7 @@ async function readSetting(db: ServiceClient, key: string): Promise<unknown> {
 }
 
 // Bài tự sinh mặc định tự đăng; tắt ở settings thì tạo bản nháp để BCN sửa rồi đăng
-async function insertSystemPost(
+export async function insertSystemPost(
   db: ServiceClient,
   sourceKey: string,
   kind: PostKind,

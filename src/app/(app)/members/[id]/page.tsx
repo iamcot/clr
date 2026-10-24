@@ -2,11 +2,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import FollowButton from '@/components/FollowButton'
+import HonorBadges from '@/components/HonorBadges'
 import PersonalRecordsCard from '@/components/PersonalRecordsCard'
 import RaceResultsList from '@/components/RaceResultsList'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { formatDateVi } from '@/lib/format/dateTime'
+import { loadHonors } from '@/lib/hallOfFame/loadHonors'
 import { loadRaceResults } from '@/lib/races/loadRaces'
 import { levelName } from '@/lib/stats/level'
 import { formatKm } from '@/lib/stats/format'
@@ -48,10 +50,11 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   const { profile, followerCount, followingCount, viewerFollows } = await loadProfile(id, me.id)
   if (!profile) notFound()
   const includeStravaPrs = canShowOthersActivities(await loadClubDisplayMode())
-  const [records, races, shared] = await Promise.all([
+  const [records, races, shared, honors] = await Promise.all([
     loadPublicPersonalRecords(profile.id, includeStravaPrs),
     loadRaceResults(profile.id),
     loadSharedStats(profile.id),
+    loadHonors({ approvedOnly: true, memberId: profile.id }),
   ])
 
   return (
@@ -97,6 +100,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           </div>
         </div>
       )}
+      <HonorBadges honors={honors} />
       <PersonalRecordsCard records={records} editable={false} />
       <div className="mt-6">
         <h2 className="text-lg font-black">Giải đã chạy</h2>

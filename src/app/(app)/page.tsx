@@ -39,6 +39,9 @@ export default async function HomePage() {
         <Link href="/rankings" className="flex min-h-11 items-center font-bold text-brand-dark underline">
           Bảng xếp hạng
         </Link>
+        <Link href="/hall-of-fame" className="flex min-h-11 items-center font-bold text-brand-dark underline">
+          Bảng vàng
+        </Link>
       </div>
       {pinned.length > 0 && (
         <>

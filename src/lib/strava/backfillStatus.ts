@@ -15,9 +15,11 @@ function formatMonthYear(iso: string): string {
   return `${month}/${year}`
 }
 
+const WAIT_HINT = 'Việc này có thể mất vài phút đến vài chục phút, bạn không cần chờ ở trang này.'
+
 export function describeBackfillStatus(input: BackfillStatusInput): string | null {
   if (input.status === 'done') return null
   if (input.status === 'failed') return 'Đồng bộ lịch sử bị gián đoạn, hãy kết nối lại Strava'
-  if (!input.cursorBefore) return 'Đang chờ đồng bộ lịch sử hoạt động'
-  return `Đang đồng bộ lịch sử: đã có ${input.activityCount} hoạt động, đến ${formatMonthYear(input.cursorBefore)}`
+  if (!input.cursorBefore) return `Đang chờ đồng bộ lịch sử hoạt động từ Strava. ${WAIT_HINT}`
+  return `Đang đồng bộ lịch sử: đã có ${input.activityCount} hoạt động, đến ${formatMonthYear(input.cursorBefore)}. ${WAIT_HINT}`
 }

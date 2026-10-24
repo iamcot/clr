@@ -280,3 +280,16 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Thêm `loading.tsx` cho `challenges`, `challenges/[id]`, `events`, `events/[id]` (loading ở layout chung không chạy khi chuyển giữa các trang con).
 > - Bảng xếp hạng challenge bỏ dòng "của tôi" ghim phía trên (bị lặp), vẫn tô nổi dòng của mình trong danh sách.
 > - "Ảnh có tôi" chỉ lọc ảnh được gắn tên mình, không tính ảnh mình upload.
+
+### 12 – Bảng vàng
+- [x] 12.1 Kỷ lục CLB (tính trong TS từ `race_results` đã xác minh: `src/lib/hallOfFame/records.ts`, nhóm cự ly và giới tính ở `src/config/hallOfFame.ts`; kỷ lục mới khi BCN xác minh thì tạo bài `club-record:<id>`)
+- [x] 12.2 Danh hiệu và cột mốc (`0014_honors.sql`: bảng `honors`, hàm `generate_honors` sinh podium, vô địch challenge, mốc km, marathon đầu tiên; `/admin/honors` duyệt, ẩn, xoá và thêm danh hiệu đặc biệt)
+- [x] 12.3 Trang `/hall-of-fame` (tab Kỷ lục / Podium / Challenge / Cột mốc, lọc năm) và huy hiệu ở hồ sơ (`/me`, `/members/[id]`)
+
+> Ghi chú task 12 (chưa chạy migration 0014 và 0015, chưa test tay, nên Nghiệm thu chưa tick):
+> - Kỷ lục không dùng view SQL mà tính bằng hàm thuần có test; chia nhóm tuổi theo `AGE_GROUPS` (Dưới 30, 30-39, 40-49, Trên 50; tuổi = năm giải − năm sinh) nhờ view `record_member_info` ở `0015_record_member_info.sql`; người chưa khai năm sinh chỉ xuất hiện ở "Mọi lứa tuổi".
+> - Danh hiệu tự sinh nằm ở trạng thái chờ duyệt, BCN bấm "Quét danh hiệu mới" ở `/admin/honors` (chưa chạy tự động theo job đêm). Chưa làm mốc "12 tháng liền hoàn thành challenge".
+> - `database.generated.ts` thêm tay bảng `honors` và hàm `generate_honors`, cần `npm run db:types` khi có DB.
+> - Dữ liệu giả: `supabase/seed_demo.sql` (chạy tay trong SQL Editor, cũng bật `club_display_mode = full_opt_in`), gỡ bằng `supabase/seed_demo_cleanup.sql`.
+> - Tải ảnh lên cho ô ảnh bìa (event, bài viết, challenge), giấy chứng nhận và ảnh danh hiệu: `ImageField` + `POST /api/uploads/image`. Ảnh bìa chỉ BCN tải được, giấy chứng nhận thành viên tự tải; file lưu ở `covers/` và `certificates/` với tên ngẫu nhiên.
+> - Backfill: `maxDuration` tăng lên 300 giây, workflow thêm `--max-time 300`; dòng báo đồng bộ lịch sử hiện ở thẻ trang chủ kèm lời nhắc có thể mất vài phút.

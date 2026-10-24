@@ -48,6 +48,7 @@ export default function HomeSummaryCard({ summary }: { summary: HomeSummary }) {
         <Stat value={summary.averagePace} label="pace TB /km" />
         <Stat value={summary.clubRank ? `#${summary.clubRank}` : '--'} label="hạng CLB" />
       </div>
+      {summary.syncNotice && <p className="mt-4 rounded-xl bg-white/10 p-3 text-sm text-white/90">{summary.syncNotice}</p>}
       {summary.mainChallenge && <ChallengeProgress challenge={summary.mainChallenge} />}
     </div>
   )

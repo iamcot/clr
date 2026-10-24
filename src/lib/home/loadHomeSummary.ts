@@ -6,6 +6,7 @@ import { daysLeft, describeRemaining } from '@/lib/home/challengeProgress'
 import { monthNumberAt } from '@/lib/home/greeting'
 import { formatPaceValue } from '@/lib/stats/format'
 import { levelName } from '@/lib/stats/level'
+import { getBackfillStatusText } from '@/lib/strava/syncStatus'
 import { loadClubRankingRows } from '@/lib/stats/loadRankings'
 import { loadOwnMonthAndYear } from '@/lib/stats/loadStatsPeriods'
 import { buildRankingPage } from '@/lib/stats/ranking'
@@ -31,6 +32,7 @@ export type HomeSummary = {
   mainChallenge: HomeChallenge | null
   unpaidAmount: number
   unpaidReason: string
+  syncNotice: string | null
 }
 
 async function loadMainChallenge(memberId: string, now: Date): Promise<HomeChallenge | null> {
@@ -84,11 +86,12 @@ async function loadOwnClubRank(memberId: string): Promise<number | null> {
 }
 
 export async function loadHomeSummary(member: CurrentMember, now: Date): Promise<HomeSummary> {
-  const [stats, mainChallenge, unpaid, clubRank] = await Promise.all([
+  const [stats, mainChallenge, unpaid, clubRank, syncNotice] = await Promise.all([
     loadOwnMonthAndYear(member.id, now),
     loadMainChallenge(member.id, now),
     loadUnpaid(member.id),
     loadOwnClubRank(member.id),
+    getBackfillStatusText(member.id),
   ])
   return {
     monthNumber: monthNumberAt(now),
@@ -101,5 +104,6 @@ export async function loadHomeSummary(member: CurrentMember, now: Date): Promise
     mainChallenge,
     unpaidAmount: unpaid.amount,
     unpaidReason: unpaid.reason,
+    syncNotice,
   }
 }

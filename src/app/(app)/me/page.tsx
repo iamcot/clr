@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import HonorBadges from '@/components/HonorBadges'
 import PersonalRecordsCard from '@/components/PersonalRecordsCard'
 import ProfileHeader from '@/components/ProfileHeader'
 import QuickStats from '@/components/QuickStats'
@@ -6,6 +7,7 @@ import RaceResultsList from '@/components/RaceResultsList'
 import RecentActivities from '@/components/RecentActivities'
 import { RECENT_RACES_ON_PROFILE } from '@/config/prDistances'
 import { requireActiveMember } from '@/lib/auth/currentMember'
+import { loadHonors } from '@/lib/hallOfFame/loadHonors'
 import { loadOwnMonthAndYear } from '@/lib/stats/loadStatsPeriods'
 import { countFollowers } from '@/lib/members/followerCount'
 import { addActivitySuggestions, loadRaceResults } from '@/lib/races/loadRaces'
@@ -15,13 +17,14 @@ import { getBackfillStatusText } from '@/lib/strava/syncStatus'
 
 export default async function MePage() {
   const member = await requireActiveMember()
-  const [backfillStatus, activities, summary, records, races, followerCount] = await Promise.all([
+  const [backfillStatus, activities, summary, records, races, followerCount, honors] = await Promise.all([
     getBackfillStatusText(member.id),
     loadOwnRecentActivities(member.id),
     loadOwnMonthAndYear(member.id, new Date()),
     loadOwnPersonalRecords(member.id),
     loadRaceResults(member.id, RECENT_RACES_ON_PROFILE),
     countFollowers(member.id),
+    loadHonors({ approvedOnly: true, memberId: member.id }),
   ])
   const racesWithSuggestions = await addActivitySuggestions(member.id, races)
 
@@ -40,6 +43,7 @@ export default async function MePage() {
       <Link href="/me/stats" className="mt-2 flex min-h-11 items-center font-bold text-brand-dark underline">
         Thống kê chi tiết
       </Link>
+      <HonorBadges honors={honors} />
       <PersonalRecordsCard records={records} editable />
       <div className="mt-6">
         <h2 className="text-lg font-black">Giải đã chạy</h2>

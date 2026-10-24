@@ -14,6 +14,7 @@ import {
   RANKING_MODES,
 } from '@/config/challenges'
 import { saveChallenge, type ChallengeFormState } from '@/lib/challenges/adminActions'
+import ImageField from '@/components/ImageField'
 
 const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
 const EMPTY_STATE: ChallengeFormState = { errors: {}, values: {} }
@@ -75,8 +76,8 @@ export default function ChallengeForm({ defaults }: { defaults: Record<string, s
         <Field label="Mô tả">
           <textarea name="description" defaultValue={value('description')} rows={3} className={`${INPUT_CLASS} py-2`} />
         </Field>
-        <Field label="Link ảnh bìa" hint="(không bắt buộc)">
-          <input name="cover_url" defaultValue={value('cover_url')} inputMode="url" className={INPUT_CLASS} />
+        <Field label="Ảnh bìa" hint="(không bắt buộc)">
+          <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
         </Field>
         <Field label="Bắt đầu (giờ VN)" error={error('starts_at')}>
           <input
