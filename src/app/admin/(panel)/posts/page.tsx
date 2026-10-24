@@ -1,44 +1,64 @@
 import Link from 'next/link'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import Badge from '@/components/admin/Badge'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import { adminButtonClass } from '@/components/admin/styles'
 import { POST_KIND_LABELS, type PostKind } from '@/config/posts'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadAdminPosts, type AdminPostRow } from '@/lib/posts/loadAdminPosts'
 
-function statusText(post: AdminPostRow, now: Date): string {
-  if (!post.publishedAt) return 'Nháp'
-  if (new Date(post.publishedAt).getTime() > now.getTime()) return `Hẹn giờ ${formatDateTimeVi(post.publishedAt)}`
-  return `Đã đăng ${formatDateTimeVi(post.publishedAt)}`
+function statusBadge(post: AdminPostRow, now: Date) {
+  if (!post.publishedAt) return <Badge>Nháp</Badge>
+  if (new Date(post.publishedAt).getTime() > now.getTime()) return <Badge tone="warning">Hẹn giờ</Badge>
+  return <Badge tone="success">Đã đăng</Badge>
+}
+
+function postColumns(now: Date): DataTableColumn<AdminPostRow>[] {
+  return [
+    {
+      key: 'title',
+      header: 'Bài viết',
+      isLink: true,
+      cell: (post) => (
+        <span>
+          {post.pinned && '📌 '}
+          {post.title}
+          {post.requireAck && <span className="ml-2 text-xs font-normal text-muted">cần xác nhận</span>}
+        </span>
+      ),
+    },
+    { key: 'kind', header: 'Loại', hideBelowMd: true, cell: (post) => POST_KIND_LABELS[post.kind as PostKind] ?? post.kind },
+    { key: 'status', header: 'Trạng thái', cell: (post) => statusBadge(post, now) },
+    {
+      key: 'published',
+      header: 'Đăng lúc',
+      hideBelowMd: true,
+      cell: (post) => (post.publishedAt ? formatDateTimeVi(post.publishedAt) : '—'),
+    },
+  ]
 }
 
 export default async function AdminPostsPage() {
   const posts = await loadAdminPosts()
-  const now = new Date()
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Bài viết</h1>
-      <Link
-        href="/admin/posts/new"
-        className="mt-3 flex min-h-12 items-center justify-center rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
-      >
-        Soạn bài mới
-      </Link>
-      <ul className="mt-4 flex flex-col gap-2">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href={`/admin/posts/${post.id}`} className="block rounded-lg bg-white p-3">
-              <p className="font-bold">
-                {post.pinned && '📌 '}
-                {post.title}
-              </p>
-              <p className="text-sm text-muted">
-                {POST_KIND_LABELS[post.kind as PostKind] ?? post.kind} · {statusText(post, now)}
-                {post.requireAck && ' · cần xác nhận'}
-              </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      {posts.length === 0 && <p className="mt-4 text-muted">Chưa có bài nào.</p>}
+      <AdminPageHeader
+        title="Bài viết"
+        description="Đăng thông báo và theo dõi người đã xác nhận"
+        actions={
+          <Link href="/admin/posts/new" className={adminButtonClass('primary')}>
+            + Soạn bài mới
+          </Link>
+        }
+      />
+      <DataTable
+        columns={postColumns(new Date())}
+        rows={posts}
+        rowKey={(post) => post.id}
+        rowHref={(post) => `/admin/posts/${post.id}`}
+        emptyText="Chưa có bài nào."
+      />
     </section>
   )
 }

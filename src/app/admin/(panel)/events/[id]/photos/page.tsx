@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import AdminPhotoGrid from '@/components/AdminPhotoGrid'
-import BackLink from '@/components/BackLink'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import PhotoUploader from '@/components/PhotoUploader'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { loadAdminEvent } from '@/lib/events/loadAdminEvents'
@@ -15,8 +15,7 @@ export default async function AdminEventPhotosPage({ params }: { params: Promise
 
   return (
     <section>
-      <BackLink href={`/admin/events/${id}`}>{event.title}</BackLink>
-      <h1 className="mt-2 mb-4 text-2xl font-black">Quản lý ảnh ({photos.length})</h1>
+      <AdminPageHeader title={`Quản lý ảnh (${photos.length})`} backHref={`/admin/events/${id}`} backLabel={event.title} />
       <div className="mb-4">
         <PhotoUploader eventId={id} />
       </div>

@@ -1,12 +1,11 @@
-import BackLink from '@/components/BackLink'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import ChallengeForm from '@/components/ChallengeForm'
 import { NEW_CHALLENGE_DEFAULTS } from '@/lib/challenges/formDefaults'
 
 export default function NewChallengePage() {
   return (
     <section>
-      <BackLink href="/admin/challenges">Challenge</BackLink>
-      <h1 className="mt-2 mb-4 text-2xl font-black">Tạo challenge</h1>
+      <AdminPageHeader title="Tạo challenge" backHref="/admin/challenges" backLabel="Challenge" />
       <ChallengeForm defaults={NEW_CHALLENGE_DEFAULTS} />
     </section>
   )
