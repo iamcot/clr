@@ -17,7 +17,7 @@ const validParams = { code: 'abc', state: 'xyz', error: null, scope: 'read,activ
 describe('buildAuthorizeUrl', () => {
   it('có đủ tham số Strava yêu cầu', () => {
     const url = new URL(buildAuthorizeUrl({ clientId: '123', redirectUri: 'https://clr.test/cb', state: 'xyz' }))
-    expect(url.origin + url.pathname).toBe('https://www.strava.com/oauth/authorize')
+    expect(url.origin + url.pathname).toBe('https://www.strava.com/oauth/mobile/authorize')
     expect(url.searchParams.get('client_id')).toBe('123')
     expect(url.searchParams.get('redirect_uri')).toBe('https://clr.test/cb')
     expect(url.searchParams.get('response_type')).toBe('code')

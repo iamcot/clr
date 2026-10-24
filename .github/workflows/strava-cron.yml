@@ -11,7 +11,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/5 * * * *'
     runs-on: ubuntu-latest
     steps:
-      - run: curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/strava-events"
+      - run: |
+          curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/strava-events"
         env:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
@@ -20,7 +21,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '7,22,37,52 * * * *'
     runs-on: ubuntu-latest
     steps:
-      - run: curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/backfill"
+      - run: |
+          curl --fail --silent --show-error -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/backfill"
         env:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
