@@ -475,6 +475,90 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"fund_accounts": {
+                  Row: {
+                    "id": string,"name": string,"kind": string,"bank_bin": string | null,"account_no": string | null,"account_name": string | null,"active": boolean,"created_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"name": string,"kind": string,"bank_bin"?: string | null,"account_no"?: string | null,"account_name"?: string | null,"active"?: boolean,"created_at"?: string
+                  }
+                  Update: {
+                    "id"?: string,"name"?: string,"kind"?: string,"bank_bin"?: string | null,"account_no"?: string | null,"account_name"?: string | null,"active"?: boolean,"created_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"fund_categories": {
+                  Row: {
+                    "id": string,"direction": string,"name": string,"sort": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"direction": string,"name": string,"sort"?: number
+                  }
+                  Update: {
+                    "id"?: string,"direction"?: string,"name"?: string,"sort"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"bank_webhook_events": {
+                  Row: {
+                    "id": string,"provider": string,"provider_txn_id": string,"direction": string,"amount": number,"content": string,"account_no": string,"transferred_at": string,"raw": Json,"received_at": string,"match_status": string,"matched_intent_id": string | null,"suggested_member_id": string | null,"processed_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"provider": string,"provider_txn_id": string,"direction": string,"amount": number,"content"?: string,"account_no"?: string,"transferred_at": string,"raw": Json,"received_at"?: string,"match_status"?: string,"matched_intent_id"?: string | null,"suggested_member_id"?: string | null,"processed_at"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"provider"?: string,"provider_txn_id"?: string,"direction"?: string,"amount"?: number,"content"?: string,"account_no"?: string,"transferred_at"?: string,"raw"?: Json,"received_at"?: string,"match_status"?: string,"matched_intent_id"?: string | null,"suggested_member_id"?: string | null,"processed_at"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payment_intents": {
+                  Row: {
+                    "id": string,"member_id": string,"ref": string,"method": string,"amount": number,"penalty_ids": string[],"status": string,"created_at": string,"expires_at": string,"paid_at": string | null,"bank_event_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"member_id": string,"ref": string,"method"?: string,"amount": number,"penalty_ids": string[],"status"?: string,"created_at"?: string,"expires_at": string,"paid_at"?: string | null,"bank_event_id"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"member_id"?: string,"ref"?: string,"method"?: string,"amount"?: number,"penalty_ids"?: string[],"status"?: string,"created_at"?: string,"expires_at"?: string,"paid_at"?: string | null,"bank_event_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"fund_transactions": {
+                  Row: {
+                    "id": string,"account_id": string,"direction": string,"amount": number,"category_id": string | null,"occurred_at": string,"description": string,"member_id": string | null,"penalty_id": string | null,"event_id": string | null,"intent_id": string | null,"bank_event_id": string | null,"receipt_url": string | null,"created_by": string | null,"created_at": string,"voided_at": string | null,"void_reason": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"account_id": string,"direction": string,"amount": number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"account_id"?: string,"direction"?: string,"amount"?: number,"category_id"?: string | null,"occurred_at"?: string,"description"?: string,"member_id"?: string | null,"penalty_id"?: string | null,"event_id"?: string | null,"intent_id"?: string | null,"bank_event_id"?: string | null,"receipt_url"?: string | null,"created_by"?: string | null,"created_at"?: string,"voided_at"?: string | null,"void_reason"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"fund_reconciliations": {
+                  Row: {
+                    "id": string,"account_id": string,"as_of": string,"statement_balance": number,"app_balance": number,"difference": number,"note": string,"created_by": string | null,"created_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"account_id": string,"as_of": string,"statement_balance": number,"app_balance": number,"difference": number,"note"?: string,"created_by"?: string | null,"created_at"?: string
+                  }
+                  Update: {
+                    "id"?: string,"account_id"?: string,"as_of"?: string,"statement_balance"?: number,"app_balance"?: number,"difference"?: number,"note"?: string,"created_by"?: string | null,"created_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"draw_prizes": {
                   Row: {
                     "draw_id": string,"id": string,"name": string,"quantity": number,"sort": number
@@ -999,6 +1083,14 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"fund_balances": {
+                  Row: {
+                    "account_id": string | null,"balance": number | null,"kind": string | null,"name": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
                 },"event_counts": {
                   Row: {
                     "event_id": string | null,"going_count": number | null,"maybe_count": number | null,"photo_count": number | null,"waitlist_count": number | null
@@ -1088,6 +1180,42 @@ isOneToOne: false
                            },
 "can_manage_fund":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"get_fund_receiving_account":
+{ Args: Record<PropertyKey, never>; Returns: { bank_bin: string; account_no: string; account_name: string }[]
+                           },
+"create_payment_intent":
+{ Args: { "p_penalty_ids": string[]; "p_method": string }; Returns: string
+                           },
+"settle_payment_intent":
+{ Args: { "p_intent_id": string; "p_event_id": string | null; "p_actor": string | null }; Returns: boolean
+                           },
+"record_bank_event":
+{ Args: { "p_provider": string; "p_txn_id": string; "p_direction": string; "p_amount": number; "p_content": string; "p_account_no": string; "p_transferred_at": string; "p_raw": Json }; Returns: { event_id: string; is_new: boolean; processed: boolean }[]
+                           },
+"finish_bank_event":
+{ Args: { "p_event_id": string; "p_status": string; "p_intent_id": string | null; "p_member_id": string | null }; Returns: undefined
+                           },
+"resolve_bank_event":
+{ Args: { "p_event_id": string; "p_intent_id": string }; Returns: undefined
+                           },
+"confirm_cash_payment":
+{ Args: { "p_intent_id": string }; Returns: undefined
+                           },
+"cancel_payment_intent":
+{ Args: { "p_intent_id": string }; Returns: undefined
+                           },
+"add_fund_transaction":
+{ Args: { "p_account_id": string; "p_direction": string; "p_amount": number; "p_category_id": string | null; "p_occurred_at": string; "p_description": string; "p_member_id": string | null; "p_event_id": string | null; "p_receipt_url": string | null }; Returns: string
+                           },
+"void_fund_transaction":
+{ Args: { "p_id": string; "p_reason": string }; Returns: undefined
+                           },
+"classify_fund_transaction":
+{ Args: { "p_id": string; "p_category_id": string | null; "p_member_id": string | null; "p_description": string | null }; Returns: undefined
+                           },
+"record_fund_reconciliation":
+{ Args: { "p_account_id": string; "p_as_of": string; "p_statement_balance": number; "p_note": string }; Returns: number
                            },
 "mark_penalties_paid":
 { Args: { "p_ids": string[]; "p_method": string; "p_ref": string }; Returns: number

@@ -23,5 +23,5 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin/posts', label: 'Bài viết', description: 'Đăng thông báo và theo dõi xác nhận', enabled: true },
   { href: '/admin/draws', label: 'Quay số', description: 'Quay số trúng thưởng trực tiếp', enabled: true },
   { href: '/admin/events', label: 'Event', description: 'Quản lý event và album', enabled: true },
-  { href: '/admin/fund', label: 'Quỹ', description: 'Sổ quỹ và đối soát', enabled: false },
+  { href: '/admin/fund', label: 'Quỹ', description: 'Sổ quỹ, đối soát chuyển khoản, thu chi', enabled: true },
 ]

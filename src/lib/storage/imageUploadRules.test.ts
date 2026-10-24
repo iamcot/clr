@@ -21,6 +21,8 @@ describe('canUploadPurpose', () => {
     expect(canUploadPurpose('cover', false)).toBe(false)
     expect(canUploadPurpose('cover', true)).toBe(true)
     expect(canUploadPurpose('certificate', false)).toBe(true)
+    expect(canUploadPurpose('receipt', false)).toBe(false)
+    expect(canUploadPurpose('receipt', true)).toBe(true)
   })
 })
 
