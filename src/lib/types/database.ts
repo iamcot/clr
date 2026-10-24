@@ -43,12 +43,16 @@ type PublicViews = Omit<GeneratedViews, 'members_public'> & {
   members_public: NarrowRelation<GeneratedViews['members_public'], MemberPublicColumns>
 }
 
-// Tham số hàm Postgres luôn nhận null, nhưng gen types sinh `p_reason: string`; bỏ cờ thì truyền null
-type PublicFunctions = Omit<GeneratedFunctions, 'set_activity_flag'> & {
-  set_activity_flag: {
-    Args: NarrowColumns<GeneratedFunctions['set_activity_flag']['Args'], { p_reason: string | null }>
-    Returns: GeneratedFunctions['set_activity_flag']['Returns']
-  }
+// Tham số hàm Postgres luôn nhận null, nhưng gen types sinh kiểu không null; ghi lại những tham số thực sự cho phép null
+type NullableArgs<Name extends keyof GeneratedFunctions, Nullable extends string> = {
+  Args: NarrowColumns<GeneratedFunctions[Name]['Args'], { [Arg in Nullable]: string | null }>
+  Returns: GeneratedFunctions[Name]['Returns']
+}
+
+type PublicFunctions = Omit<GeneratedFunctions, 'set_activity_flag' | 'admin_review_members' | 'admin_update_member'> & {
+  set_activity_flag: NullableArgs<'set_activity_flag', 'p_reason'>
+  admin_review_members: NullableArgs<'admin_review_members', 'p_member_type' | 'p_reason'>
+  admin_update_member: NullableArgs<'admin_update_member', 'p_member_type'>
 }
 
 export type Database = Omit<GeneratedDatabase, 'public'> & {

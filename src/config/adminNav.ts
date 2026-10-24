@@ -1,4 +1,22 @@
-export const ADMIN_LINKS = [
-  { href: '/admin/activities', label: 'Hoạt động', description: 'Xem và đánh dấu hoạt động không hợp lệ' },
-  { href: '/admin/sync', label: 'Đồng bộ', description: 'Hạn mức Strava, hàng đợi, event lỗi' },
+export type AdminNavItem = {
+  href: string
+  label: string
+  description: string
+  enabled: boolean
+}
+
+export const ADMIN_NAV: AdminNavItem[] = [
+  { href: '/admin', label: 'Tổng quan', description: 'Số liệu nhanh của CLB', enabled: true },
+  { href: '/admin/members', label: 'Thành viên', description: 'Duyệt và quản lý thành viên', enabled: true },
+  {
+    href: '/admin/activities',
+    label: 'Hoạt động',
+    description: 'Xem và đánh dấu hoạt động không hợp lệ',
+    enabled: true,
+  },
+  { href: '/admin/sync', label: 'Đồng bộ', description: 'Hạn mức Strava, hàng đợi, event lỗi', enabled: true },
+  { href: '/admin/challenges', label: 'Challenge', description: 'Tạo và theo dõi challenge', enabled: false },
+  { href: '/admin/penalties', label: 'Thưởng phạt', description: 'Thưởng và phạt thành viên', enabled: false },
+  { href: '/admin/events', label: 'Event', description: 'Quản lý event và album', enabled: false },
+  { href: '/admin/fund', label: 'Quỹ', description: 'Sổ quỹ và đối soát', enabled: false },
 ]

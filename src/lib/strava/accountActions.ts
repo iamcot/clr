@@ -40,7 +40,10 @@ export async function saveShareStats(formData: FormData): Promise<ActionResult> 
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase
     .from('members')
-    .update({ share_stats_with_club: formData.get('share_stats_with_club') === 'on' })
+    .update({
+      share_stats_with_club: formData.get('share_stats_with_club') === 'on',
+      share_private_in_totals: formData.get('share_private_in_totals') === 'on',
+    })
     .eq('id', member.id)
   if (error) return actionError('Không lưu được, vui lòng thử lại')
   revalidatePath('/me/settings')

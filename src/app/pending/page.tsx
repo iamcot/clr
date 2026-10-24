@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 const STATUS_MESSAGES: Record<CurrentMember['status'], string> = {
   pending: 'Đang chờ BCN duyệt',
   active: '',
-  inactive: 'Tài khoản của bạn đang tạm ngưng',
+  inactive: 'Tài khoản đã ngưng',
   rejected: 'Yêu cầu tham gia chưa được BCN chấp nhận',
 }
 
@@ -30,6 +30,9 @@ export default async function PendingPage() {
       )}
       <h1 className="text-xl font-black">{member.display_name ?? 'Thành viên mới'}</h1>
       <p className="text-lg font-bold text-brand-dark">{STATUS_MESSAGES[member.status]}</p>
+      {member.rejection_reason && member.status === 'rejected' && (
+        <p className="text-sm">Lý do: {member.rejection_reason}</p>
+      )}
       <p className="text-sm text-muted">Khi BCN duyệt xong, bạn tải lại trang này để vào app.</p>
       {zaloGroupUrl && (
         <a href={zaloGroupUrl} className="min-h-11 font-bold text-brand-dark underline">
