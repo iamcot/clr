@@ -4,10 +4,10 @@ import { useState } from 'react'
 
 type Option = { id: string; title: string }
 
-type MultiSelectDropdownProps = { name: string; options: Option[]; placeholder: string }
+type MultiSelectDropdownProps = { name: string; options: Option[]; placeholder: string; defaultSelected?: string[] }
 
-export default function MultiSelectDropdown({ name, options, placeholder }: MultiSelectDropdownProps) {
-  const [selected, setSelected] = useState<string[]>([])
+export default function MultiSelectDropdown({ name, options, placeholder, defaultSelected = [] }: MultiSelectDropdownProps) {
+  const [selected, setSelected] = useState<string[]>(defaultSelected)
 
   function toggle(id: string) {
     setSelected((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]))

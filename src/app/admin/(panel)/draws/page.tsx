@@ -2,7 +2,9 @@ import Link from 'next/link'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import { adminButtonClass } from '@/components/admin/styles'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
@@ -16,9 +18,10 @@ const COLUMNS: DataTableColumn<DrawRow>[] = [
   { key: 'created', header: 'Tạo lúc', hideBelowMd: true, cell: (draw) => formatDateTimeVi(draw.createdAt) },
 ]
 
-export default async function AdminDrawsPage() {
+export default async function AdminDrawsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   await requireBcn()
-  const draws = await loadDrawList()
+  const params = await searchParams
+  const { rows: draws, window } = slicePage(await loadDrawList(), parsePage(params.page))
 
   return (
     <section>
@@ -38,6 +41,7 @@ export default async function AdminDrawsPage() {
         rowHref={(draw) => `/admin/draws/${draw.id}`}
         emptyText="Chưa có đợt quay số nào."
       />
+      <Pagination window={window} hrefFor={(page) => hrefWithPage('/admin/draws', params, page)} unit="đợt quay" />
     </section>
   )
 }

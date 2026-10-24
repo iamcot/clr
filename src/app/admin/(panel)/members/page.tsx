@@ -6,9 +6,9 @@ import AdminTabs from '@/components/admin/AdminTabs'
 import Badge from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
 import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
+import Pagination from '@/components/admin/Pagination'
 import Avatar from '@/components/Avatar'
 import {
-  ADMIN_MEMBER_PAGE_SIZE,
   MEMBER_STATUSES,
   MEMBER_STATUS_LABELS,
   MEMBER_TYPES,
@@ -17,6 +17,7 @@ import {
 import { GENDER_OPTIONS } from '@/config/profile'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { createAdminAccount } from '@/lib/members/adminLoginActions'
+import { describePage, hrefWithPage, pageRange, parsePage } from '@/lib/admin/pagination'
 import { reviewMembers } from '@/lib/members/adminActions'
 import { parseMemberFilter, toLikePattern, type MemberFilter } from '@/lib/members/memberFilter'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
@@ -24,22 +25,22 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 const INPUT_CLASS = ADMIN_INPUT_CLASS
 const LIST_COLUMNS = 'id, display_name, member_code, member_type, gender, avatar_url, created_at, level' as const
 
-async function loadMembers(filter: MemberFilter) {
+async function loadMembers(filter: MemberFilter, page: number) {
   const supabase = await createSupabaseServerClient()
   let query = supabase
     .from('members')
-    .select(LIST_COLUMNS)
+    .select(LIST_COLUMNS, { count: 'exact' })
     .eq('status', filter.status)
     .order('created_at', { ascending: false })
-    .limit(ADMIN_MEMBER_PAGE_SIZE)
+    .range(pageRange(page).from, pageRange(page).to)
   if (filter.search) query = query.ilike('display_name', toLikePattern(filter.search))
   if (filter.type) query = query.eq('member_type', filter.type)
   if (filter.gender) query = query.eq('gender', filter.gender)
-  const { data } = await query
-  return data ?? []
+  const { data, count } = await query
+  return { rows: data ?? [], total: count ?? 0 }
 }
 
-type MemberRow = Awaited<ReturnType<typeof loadMembers>>[number]
+type MemberRow = Awaited<ReturnType<typeof loadMembers>>['rows'][number]
 
 function StatusTabs({ filter }: { filter: MemberFilter }) {
   const items = MEMBER_STATUSES.map((status) => ({
@@ -179,8 +180,10 @@ function ReviewControls() {
 }
 
 export default async function AdminMembersPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
-  const filter = parseMemberFilter(await searchParams)
-  const members = await loadMembers(filter)
+  const raw = await searchParams
+  const filter = parseMemberFilter(raw)
+  const page = parsePage(raw.page)
+  const { rows: members, total } = await loadMembers(filter, page)
   const isPendingTab = filter.status === 'pending'
 
   return (
@@ -205,6 +208,11 @@ export default async function AdminMembersPage({ searchParams }: { searchParams:
             rowKey={(member) => member.id}
             rowHref={(member) => `/admin/members/${member.id}`}
             emptyText="Không có thành viên nào."
+          />
+          <Pagination
+            window={describePage(page, total)}
+            hrefFor={(target) => hrefWithPage('/admin/members', raw, target)}
+            unit="thành viên"
           />
         </div>
         {isPendingTab && members.length > 0 && <ReviewControls />}
