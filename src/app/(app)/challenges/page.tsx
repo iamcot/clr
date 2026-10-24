@@ -1,10 +1,10 @@
 import ChallengeCard from '@/components/ChallengeCard'
+import { MEMBER_VISIBLE_STATUSES, type ChallengeStatus } from '@/config/challenges'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { loadChallenges, type ChallengeRow } from '@/lib/challenges/loadChallenges'
 import { challengePhase } from '@/lib/challenges/status'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import type { ChallengeStatus } from '@/config/challenges'
 
 type MyEntrySummary = { progressPct: number; completed: boolean }
 
@@ -35,7 +35,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode[]
 
 export default async function ChallengesPage() {
   const member = await requireActiveMember()
-  const [challenges, mine] = await Promise.all([loadChallenges(), loadMyEntries(member.id)])
+  const [challenges, mine] = await Promise.all([loadChallenges(MEMBER_VISIBLE_STATUSES), loadMyEntries(member.id)])
   const now = new Date()
   const phaseOf = (challenge: ChallengeRow) =>
     challengePhase(challenge.status as ChallengeStatus, challenge.starts_at, challenge.ends_at, now)

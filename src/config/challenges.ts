@@ -57,3 +57,6 @@ export const GOAL_UNIT_LABELS: Record<GoalType, string> = {
 export const DEFAULT_REGISTRATION_GRACE_HOURS = 48
 export const MAX_CATEGORIES_IN_FORM = 4
 export const MAX_ENTRIES_IN_LIST = 1000
+
+// BCN đọc được cả bản nháp qua RLS, nên danh sách cho thành viên phải tự loại bản nháp
+export const MEMBER_VISIBLE_STATUSES: ChallengeStatus[] = ['published', 'running', 'finalizing', 'closed']

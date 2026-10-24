@@ -8,7 +8,7 @@ export default async function WelcomePage() {
   if (member.profile_onboarded_at) redirect('/')
 
   return (
-    <main className="mx-auto min-h-dvh max-w-[480px] px-6 py-10">
+    <main className="mx-auto min-h-dvh max-w-[480px] px-6 pb-10 pt-[calc(2.5rem+env(safe-area-inset-top))]">
       <h1 className="text-2xl font-black">Chào mừng đến với CLR</h1>
       <p className="mt-2 mb-6 text-sm text-muted">
         Giới tính và năm sinh dùng để chia hạng mục challenge và bảng vàng. Bạn có thể bỏ qua và bổ sung sau trong phần

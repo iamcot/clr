@@ -7,7 +7,7 @@ import { requireActiveMember } from '@/lib/auth/currentMember'
 
 function AppHeader() {
   return (
-    <header className="flex items-center gap-2 bg-deep px-4 py-3 text-white">
+    <header className="flex items-center gap-2 bg-deep px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] text-white">
       <Image src="/brand/clr-logo.jpg" alt="Logo CLR" width={32} height={32} className="rounded-full" />
       <span className="text-lg font-black tracking-wide">CLR</span>
     </header>
@@ -22,7 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="mx-auto min-h-dvh max-w-[480px] bg-page shadow-sm">
       <AppHeader />
       <OfflineBanner />
-      <main className="px-4 pt-4 pb-24">{children}</main>
+      <main className="px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">{children}</main>
       <AppTabs />
       <ServiceWorkerRegister />
     </div>
