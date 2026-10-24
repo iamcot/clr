@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import RaceResultForm from '@/components/RaceResultForm'
 import { PR_DISTANCES } from '@/config/prDistances'
 import { requireActiveMember } from '@/lib/auth/currentMember'
@@ -37,9 +37,7 @@ export default async function EditRaceResultPage({ params }: { params: Promise<{
 
   return (
     <section>
-      <Link href="/me/races" className="text-sm text-muted">
-        ← Giải đã chạy
-      </Link>
+      <BackLink href="/me/races">Giải đã chạy</BackLink>
       <h1 className="mt-2 mb-4 text-2xl font-black">Sửa kết quả giải</h1>
       <RaceResultForm defaults={toFormDefaults(result)} raceNameSuggestions={raceNameSuggestions} />
     </section>

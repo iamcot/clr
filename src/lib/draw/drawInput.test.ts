@@ -35,7 +35,7 @@ describe('parseDrawInput', () => {
       value: {
         title: 'Quay số tháng 10',
         sourceType: 'challenge_completed',
-        sourceId: SOURCE_ID,
+        sourceIds: [SOURCE_ID],
         style: 'race',
         prizes: [{ name: 'Giày', quantity: 1 }],
       },
@@ -44,12 +44,22 @@ describe('parseDrawInput', () => {
 
   it('nguồn event đọc ô event_id', () => {
     const parsed = parseDrawInput(form({ ...valid, source_type: 'event_checked_in', challenge_id: '', event_id: SOURCE_ID }))
-    expect(parsed.ok && parsed.value.sourceId).toBe(SOURCE_ID)
+    expect(parsed.ok && parsed.value.sourceIds).toEqual([SOURCE_ID])
+  })
+
+  it('cho chọn nhiều nguồn và bỏ trùng', () => {
+    const other = '0b9e7c1a-2d3f-4a5b-8c6d-7e8f9a0b1c2d'
+    const data = form(valid)
+    data.set('challenge_id', SOURCE_ID)
+    data.append('challenge_id', other)
+    data.append('challenge_id', SOURCE_ID)
+    const parsed = parseDrawInput(data)
+    expect(parsed.ok && parsed.value.sourceIds).toEqual([SOURCE_ID, other])
   })
 
   it('chọn tay thì không cần nguồn', () => {
     const parsed = parseDrawInput(form({ ...valid, source_type: 'manual', challenge_id: '' }))
-    expect(parsed.ok && parsed.value.sourceId).toBeNull()
+    expect(parsed.ok && parsed.value.sourceIds).toEqual([])
   })
 
   it('từ chối thiếu tên, nguồn lạ, thiếu nguồn hoặc giải sai', () => {

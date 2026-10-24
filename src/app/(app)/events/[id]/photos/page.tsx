@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import PhotoGrid from '@/components/PhotoGrid'
 import PhotoUploader from '@/components/PhotoUploader'
 import { requireActiveMember } from '@/lib/auth/currentMember'
@@ -24,9 +25,7 @@ export default async function EventPhotosPage({
 
   return (
     <section>
-      <Link href={`/events/${id}`} className="flex min-h-11 items-center font-bold text-brand-dark">
-        ← {event.title}
-      </Link>
+      <BackLink href={`/events/${id}`}>{event.title}</BackLink>
       <h1 className="text-2xl font-black">Album ảnh</h1>
       <div className="mt-3 flex gap-2">
         <Link

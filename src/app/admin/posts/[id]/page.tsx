@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import PostForm from '@/components/PostForm'
 import { deletePost, publishDraftNow } from '@/lib/posts/adminActions'
@@ -16,9 +17,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   return (
     <section>
-      <Link href="/admin/posts" className="text-sm text-muted">
-        ← Bài viết
-      </Link>
+      <BackLink href="/admin/posts">Bài viết</BackLink>
       <h1 className="mt-2 mb-4 text-2xl font-black">Sửa bài</h1>
       {post.published_at && !scheduled && (
         <Link href={`/posts/${id}`} className="mb-3 flex min-h-11 items-center font-bold text-brand-dark underline">

@@ -8,19 +8,19 @@ type ServiceClient = ReturnType<typeof createSupabaseServiceClient>
 export async function listSourceMemberIds(
   db: ServiceClient,
   sourceType: DrawSourceType,
-  sourceId: string | null,
+  sourceIds: string[],
 ): Promise<string[]> {
-  if (sourceType === 'manual' || !sourceId) return []
+  if (sourceType === 'manual' || sourceIds.length === 0) return []
   const rows =
     sourceType === 'challenge_completed'
       ? await db
           .from('challenge_entries')
           .select('member_id')
-          .eq('challenge_id', sourceId)
+          .in('challenge_id', sourceIds)
           .eq('completed', true)
           .eq('excluded', false)
-      : await db.from('event_attendees').select('member_id').eq('event_id', sourceId).not('checked_in_at', 'is', null)
-  const memberIds = (rows.data ?? []).map((row) => row.member_id)
+      : await db.from('event_attendees').select('member_id').in('event_id', sourceIds).not('checked_in_at', 'is', null)
+  const memberIds = [...new Set((rows.data ?? []).map((row) => row.member_id))]
   if (memberIds.length === 0) return []
 
   const { data: active } = await db.from('members').select('id').in('id', memberIds).eq('status', 'active')

@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import {
   MEMBER_HISTORY_LIMIT,
@@ -51,9 +51,7 @@ export default async function AdminMemberDetailPage({ params }: { params: Promis
 
   return (
     <section>
-      <Link href="/admin/members" className="text-sm text-muted">
-        ← Danh sách
-      </Link>
+      <BackLink href="/admin/members">Danh sách</BackLink>
       <div className="mt-3 flex items-center gap-3">
         {member.avatar_url && (
           <Image src={member.avatar_url} alt="" width={64} height={64} className="rounded-full" unoptimized />

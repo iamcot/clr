@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import {
   GOAL_TYPE_LABELS,
@@ -189,9 +190,7 @@ export default async function AdminChallengeDetailPage({
 
   return (
     <section>
-      <Link href="/admin/challenges" className="text-sm text-muted">
-        ← Challenge
-      </Link>
+      <BackLink href="/admin/challenges">Challenge</BackLink>
       <h1 className="mt-2 text-2xl font-black">{challenge.title}</h1>
       <p className="text-sm text-muted">
         {STATUS_LABELS[challenge.status as keyof typeof STATUS_LABELS]} · {GOAL_TYPE_LABELS[goalType]} ·{' '}

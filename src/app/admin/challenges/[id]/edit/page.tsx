@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ChallengeForm from '@/components/ChallengeForm'
 import { toFormDefaults } from '@/lib/challenges/formDefaults'
 import { loadChallenge } from '@/lib/challenges/loadChallenges'
@@ -36,9 +36,7 @@ export default async function EditChallengePage({ params }: { params: Promise<{ 
 
   return (
     <section>
-      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted">
-        ← {challenge.title}
-      </Link>
+      <BackLink href={`/admin/challenges/${id}`}>{challenge.title}</BackLink>
       <h1 className="mt-2 text-2xl font-black">Sửa challenge</h1>
       {isLive && (
         <p className="mt-2 rounded-lg bg-gold/30 p-3 text-sm">

@@ -23,10 +23,10 @@ async function loadFollowingIds(supabase: Client, memberId: string): Promise<str
 async function loadHonorItems(supabase: Client, friendIds: string[], now: Date): Promise<NamedItem[]> {
   const { data } = await supabase
     .from('honors')
-    .select('id, member_id, title, honor_date')
+    .select('id, member_id, title, honor_date, created_at')
     .in('member_id', friendIds)
     .eq('approved', true)
-    .order('honor_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(HIGHLIGHT_LIMIT)
   return (data ?? [])
     .filter((row) => isWithinDays(`${row.honor_date}T00:00:00+07:00`, HIGHLIGHT_WINDOW_DAYS, now))
@@ -35,14 +35,14 @@ async function loadHonorItems(supabase: Client, friendIds: string[], now: Date):
       memberId: row.member_id,
       kind: 'honor' as const,
       text: describeHonor(row.title),
-      date: row.honor_date,
+      date: row.created_at,
     }))
 }
 
 async function loadRaceItems(supabase: Client, friendIds: string[], now: Date): Promise<NamedItem[]> {
   const { data } = await supabase
     .from('race_results')
-    .select('id, member_id, distance_label, rank_overall, rank_age_group, races(name, race_date)')
+    .select('id, member_id, distance_label, rank_overall, rank_age_group, created_at, races(name, race_date)')
     .in('member_id', friendIds)
     .order('created_at', { ascending: false })
     .limit(HIGHLIGHT_LIMIT)
@@ -54,7 +54,7 @@ async function loadRaceItems(supabase: Client, friendIds: string[], now: Date): 
         memberId: row.member_id,
         kind: 'race' as const,
         text: describeRace(row.distance_label, row.races.name, row.rank_overall, row.rank_age_group),
-        date: row.races.race_date,
+        date: row.created_at,
       },
     ]
   })

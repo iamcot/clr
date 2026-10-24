@@ -14,7 +14,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 function ChallengeProgress({ challenge }: { challenge: HomeChallenge }) {
   const percent = Math.min(100, challenge.progressPct)
   return (
-    <Link href={`/challenges/${challenge.id}`} className="mt-4 block rounded-xl bg-white/10 p-3">
+    <Link href={`/challenges/${challenge.id}`} className="block rounded-xl bg-white/10 p-3">
       <div className="flex items-center justify-between gap-2 text-sm">
         <p className="font-bold">
           {challenge.title} · {challenge.goalText}
@@ -24,7 +24,6 @@ function ChallengeProgress({ challenge }: { challenge: HomeChallenge }) {
       <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-black/30">
         <div className="h-full rounded-full bg-lime" style={{ width: `${percent}%` }} />
       </div>
-      <p className="mt-2 text-xs text-white/70">{challenge.remainingText}</p>
     </Link>
   )
 }
@@ -49,7 +48,13 @@ export default function HomeSummaryCard({ summary }: { summary: HomeSummary }) {
         <Stat value={summary.clubRank ? `#${summary.clubRank}` : '--'} label="hạng CLB" />
       </div>
       {summary.syncNotice && <p className="mt-4 rounded-xl bg-white/10 p-3 text-sm text-white/90">{summary.syncNotice}</p>}
-      {summary.mainChallenge && <ChallengeProgress challenge={summary.mainChallenge} />}
+      {summary.challenges.length > 0 && (
+        <div className="mt-4 flex flex-col gap-2">
+          {summary.challenges.map((challenge) => (
+            <ChallengeProgress key={challenge.id} challenge={challenge} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

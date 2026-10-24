@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import DrawCelebration from '@/components/DrawCelebration'
 import DrawRaceStage from '@/components/DrawRaceStage'
 import DrawReelStage from '@/components/DrawReelStage'
 import DrawWaiting from '@/components/DrawWaiting'
 import { DRAW_POLL_FAST_MS, DRAW_POLL_FAST_WINDOW_MS, DRAW_POLL_IDLE_MS } from '@/config/draw'
 import { estimateClockOffset, pickBetterOffset } from '@/lib/draw/clockOffset'
-import type { DrawDetail, DrawState } from '@/lib/draw/loadDraw'
+import type { DrawDetail, DrawState, SpinningView } from '@/lib/draw/loadDraw'
 
 type DrawLiveProps = {
   drawId: string
@@ -87,35 +88,74 @@ function useLiveDraw(drawId: string, initial: DrawState) {
   return { state, nowMs, winnerSeen }
 }
 
-function Stage({ state, nowMs, winnerSeen, participants }: { state: DrawState; nowMs: number; winnerSeen: WinnerSeen | null; participants: DrawLiveProps['participants'] }) {
+type Celebration = { prizeName: string; winnerName: string }
+
+function currentCelebration(state: DrawState, nowMs: number): Celebration | null {
   const { spinning } = state
-  if (state.status === 'draft') return <DrawWaiting text="Chờ BCN mở quay số" />
-  if (!spinning) {
-    if (state.status !== 'live') return null
-    return <DrawWaiting text={state.completed.length === 0 ? 'Chờ BCN quay giải đầu tiên' : 'Chờ BCN quay giải tiếp theo'} />
+  if (spinning?.winner && nowMs >= spinning.revealAtMs) {
+    return { prizeName: spinning.prizeName, winnerName: spinning.winner.name }
   }
+  if (spinning) return null
+  const last = state.completed[state.completed.length - 1]
+  return last ? { prizeName: last.prizeName, winnerName: last.memberName } : null
+}
+
+function SpinningStage({ state, spinning, nowMs, winnerSeen, participants }: StageProps & { spinning: SpinningView }) {
   const winnerSeenAtMs = winnerSeen?.order === spinning.order ? winnerSeen.atMs : null
-  return (
-    <div className="mt-4">
-      <p className="mb-2 text-center text-sm text-muted">Đang quay: {spinning.prizeName}</p>
-      {state.style === 'reel' ? (
+  const banner = `Đang quay giải ${spinning.prizeName}`
+  if (state.style === 'reel') {
+    return (
+      <div className="mt-4 rounded-2xl bg-deep">
+        <p className="px-3 pt-3 text-center text-sm font-bold text-lime">{banner}</p>
         <DrawReelStage
           spinning={spinning}
           names={participants.map((participant) => participant.name)}
           nowMs={nowMs}
           winnerSeenAtMs={winnerSeenAtMs}
         />
-      ) : (
-        <DrawRaceStage
-          kind={state.style === 'duck' ? 'duck' : 'runner'}
-          spinning={spinning}
-          racers={participants}
-          nowMs={nowMs}
-          winnerSeenAtMs={winnerSeenAtMs}
-        />
-      )}
+      </div>
+    )
+  }
+  return (
+    <div className="relative mt-4">
+      <p className="absolute top-2 left-1/2 z-10 -translate-x-1/2 rounded-full bg-deep/80 px-3 py-1 text-sm font-bold whitespace-nowrap text-white">
+        {banner}
+      </p>
+      <DrawRaceStage
+        kind={state.style === 'duck' ? 'duck' : 'runner'}
+        spinning={spinning}
+        racers={participants}
+        nowMs={nowMs}
+        winnerSeenAtMs={winnerSeenAtMs}
+      />
     </div>
   )
+}
+
+type StageProps = {
+  state: DrawState
+  nowMs: number
+  winnerSeen: WinnerSeen | null
+  participants: DrawLiveProps['participants']
+}
+
+function Stage(props: StageProps) {
+  const { state, nowMs } = props
+  if (state.status === 'draft') return <DrawWaiting text="Chờ BCN mở quay số" />
+  const celebration = currentCelebration(state, nowMs)
+  if (celebration) {
+    return (
+      <DrawCelebration
+        key={`${celebration.prizeName}:${celebration.winnerName}`}
+        prizeName={celebration.prizeName}
+        winnerName={celebration.winnerName}
+        waitingNext={state.status === 'live'}
+      />
+    )
+  }
+  if (state.spinning) return <SpinningStage {...props} spinning={state.spinning} />
+  if (state.status !== 'live') return null
+  return <DrawWaiting text="Chờ BCN quay giải đầu tiên" />
 }
 
 export default function DrawLive({ drawId, initial, prizes, participants }: DrawLiveProps) {

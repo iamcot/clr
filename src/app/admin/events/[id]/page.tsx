@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import AdminAttendeeList from '@/components/AdminAttendeeList'
 import CheckinPanel from '@/components/CheckinPanel'
@@ -25,9 +26,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
 
   return (
     <section>
-      <Link href="/admin/events" className="text-sm text-muted">
-        ← Event
-      </Link>
+      <BackLink href="/admin/events">Event</BackLink>
       <h1 className="mt-2 mb-4 text-2xl font-black">{event.title}</h1>
       <div className="mb-4 flex gap-2">
         <Link

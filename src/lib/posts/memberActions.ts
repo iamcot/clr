@@ -3,7 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { COMMENT_MAX_LENGTH, REACTIONS } from '@/config/posts'
 import { requireActiveMember } from '@/lib/auth/currentMember'
-import { loadFeedPage, type FeedPage } from '@/lib/posts/loadFeed'
+import { loadHomeFeedPage } from '@/lib/feed/loadHomeFeed'
+import type { HomeFeedPage } from '@/lib/feed/mergeFeed'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { actionError, actionSuccess, type ActionResult } from '@/lib/toast/actionResult'
 
@@ -90,7 +91,7 @@ export async function deleteComment(formData: FormData): Promise<ActionResult> {
   return actionSuccess('Đã xoá bình luận')
 }
 
-export async function loadMoreFeed(cursor: string, pinnedIds: string[]): Promise<FeedPage> {
+export async function loadMoreFeed(cursor: string, pinnedIds: string[]): Promise<HomeFeedPage> {
   const member = await requireActiveMember()
-  return loadFeedPage(member.id, new Date(), cursor, pinnedIds)
+  return loadHomeFeedPage(member.id, new Date(), cursor, pinnedIds)
 }

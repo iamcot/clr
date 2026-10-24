@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import AttendanceButtons from '@/components/AttendanceButtons'
 import Markdown from '@/components/Markdown'
 import { EVENT_KIND_LABELS } from '@/config/events'
@@ -87,9 +88,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
   return (
     <section>
-      <Link href="/events" className="flex min-h-11 items-center font-bold text-brand-dark">
-        ← Event
-      </Link>
+      <BackLink href="/events">Event</BackLink>
       {event.coverUrl && (
         <Image src={event.coverUrl} alt="" width={480} height={240} className="h-44 w-full rounded-2xl object-cover" unoptimized />
       )}

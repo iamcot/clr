@@ -39,3 +39,13 @@ export function isCheckinOpen(
   const time = now.getTime()
   return time >= Date.parse(event.startsAt) - opensBeforeMs && time <= Date.parse(event.endsAt) + closesAfterMs
 }
+
+export type HomeEvents<Event> = { ongoing: boolean; events: Event[] }
+
+// Trang chủ ưu tiên event đang diễn ra, không có thì lấy các event sắp tới
+export function pickHomeEvents<Event extends EventWindow>(events: Event[], now: Date, limit: number): HomeEvents<Event> {
+  const { upcoming } = splitUpcomingAndPast(events, now)
+  const ongoing = upcoming.filter((event) => event.status === 'published' && Date.parse(event.startsAt) <= now.getTime())
+  if (ongoing.length > 0) return { ongoing: true, events: ongoing.slice(0, limit) }
+  return { ongoing: false, events: upcoming.slice(0, limit) }
+}

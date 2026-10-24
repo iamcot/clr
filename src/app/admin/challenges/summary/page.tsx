@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import BackLink from '@/components/BackLink'
 import { MEMBER_TYPE_LABELS } from '@/config/members'
 import { summarizeMembers, type MemberSummary } from '@/lib/challenges/summary'
 import { loadSummaryEntries } from '@/lib/challenges/loadSummary'
@@ -32,9 +33,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
 
   return (
     <section>
-      <Link href="/admin/challenges" className="text-sm text-muted">
-        ← Challenge
-      </Link>
+      <BackLink href="/admin/challenges">Challenge</BackLink>
       <h1 className="mt-2 text-2xl font-black">Tổng hợp nhiều kỳ</h1>
       <p className="text-sm text-muted">Chỉ tính các challenge đã chốt.</p>
       <form method="get" className="mt-3 flex gap-2">

@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import CommentSection from '@/components/CommentSection'
 import Markdown from '@/components/Markdown'
@@ -21,9 +21,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   return (
     <article>
       <MarkPostRead postId={id} />
-      <Link href="/" className="text-sm text-muted">
-        ← Trang chủ
-      </Link>
+      <BackLink href="/">Trang chủ</BackLink>
       {post.coverUrl && (
         // eslint-disable-next-line @next/next/no-img-element -- ảnh bìa là link ngoài do BCN dán, chưa có kho ảnh để cấu hình next/image
         <img src={post.coverUrl} alt="" className="mt-2 h-48 w-full rounded-lg object-cover" />

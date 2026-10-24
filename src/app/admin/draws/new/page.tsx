@@ -16,6 +16,23 @@ async function loadSources() {
   return { challenges: challenges.data ?? [], events: events.data ?? [] }
 }
 
+function SourcePicker({ legend, name, options }: { legend: string; name: string; options: { id: string; title: string }[] }) {
+  return (
+    <fieldset className="flex flex-col gap-1">
+      <legend className="font-bold">{legend}</legend>
+      <div className="max-h-56 overflow-y-auto rounded-lg border border-line bg-white">
+        {options.map((option) => (
+          <label key={option.id} className="flex min-h-11 items-center gap-3 border-b border-line px-3 last:border-b-0">
+            <input type="checkbox" name={name} value={option.id} className="size-5 accent-brand" />
+            <span>{option.title}</span>
+          </label>
+        ))}
+        {options.length === 0 && <p className="p-3 text-sm text-muted">Chưa có dữ liệu.</p>}
+      </div>
+    </fieldset>
+  )
+}
+
 export default async function NewDrawPage() {
   await requireBcn()
   const { challenges, events } = await loadSources()
@@ -48,28 +65,8 @@ export default async function NewDrawPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1">
-          <span className="font-bold">Challenge (khi chọn nguồn challenge)</span>
-          <select name="challenge_id" defaultValue="" className={INPUT_CLASS}>
-            <option value="">Không chọn</option>
-            {challenges.map((challenge) => (
-              <option key={challenge.id} value={challenge.id}>
-                {challenge.title}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="font-bold">Event (khi chọn nguồn event)</span>
-          <select name="event_id" defaultValue="" className={INPUT_CLASS}>
-            <option value="">Không chọn</option>
-            {events.map((event) => (
-              <option key={event.id} value={event.id}>
-                {event.title}
-              </option>
-            ))}
-          </select>
-        </label>
+        <SourcePicker legend="Challenge (khi chọn nguồn challenge, chọn được nhiều)" name="challenge_id" options={challenges} />
+        <SourcePicker legend="Event (khi chọn nguồn event, chọn được nhiều)" name="event_id" options={events} />
         <label className="flex flex-col gap-1">
           <span className="font-bold">Các giải</span>
           <span className="text-sm text-muted">Mỗi giải một dòng, dạng “Tên giải | số lượng”. Quay theo thứ tự từ trên xuống.</span>

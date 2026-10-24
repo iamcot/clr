@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import LiveChallengeRanking, { type LiveRankingRow } from '@/components/LiveChallengeRanking'
 import { KM_GOAL_TYPES, type ChallengeStatus, type GoalType } from '@/config/challenges'
@@ -69,9 +69,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
 
   return (
     <section>
-      <Link href="/challenges" className="text-sm text-muted">
-        ← Challenge
-      </Link>
+      <BackLink href="/challenges">Challenge</BackLink>
       <h1 className="mt-2 text-2xl font-black">{challenge.title}</h1>
       <p className="text-sm text-muted">
         {formatDateTimeVi(challenge.starts_at)} đến {formatDateTimeVi(challenge.ends_at)}

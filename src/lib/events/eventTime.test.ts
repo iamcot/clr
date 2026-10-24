@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isCheckinOpen, isPastEvent, isRegistrationOpen, splitUpcomingAndPast } from '@/lib/events/eventTime'
+import { isCheckinOpen, isPastEvent, isRegistrationOpen, pickHomeEvents, splitUpcomingAndPast } from '@/lib/events/eventTime'
 
 const NOW = new Date('2026-10-23T12:00:00Z')
 const HOUR = 3600 * 1000
@@ -59,5 +59,23 @@ describe('isCheckinOpen', () => {
     expect(isCheckinOpen(event, new Date('2026-10-23T11:59:00Z'), HOUR, 3 * HOUR)).toBe(false)
     expect(isCheckinOpen(event, new Date('2026-10-23T12:30:00Z'), HOUR, 3 * HOUR)).toBe(true)
     expect(isCheckinOpen(event, new Date('2026-10-23T18:01:00Z'), HOUR, 3 * HOUR)).toBe(false)
+  })
+})
+
+describe('pickHomeEvents', () => {
+  const ongoing = { ...base, startsAt: '2026-10-23T11:00:00Z', endsAt: '2026-10-23T14:00:00Z' }
+
+  it('có event đang diễn ra thì chỉ hiện event đó', () => {
+    expect(pickHomeEvents([base, ongoing], NOW, 2)).toEqual({ ongoing: true, events: [ongoing] })
+  })
+
+  it('không có event đang diễn ra thì hiện các event sắp tới, giới hạn theo số lượng', () => {
+    const later = { ...base, startsAt: '2026-10-28T22:00:00Z', endsAt: '2026-10-29T00:00:00Z' }
+    expect(pickHomeEvents([later, base], NOW, 1)).toEqual({ ongoing: false, events: [base] })
+  })
+
+  it('bỏ qua event đã qua', () => {
+    const past = { ...base, startsAt: '2026-10-01T22:00:00Z', endsAt: '2026-10-02T00:00:00Z' }
+    expect(pickHomeEvents([past], NOW, 2)).toEqual({ ongoing: false, events: [] })
   })
 })

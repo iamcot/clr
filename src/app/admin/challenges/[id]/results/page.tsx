@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import { PENALTY_TYPES } from '@/config/penalties'
 import { STATUS_LABELS, type ChallengeStatus, type GoalType } from '@/config/challenges'
@@ -25,9 +26,7 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
 
   return (
     <section>
-      <Link href={`/admin/challenges/${id}`} className="text-sm text-muted">
-        ← {challenge.title}
-      </Link>
+      <BackLink href={`/admin/challenges/${id}`}>{challenge.title}</BackLink>
       <h1 className="mt-2 text-2xl font-black">Kết quả và chốt</h1>
       <p className="text-sm text-muted">{STATUS_LABELS[status]}</p>
       <Link

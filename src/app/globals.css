@@ -97,3 +97,25 @@ body {
   animation: sprite-bob 0.6s ease-in-out infinite;
   animation-delay: var(--d, 0s);
 }
+
+@keyframes celebrate-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes confetti-fall {
+  from {
+    opacity: 1;
+    transform: translateY(-20px) rotate(0deg);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(260px) rotate(360deg);
+  }
+}

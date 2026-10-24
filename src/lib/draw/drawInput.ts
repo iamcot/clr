@@ -6,7 +6,7 @@ export type PrizeInput = { name: string; quantity: number }
 export type DrawInput = {
   title: string
   sourceType: DrawSourceType
-  sourceId: string | null
+  sourceIds: string[]
   style: DrawStyle
   prizes: PrizeInput[]
 }
@@ -36,16 +36,21 @@ function text(formData: FormData, name: string): string {
   return String(formData.get(name) ?? '').trim()
 }
 
+function readSourceIds(formData: FormData, name: string): string[] {
+  const ids = formData.getAll(name).map((value) => String(value).trim()).filter(isUuid)
+  return [...new Set(ids)]
+}
+
 export function parseDrawInput(formData: FormData): DrawInputParse {
   const title = text(formData, 'title')
   if (!title) return { ok: false, message: 'Hãy nhập tên đợt quay số' }
   const sourceType = DRAW_SOURCE_TYPES.find((type) => type === text(formData, 'source_type'))
   if (!sourceType) return { ok: false, message: 'Nguồn danh sách không hợp lệ' }
-  const sourceId = text(formData, sourceType === 'event_checked_in' ? 'event_id' : 'challenge_id')
-  if (sourceType !== 'manual' && !isUuid(sourceId)) return { ok: false, message: 'Hãy chọn challenge hoặc event' }
+  const sourceIds = sourceType === 'manual' ? [] : readSourceIds(formData, sourceType === 'event_checked_in' ? 'event_id' : 'challenge_id')
+  if (sourceType !== 'manual' && sourceIds.length === 0) return { ok: false, message: 'Hãy chọn ít nhất một challenge hoặc event' }
   const style = DRAW_STYLES.find((item) => item === text(formData, 'style'))
   if (!style) return { ok: false, message: 'Hãy chọn hình thức quay số' }
   const prizes = parsePrizeLines(text(formData, 'prizes'))
   if (!prizes) return { ok: false, message: 'Mỗi giải một dòng, dạng “Tên giải | số lượng”' }
-  return { ok: true, value: { title, sourceType, sourceId: sourceType === 'manual' ? null : sourceId, style, prizes } }
+  return { ok: true, value: { title, sourceType, sourceIds, style, prizes } }
 }

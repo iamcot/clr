@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import BackLink from '@/components/BackLink'
 import { parsePeriodValue, periodRange, shiftPeriod, summarizeEvents, type StatsPeriod } from '@/lib/events/eventStats'
 import { loadEventStatsRows, loadTopAttendees } from '@/lib/events/loadEventStats'
 import { formatDateVi } from '@/lib/format/dateTime'
@@ -36,9 +37,7 @@ export default async function EventStatsPage({ searchParams }: { searchParams: P
 
   return (
     <section>
-      <Link href="/admin/events" className="text-sm text-muted">
-        ← Event
-      </Link>
+      <BackLink href="/admin/events">Event</BackLink>
       <h1 className="mt-2 text-2xl font-black">Thống kê event</h1>
       <div className="mt-3 flex gap-2">
         {(['month', 'year'] as const).map((item) => (
