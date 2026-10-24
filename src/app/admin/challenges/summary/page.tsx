@@ -32,7 +32,7 @@ export default async function ChallengeSummaryPage({ searchParams }: { searchPar
 
   return (
     <section>
-      <Link href="/admin/challenges" className="text-sm text-muted underline">
+      <Link href="/admin/challenges" className="text-sm text-muted">
         ← Challenge
       </Link>
       <h1 className="mt-2 text-2xl font-black">Tổng hợp nhiều kỳ</h1>

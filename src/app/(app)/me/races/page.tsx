@@ -9,7 +9,7 @@ export default async function MyRacesPage() {
 
   return (
     <section>
-      <Link href="/me" className="text-sm text-muted underline">
+      <Link href="/me" className="text-sm text-muted">
         ← Tôi
       </Link>
       <h1 className="mt-2 text-2xl font-black">Giải đã chạy</h1>
