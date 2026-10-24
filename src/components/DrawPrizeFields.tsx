@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 
 type PrizeRow = { key: number; name: string; quantity: string }
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = ADMIN_INPUT_CLASS
 
 function toPrizeLines(rows: PrizeRow[]): string {
   return rows
@@ -35,12 +36,12 @@ export default function DrawPrizeFields() {
       <legend className="font-bold">Các giải</legend>
       <p className="text-sm text-muted">Quay theo thứ tự từ trên xuống.</p>
       <input type="hidden" name="prizes" value={toPrizeLines(rows)} />
-      <div className="grid grid-cols-[1fr_5rem_2.75rem] gap-2 text-sm text-muted">
+      <div className="grid grid-cols-[1fr_5rem_2.5rem] gap-2 text-sm text-muted">
         <span>Tên giải</span>
         <span>Số lượng</span>
       </div>
       {rows.map((row) => (
-        <div key={row.key} className="grid grid-cols-[1fr_5rem_2.75rem] gap-2">
+        <div key={row.key} className="grid grid-cols-[1fr_5rem_2.5rem] gap-2">
           <input
             value={row.name}
             onChange={(event) => update(row.key, { name: event.target.value })}
@@ -62,13 +63,13 @@ export default function DrawPrizeFields() {
             onClick={() => removeRow(row.key)}
             disabled={rows.length === 1}
             aria-label="Xoá giải"
-            className="min-h-11 rounded-lg border border-line bg-white text-danger disabled:opacity-30"
+            className="min-h-10 rounded-lg border border-hairline bg-white text-danger disabled:opacity-30 md:min-h-9"
           >
             ✕
           </button>
         </div>
       ))}
-      <button type="button" onClick={addRow} className="min-h-11 rounded-lg border border-line bg-white font-bold">
+      <button type="button" onClick={addRow} className={adminButtonClass('secondary')}>
         + Thêm giải
       </button>
     </fieldset>

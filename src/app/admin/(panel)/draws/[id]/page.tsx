@@ -1,17 +1,26 @@
 import { notFound } from 'next/navigation'
-import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
+import AdminCard from '@/components/admin/AdminCard'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
+import Badge from '@/components/admin/Badge'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import DrawLive from '@/components/DrawLive'
 import MultiSelectDropdown from '@/components/MultiSelectDropdown'
 import { DRAW_STATUS_LABELS } from '@/config/draw'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
+import { pickTab } from '@/lib/admin/tabs'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { cancelDraw, drawNext, finishDraw, lockDraw, setParticipant, startDraw } from '@/lib/draw/adminActions'
 import { loadDrawDetail, loadDrawState, type DrawDetail } from '@/lib/draw/loadDraw'
 import { countPrizeSlots } from '@/lib/draw/pick'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
-const PRIMARY_CLASS = 'min-h-12 w-full rounded-full bg-brand font-bold text-white'
+const TABS = ['run', 'participants'] as const
+
+type Participant = DrawDetail['participants'][number]
 
 async function loadMemberOptions() {
   const supabase = await createSupabaseServerClient()
@@ -23,110 +32,174 @@ function DrawIdField({ drawId }: { drawId: string }) {
   return <input type="hidden" name="draw_id" value={drawId} />
 }
 
-function ParticipantEditor({ draw, members }: { draw: DrawDetail; members: { id: string | null; display_name: string | null }[] }) {
+function StateButton({
+  draw,
+  drawnCount,
+  totalSlots,
+}: {
+  draw: DrawDetail
+  drawnCount: number
+  totalSlots: number
+}) {
+  if (draw.status === 'draft' && !draw.seedCommit) {
+    return (
+      <ActionForm action={lockDraw}>
+        <DrawIdField drawId={draw.id} />
+        <button type="submit" className={adminButtonClass('primary')}>
+          Chốt danh sách, công bố mã commit
+        </button>
+      </ActionForm>
+    )
+  }
+  if (draw.status === 'draft') {
+    return (
+      <ActionForm action={startDraw}>
+        <DrawIdField drawId={draw.id} />
+        <button type="submit" className={adminButtonClass('primary')}>
+          Bắt đầu quay số
+        </button>
+      </ActionForm>
+    )
+  }
+  if (draw.status === 'live') {
+    const more = drawnCount < totalSlots
+    return (
+      <ActionForm action={more ? drawNext : finishDraw}>
+        <DrawIdField drawId={draw.id} />
+        <button type="submit" className={adminButtonClass('primary')}>
+          {more ? 'Quay giải tiếp theo' : 'Kết thúc, công bố kết quả'}
+        </button>
+      </ActionForm>
+    )
+  }
+  return null
+}
+
+function participantColumns(drawId: string, editable: boolean): DataTableColumn<Participant>[] {
+  const columns: DataTableColumn<Participant>[] = [
+    { key: 'name', header: 'Thành viên', cell: (participant) => <b>{participant.name}</b> },
+  ]
+  if (!editable) return columns
+  return [
+    ...columns,
+    {
+      key: 'remove',
+      header: '',
+      align: 'right',
+      cell: (participant) => (
+        <ActionForm action={setParticipant}>
+          <DrawIdField drawId={drawId} />
+          <input type="hidden" name="member_id" value={participant.memberId} />
+          <input type="hidden" name="remove" value="true" />
+          <button type="submit" className={adminButtonClass('danger')}>
+            Bỏ
+          </button>
+        </ActionForm>
+      ),
+    },
+  ]
+}
+
+function AddParticipants({
+  draw,
+  members,
+}: {
+  draw: DrawDetail
+  members: { id: string | null; display_name: string | null }[]
+}) {
   const joinedIds = new Set(draw.participants.map((participant) => participant.memberId))
   const candidates = members.filter((member) => member.id && !joinedIds.has(member.id))
   return (
-    <div className="mt-4">
-      <h2 className="text-lg font-black">Danh sách tham gia ({draw.participants.length})</h2>
-      <ActionForm action={setParticipant} className="mt-2 flex items-start gap-2">
+    <AdminCard title="Thêm thành viên" className="mb-4">
+      <ActionForm action={setParticipant} className="flex items-start gap-2">
         <DrawIdField drawId={draw.id} />
         <div className="min-w-0 flex-1">
           <MultiSelectDropdown
             key={draw.participants.length}
             name="member_id"
-            placeholder="Thêm thành viên (chọn nhiều)"
+            placeholder="Chọn thành viên (chọn nhiều)"
             options={candidates.map((member) => ({ id: member.id ?? '', title: member.display_name ?? 'Thành viên' }))}
           />
         </div>
-        <button type="submit" className={BUTTON_CLASS}>
+        <button type="submit" className={adminButtonClass('primary')}>
           Thêm
         </button>
       </ActionForm>
-      <ul className="mt-2 flex flex-col gap-1">
-        {draw.participants.map((participant) => (
-          <li key={participant.memberId} className="flex items-center justify-between gap-2 rounded-lg bg-white px-3">
-            <span className="truncate">{participant.name}</span>
-            <ActionForm action={setParticipant}>
-              <DrawIdField drawId={draw.id} />
-              <input type="hidden" name="member_id" value={participant.memberId} />
-              <input type="hidden" name="remove" value="true" />
-              <button type="submit" className="min-h-11 px-2 font-bold text-danger">
-                Bỏ
-              </button>
-            </ActionForm>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </AdminCard>
   )
 }
 
-export default async function AdminDrawPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminDrawPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ tab?: string; page?: string }>
+}) {
   await requireBcn()
   const { id } = await params
+  const query = await searchParams
   const draw = await loadDrawDetail(id)
   const state = draw ? await loadDrawState(id) : null
   if (!draw || !state) notFound()
+  const tab = pickTab(TABS, query.tab, 'run')
   const drawnCount = state.completed.length + (state.spinning ? 1 : 0)
-  const members = draw.status === 'draft' && !draw.seedCommit ? await loadMemberOptions() : []
+  const editable = draw.status === 'draft' && !draw.seedCommit
+  const members = editable && tab === 'participants' ? await loadMemberOptions() : []
   const totalSlots = countPrizeSlots(draw.prizes)
   const finalStatus = draw.status === 'done' || draw.status === 'cancelled'
+  const paged = slicePage(draw.participants, parsePage(query.page))
+  const basePath = `/admin/draws/${id}`
 
   return (
     <section>
-      <BackLink href="/admin/draws">Quay số</BackLink>
-      <h1 className="mt-2 text-2xl font-black">{draw.title}</h1>
-      <p className="text-sm text-muted">
-        {DRAW_STATUS_LABELS[draw.status]} · {drawnCount}/{totalSlots} giải đã quay
-      </p>
-      {draw.seedCommit && (
-        <p className="mt-2 rounded-lg bg-white p-3 font-mono text-xs break-all">Mã commit: {draw.seedCommit}</p>
-      )}
-      {draw.cancelReason && <p className="mt-2 rounded-lg bg-danger/10 p-3 text-danger">Đã huỷ: {draw.cancelReason}</p>}
+      <AdminPageHeader
+        title={draw.title}
+        backHref="/admin/draws"
+        backLabel="Quay số"
+        description={`${drawnCount}/${totalSlots} giải đã quay · ${draw.participants.length} người tham gia`}
+        actions={<StateButton draw={draw} drawnCount={drawnCount} totalSlots={totalSlots} />}
+      />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <Badge tone={draw.status === 'live' ? 'success' : 'info'}>{DRAW_STATUS_LABELS[draw.status]}</Badge>
+        {draw.seedCommit && <span className="font-mono text-xs break-all text-muted">Mã commit: {draw.seedCommit}</span>}
+      </div>
+      {draw.cancelReason && <p className="mb-4 rounded-lg bg-danger/10 p-3 text-danger">Đã huỷ: {draw.cancelReason}</p>}
+      <AdminTabs
+        items={[
+          { href: basePath, label: 'Quay số', active: tab === 'run' },
+          { href: `${basePath}?tab=participants`, label: `Người tham gia (${draw.participants.length})`, active: tab === 'participants' },
+        ]}
+      />
 
-      <DrawLive drawId={draw.id} initial={state} prizes={draw.prizes} participants={draw.participants} />
+      {tab === 'run' && (
+        <div className="mt-4">
+          <DrawLive drawId={draw.id} initial={state} prizes={draw.prizes} participants={draw.participants} />
+          {!finalStatus && (
+            <AdminCard title="Huỷ đợt quay số" className="mt-4">
+              <ActionForm action={cancelDraw} className="flex flex-col gap-2 md:flex-row">
+                <DrawIdField drawId={draw.id} />
+                <input name="reason" required placeholder="Lý do huỷ (hiện công khai)" className={ADMIN_INPUT_CLASS} />
+                <button type="submit" className={adminButtonClass('danger')}>
+                  Huỷ đợt quay
+                </button>
+              </ActionForm>
+            </AdminCard>
+          )}
+        </div>
+      )}
 
-      {draw.status === 'draft' && !draw.seedCommit && (
-        <>
-          <ParticipantEditor draw={draw} members={members} />
-          <ActionForm action={lockDraw} className="mt-4">
-            <DrawIdField drawId={draw.id} />
-            <button type="submit" className={PRIMARY_CLASS}>
-              Chốt danh sách và công bố mã commit
-            </button>
-          </ActionForm>
-        </>
-      )}
-      {draw.status === 'draft' && draw.seedCommit && (
-        <ActionForm action={startDraw} className="mt-4">
-          <DrawIdField drawId={draw.id} />
-          <button type="submit" className={PRIMARY_CLASS}>
-            Bắt đầu quay số
-          </button>
-        </ActionForm>
-      )}
-      {draw.status === 'live' && (
-        <ActionForm action={drawnCount < totalSlots ? drawNext : finishDraw} className="mt-4">
-          <DrawIdField drawId={draw.id} />
-          <button type="submit" className={PRIMARY_CLASS}>
-            {drawnCount < totalSlots ? 'Quay giải tiếp theo' : 'Kết thúc và công bố kết quả'}
-          </button>
-        </ActionForm>
-      )}
-      {!finalStatus && (
-        <ActionForm action={cancelDraw} className="mt-6 flex flex-col gap-2">
-          <DrawIdField drawId={draw.id} />
-          <input
-            name="reason"
-            required
-            placeholder="Lý do huỷ (hiện công khai)"
-            className="min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8"
+      {tab === 'participants' && (
+        <div className="mt-4">
+          {editable && <AddParticipants draw={draw} members={members} />}
+          <DataTable
+            columns={participantColumns(draw.id, editable)}
+            rows={paged.rows}
+            rowKey={(participant) => participant.memberId}
+            emptyText="Chưa có ai trong danh sách."
           />
-          <button type="submit" className={`${BUTTON_CLASS} text-danger`}>
-            Huỷ đợt quay số
-          </button>
-        </ActionForm>
+          <Pagination window={paged.window} hrefFor={(page) => hrefWithPage(basePath, query, page)} unit="người" />
+        </div>
       )}
     </section>
   )

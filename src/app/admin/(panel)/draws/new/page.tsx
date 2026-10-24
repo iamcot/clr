@@ -1,4 +1,9 @@
 import ActionForm from '@/components/ActionForm'
+import AdminFormSection from '@/components/admin/AdminFormSection'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import FormField from '@/components/admin/FormField'
+import StickyActionBar from '@/components/admin/StickyActionBar'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import DrawPrizeFields from '@/components/DrawPrizeFields'
 import DrawSourceFields from '@/components/DrawSourceFields'
 import { DRAW_STYLE_CONFIG, DRAW_STYLES } from '@/config/draw'
@@ -6,7 +11,7 @@ import { requireBcn } from '@/lib/auth/requireBcn'
 import { createDraw } from '@/lib/draw/adminActions'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
+const INPUT_CLASS = ADMIN_INPUT_CLASS
 const SOURCE_LIST_LIMIT = 50
 
 async function loadSources() {
@@ -24,27 +29,33 @@ export default async function NewDrawPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-black">Tạo đợt quay số</h1>
-      <ActionForm action={createDraw} className="mt-4 flex flex-col gap-3">
-        <label className="flex flex-col gap-1">
-          <span className="font-bold">Tên đợt quay số</span>
-          <input name="title" required className={INPUT_CLASS} />
-        </label>
-        <label className="flex flex-col gap-1">
-          <span className="font-bold">Hình thức quay</span>
-          <select name="style" defaultValue="reel" className={INPUT_CLASS}>
-            {DRAW_STYLES.map((style) => (
-              <option key={style} value={style}>
-                {DRAW_STYLE_CONFIG[style].label} ({DRAW_STYLE_CONFIG[style].durationMs / 1000} giây mỗi giải)
-              </option>
-            ))}
-          </select>
-        </label>
-        <DrawSourceFields challenges={challenges} events={events} />
-        <DrawPrizeFields />
-        <button type="submit" className="min-h-12 rounded-full bg-brand font-bold text-white">
-          Tạo và chọn danh sách
-        </button>
+      <AdminPageHeader title="Tạo đợt quay số" backHref="/admin/draws" backLabel="Quay số" />
+      <ActionForm action={createDraw} className="flex flex-col gap-4">
+        <AdminFormSection title="Thông tin chung">
+          <FormField label="Tên đợt quay số">
+            <input name="title" required className={INPUT_CLASS} />
+          </FormField>
+          <FormField label="Hình thức quay">
+            <select name="style" defaultValue="reel" className={INPUT_CLASS}>
+              {DRAW_STYLES.map((style) => (
+                <option key={style} value={style}>
+                  {DRAW_STYLE_CONFIG[style].label} ({DRAW_STYLE_CONFIG[style].durationMs / 1000} giây mỗi giải)
+                </option>
+              ))}
+            </select>
+          </FormField>
+        </AdminFormSection>
+        <AdminFormSection title="Nguồn danh sách">
+          <DrawSourceFields challenges={challenges} events={events} />
+        </AdminFormSection>
+        <AdminFormSection title="Giải thưởng">
+          <DrawPrizeFields />
+        </AdminFormSection>
+        <StickyActionBar>
+          <button type="submit" className={adminButtonClass('primary')}>
+            Tạo và chọn danh sách
+          </button>
+        </StickyActionBar>
       </ActionForm>
     </section>
   )

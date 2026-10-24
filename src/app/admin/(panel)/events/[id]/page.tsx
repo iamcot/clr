@@ -1,69 +1,119 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
 import AdminAttendeeList from '@/components/AdminAttendeeList'
+import AdminCard from '@/components/admin/AdminCard'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
+import Badge from '@/components/admin/Badge'
+import Pagination from '@/components/admin/Pagination'
+import { adminButtonClass } from '@/components/admin/styles'
 import CheckinPanel from '@/components/CheckinPanel'
 import EventForm from '@/components/EventForm'
+import { EVENT_KIND_LABELS, EVENT_STATUS_LABELS } from '@/config/events'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
+import { pickTab } from '@/lib/admin/tabs'
 import { getAppUrl } from '@/lib/env'
 import { createAbsentPenalties, loadCheckinCode } from '@/lib/events/adminActions'
 import { isPastEvent } from '@/lib/events/eventTime'
+import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { eventFormDefaults } from '@/lib/events/formDefaults'
 import { loadAdminAttendees, loadAdminEvent } from '@/lib/events/loadAdminEvents'
 
-export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+const TABS = ['edit', 'attendees', 'checkin'] as const
+
+export default async function EditEventPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ tab?: string; page?: string }>
+}) {
   const { id } = await params
+  const query = await searchParams
   const event = await loadAdminEvent(id)
   if (!event) notFound()
+  const published = event.status === 'published'
+  const tab = pickTab(TABS, query.tab, 'edit')
   const [attendees, checkinCode] = await Promise.all([
     loadAdminAttendees(id),
-    event.status === 'published' ? loadCheckinCode(id) : null,
+    published && tab === 'checkin' ? loadCheckinCode(id) : null,
   ])
+  const registered = attendees.filter((attendee) => attendee.status !== 'not_going')
+  const paged = slicePage(registered, parsePage(query.page))
+  const goingCount = attendees.filter((attendee) => attendee.status === 'going').length
   const past = isPastEvent(event, new Date())
   const absentCount = attendees.filter(
     (attendee) => attendee.status === 'going' && !attendee.checkedInAt && !attendee.hasActivity,
   ).length
+  const basePath = `/admin/events/${id}`
+
+  const tabItems = [
+    { href: basePath, label: 'Chỉnh sửa', active: tab === 'edit' },
+    { href: `${basePath}?tab=attendees`, label: `Người đăng ký (${goingCount})`, active: tab === 'attendees' },
+    ...(published ? [{ href: `${basePath}?tab=checkin`, label: 'Điểm danh', active: tab === 'checkin' }] : []),
+  ]
 
   return (
     <section>
-      <BackLink href="/admin/events">Event</BackLink>
-      <h1 className="mt-2 mb-4 text-2xl font-black">{event.title}</h1>
-      <div className="mb-4 flex gap-2">
-        <Link
-          href={`/events/${id}`}
-          className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-hairline bg-white font-bold"
-        >
-          Xem như thành viên
-        </Link>
-        <Link
-          href={`/admin/events/${id}/photos`}
-          className="flex min-h-11 flex-1 items-center justify-center rounded-lg border border-hairline bg-white font-bold"
-        >
-          Quản lý ảnh
-        </Link>
+      <AdminPageHeader
+        title={event.title}
+        backHref="/admin/events"
+        backLabel="Event"
+        description={`${EVENT_KIND_LABELS[event.kind]} · ${formatDateTimeVi(event.startsAt)}`}
+        actions={
+          <>
+            <Link href={`/events/${id}`} className={adminButtonClass('secondary')}>
+              Xem như thành viên
+            </Link>
+            <Link href={`${basePath}/photos`} className={adminButtonClass('secondary')}>
+              Quản lý ảnh
+            </Link>
+          </>
+        }
+      />
+      <div className="mb-4">
+        <Badge tone={published ? 'success' : 'neutral'}>{EVENT_STATUS_LABELS[event.status]}</Badge>
       </div>
-      {event.status === 'published' && (
-        <div className="mb-6">
-          <h2 className="mb-2 text-lg font-black">Điểm danh</h2>
-          <CheckinPanel eventId={id} origin={getAppUrl()} initial={checkinCode} />
-        </div>
-      )}
-      <EventForm defaults={eventFormDefaults(event)} />
-      <h2 className="mt-8 text-lg font-black">Người đăng ký ({attendees.filter((a) => a.status === 'going').length})</h2>
-      <form method="post" action={`/admin/events/${id}/link-activities`} className="mt-2">
-        <button type="submit" className="min-h-11 w-full rounded-lg border border-hairline bg-white font-bold">
-          Quét hoạt động Strava khớp với event
-        </button>
-      </form>
-      <AdminAttendeeList eventId={id} attendees={attendees} />
-      {past && event.absentPenalty && (
-        <ActionForm action={createAbsentPenalties} className="mt-4">
-          <input type="hidden" name="event_id" value={id} />
-          <button type="submit" className="min-h-12 w-full rounded-lg border border-danger font-bold text-danger">
-            Sinh phạt cho {absentCount} người vắng
-          </button>
-        </ActionForm>
-      )}
+      <AdminTabs items={tabItems} />
+
+      <div className="mt-4">
+        {tab === 'edit' && <EventForm defaults={eventFormDefaults(event)} />}
+
+        {tab === 'attendees' && (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2">
+              <form method="post" action={`${basePath}/link-activities`}>
+                <button type="submit" className={adminButtonClass('secondary')}>
+                  Quét hoạt động Strava khớp với event
+                </button>
+              </form>
+              {past && event.absentPenalty && (
+                <ActionForm action={createAbsentPenalties}>
+                  <input type="hidden" name="event_id" value={id} />
+                  <button type="submit" className={adminButtonClass('danger')}>
+                    Sinh phạt cho {absentCount} người vắng
+                  </button>
+                </ActionForm>
+              )}
+            </div>
+            <div>
+              <AdminAttendeeList eventId={id} attendees={paged.rows} />
+              <Pagination
+                window={paged.window}
+                hrefFor={(page) => hrefWithPage(basePath, query, page)}
+                unit="người đăng ký"
+              />
+            </div>
+          </div>
+        )}
+
+        {tab === 'checkin' && published && (
+          <AdminCard title="Mã điểm danh">
+            <CheckinPanel eventId={id} origin={getAppUrl()} initial={checkinCode} />
+          </AdminCard>
+        )}
+      </div>
     </section>
   )
 }

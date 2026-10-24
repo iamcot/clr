@@ -1,19 +1,75 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import BackLink from '@/components/BackLink'
 import ActionForm from '@/components/ActionForm'
+import AdminCard from '@/components/admin/AdminCard'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import Badge from '@/components/admin/Badge'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
+import StatCard from '@/components/admin/StatCard'
+import { adminButtonClass } from '@/components/admin/styles'
 import { PENALTY_TYPES } from '@/config/penalties'
 import { STATUS_LABELS, type ChallengeStatus, type GoalType } from '@/config/challenges'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { closeChallengeAction } from '@/lib/challenges/adminActions'
 import { formatProgressValue } from '@/lib/challenges/describe'
-import { loadChallenge, loadEntries } from '@/lib/challenges/loadChallenges'
+import { loadChallenge, loadEntries, type EntryWithMember } from '@/lib/challenges/loadChallenges'
 import { previewSettlement } from '@/lib/challenges/settlement'
 import { formatVndCompact } from '@/lib/format/money'
 
 const PENALTY_NAMES = Object.fromEntries(PENALTY_TYPES.map((type) => [type.code, type.name]))
 
-export default async function ChallengeResultsPage({ params }: { params: Promise<{ id: string }> }) {
+type PreviewRow = { key: string; kind: 'penalty' | 'reward'; name: string; detail: string; amount: number }
+
+const PREVIEW_COLUMNS: DataTableColumn<PreviewRow>[] = [
+  { key: 'name', header: 'Thành viên', cell: (row) => <b>{row.name}</b> },
+  {
+    key: 'kind',
+    header: 'Loại',
+    cell: (row) => <Badge tone={row.kind === 'penalty' ? 'danger' : 'success'}>{row.kind === 'penalty' ? 'Phạt' : 'Thưởng'}</Badge>,
+  },
+  { key: 'detail', header: 'Nội dung', hideBelowMd: true, cell: (row) => row.detail },
+  { key: 'amount', header: 'Số tiền', align: 'right', cell: (row) => (row.amount ? formatVndCompact(row.amount) : '—') },
+]
+
+function entryColumns(categoryName: Map<string, string>, goalType: GoalType): DataTableColumn<EntryWithMember>[] {
+  return [
+    { key: 'rank', header: '#', cell: (entry) => entry.rank ?? '—' },
+    {
+      key: 'member',
+      header: 'Thành viên',
+      cell: (entry) => (
+        <b>
+          {entry.displayName}
+          {entry.completed && <span className="ml-1 text-brand-dark">✓</span>}
+        </b>
+      ),
+    },
+    { key: 'category', header: 'Hạng mục', hideBelowMd: true, cell: (entry) => categoryName.get(entry.category_id) ?? '—' },
+    {
+      key: 'progress',
+      header: 'Tiến độ',
+      align: 'right',
+      cell: (entry) => `${formatProgressValue(goalType, Number(entry.value))} · ${Math.round(Number(entry.progress_pct))}%`,
+    },
+    {
+      key: 'status',
+      header: 'Ghi chú',
+      hideBelowMd: true,
+      cell: (entry) => entry.excluded && <Badge tone="danger">Bị loại{entry.excluded_reason ? `: ${entry.excluded_reason}` : ''}</Badge>,
+    },
+  ]
+}
+
+export default async function ChallengeResultsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
   const { id } = await params
+  const query = await searchParams
   const data = await loadChallenge(id)
   if (!data || data.challenge.status === 'draft') notFound()
   const { challenge, categories } = data
@@ -23,75 +79,78 @@ export default async function ChallengeResultsPage({ params }: { params: Promise
   const categoryName = new Map(categories.map((category) => [category.id, category.name]))
   const ended = new Date(challenge.ends_at).getTime() <= new Date().getTime()
   const canClose = status !== 'closed' && status !== 'published' && ended
+  const paged = slicePage(entries, parsePage(query.page))
+  const previewRows: PreviewRow[] = preview
+    ? [
+        ...preview.plan.penalties.map((penalty) => ({
+          key: `p-${penalty.memberId}-${penalty.typeCode}`,
+          kind: 'penalty' as const,
+          name: preview.names[penalty.memberId] ?? 'Thành viên',
+          detail: `${PENALTY_NAMES[penalty.typeCode] ?? penalty.typeCode}: ${penalty.reason}`,
+          amount: penalty.amount,
+        })),
+        ...preview.plan.rewards.map((reward) => ({
+          key: `r-${reward.memberId}-${reward.title}`,
+          kind: 'reward' as const,
+          name: preview.names[reward.memberId] ?? 'Thành viên',
+          detail: `${reward.title}: ${reward.reason}`,
+          amount: reward.amount ?? 0,
+        })),
+      ]
+    : []
 
   return (
     <section>
-      <BackLink href={`/admin/challenges/${id}`}>{challenge.title}</BackLink>
-      <h1 className="mt-2 text-2xl font-black">Kết quả và chốt</h1>
-      <p className="text-sm text-muted">{STATUS_LABELS[status]}</p>
-      <Link
-        href={`/admin/challenges/${id}/results/csv`}
-        prefetch={false}
-        className="mt-3 flex min-h-11 items-center justify-center rounded-lg border border-hairline bg-white font-bold"
-      >
-        Xuất CSV
-      </Link>
+      <AdminPageHeader
+        title="Kết quả và chốt"
+        backHref={`/admin/challenges/${id}`}
+        backLabel={challenge.title}
+        description={STATUS_LABELS[status]}
+        actions={
+          <>
+            <Link href={`/admin/challenges/${id}/results/csv`} prefetch={false} className={adminButtonClass('secondary')}>
+              Xuất CSV
+            </Link>
+            {canClose && (
+              <ActionForm action={closeChallengeAction}>
+                <input type="hidden" name="challenge_id" value={id} />
+                <button type="submit" className={adminButtonClass('primary')}>
+                  Chốt kết quả
+                </button>
+              </ActionForm>
+            )}
+          </>
+        }
+      />
 
-      <h2 className="mt-6 text-lg font-black">Bản xem trước thưởng phạt</h2>
       {preview && (
-        <>
-          <p className="text-sm text-muted">
-            {preview.plan.penalties.length} khoản phạt, tổng {formatVndCompact(preview.totalPenaltyAmount)}.{' '}
-            {preview.plan.rewards.length} khoản thưởng.
-          </p>
-          <ul className="mt-2 flex flex-col gap-1 text-sm">
-            {preview.plan.penalties.map((penalty) => (
-              <li key={`${penalty.memberId}-${penalty.typeCode}`} className="rounded-lg bg-white p-2">
-                <b>{preview.names[penalty.memberId]}</b>: phạt {formatVndCompact(penalty.amount)} (
-                {PENALTY_NAMES[penalty.typeCode] ?? penalty.typeCode}, {penalty.reason})
-              </li>
-            ))}
-            {preview.plan.rewards.map((reward) => (
-              <li key={`${reward.memberId}-${reward.title}`} className="rounded-lg bg-lime/30 p-2">
-                <b>{preview.names[reward.memberId]}</b>: thưởng {reward.title}
-                {reward.amount ? ` ${formatVndCompact(reward.amount)}` : ''} ({reward.reason})
-              </li>
-            ))}
-          </ul>
-        </>
+        <div className="grid grid-cols-3 gap-4">
+          <StatCard label="Khoản phạt" value={preview.plan.penalties.length} />
+          <StatCard label="Tổng tiền phạt" value={formatVndCompact(preview.totalPenaltyAmount)} />
+          <StatCard label="Khoản thưởng" value={preview.plan.rewards.length} />
+        </div>
       )}
-      <p className="mt-2 text-xs text-muted">
-        Người bị loại hoặc đã được miễn phạt (ở trang challenge) không có khoản phạt. Chốt lần nữa không nhân đôi khoản.
-      </p>
-      {canClose && (
-        <ActionForm action={closeChallengeAction} className="mt-3">
-          <input type="hidden" name="challenge_id" value={id} />
-          <button
-            type="submit"
-            className="min-h-12 w-full rounded-lg bg-brand font-bold text-white active:bg-brand-dark"
-          >
-            Chốt kết quả
-          </button>
-        </ActionForm>
-      )}
-      {!canClose && status !== 'closed' && <p className="mt-3 text-sm text-muted">Chưa tới hạn chốt.</p>}
 
-      <h2 className="mt-6 text-lg font-black">Bảng kết quả</h2>
-      <ul className="mt-2 flex flex-col gap-2">
-        {entries.map((entry) => (
-          <li key={entry.member_id} className={`rounded-lg p-3 ${entry.excluded ? 'bg-line' : 'bg-white'}`}>
-            <p className="font-bold">
-              {entry.rank ? `#${entry.rank} ` : ''}
-              {entry.displayName}
-              {entry.completed && <span className="ml-2 text-brand-dark">✓</span>}
-            </p>
-            <p className="text-sm text-muted">
-              {categoryName.get(entry.category_id)} · {formatProgressValue(goalType, Number(entry.value))} ·{' '}
-              {Math.round(Number(entry.progress_pct))}%{entry.excluded && ` · Bị loại: ${entry.excluded_reason ?? ''}`}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <AdminCard title="Bản xem trước thưởng phạt" className="mt-4">
+        <DataTable columns={PREVIEW_COLUMNS} rows={previewRows} rowKey={(row) => row.key} emptyText="Không có khoản nào." />
+        <p className="mt-3 text-xs text-muted">
+          Người bị loại hoặc đã được miễn phạt (ở trang challenge) không có khoản phạt. Chốt lần nữa không nhân đôi khoản.
+          {!canClose && status !== 'closed' && ' Chưa tới hạn chốt.'}
+        </p>
+      </AdminCard>
+
+      <h2 className="mt-6 mb-2 text-lg font-black">Bảng kết quả</h2>
+      <DataTable
+        columns={entryColumns(categoryName, goalType)}
+        rows={paged.rows}
+        rowKey={(entry) => entry.member_id}
+        emptyText="Chưa có ai tham gia."
+      />
+      <Pagination
+        window={paged.window}
+        hrefFor={(page) => hrefWithPage(`/admin/challenges/${id}/results`, query, page)}
+        unit="người"
+      />
     </section>
   )
 }

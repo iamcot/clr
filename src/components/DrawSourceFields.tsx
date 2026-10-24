@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { ADMIN_INPUT_CLASS } from '@/components/admin/styles'
 import MultiSelectDropdown from '@/components/MultiSelectDropdown'
 import { DRAW_SOURCE_LABELS, DRAW_SOURCE_TYPES, type DrawSourceType } from '@/config/draw'
 
 type Option = { id: string; title: string }
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = ADMIN_INPUT_CLASS
 
 export default function DrawSourceFields({ challenges, events }: { challenges: Option[]; events: Option[] }) {
   const [sourceType, setSourceType] = useState<DrawSourceType>('challenge_completed')
