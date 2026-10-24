@@ -3,7 +3,7 @@ import ImageField from '@/components/ImageField'
 import { HONOR_KIND_ICONS, HONOR_KIND_LABELS } from '@/config/hallOfFame'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import { formatDateVi } from '@/lib/format/dateTime'
-import { addSpecialHonor, deleteHonor, generateHonors, setHonorApproved } from '@/lib/hallOfFame/adminActions'
+import { addSpecialHonor, announceRecords, deleteHonor, generateHonors, setHonorApproved } from '@/lib/hallOfFame/adminActions'
 import { loadHonors, type HonorView } from '@/lib/hallOfFame/loadHonors'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
@@ -58,6 +58,12 @@ export default async function AdminHonorsPage() {
       <ActionForm action={generateHonors} className="mt-3">
         <button type="submit" className={`${BUTTON_CLASS} w-full`}>
           Quét danh hiệu mới từ dữ liệu
+        </button>
+      </ActionForm>
+
+      <ActionForm action={announceRecords} className="mt-2">
+        <button type="submit" className={`${BUTTON_CLASS} w-full`}>
+          Đăng bài chúc mừng các kỷ lục hiện tại
         </button>
       </ActionForm>
 

@@ -72,7 +72,7 @@ export default async function AdminDrawPage({ params }: { params: Promise<{ id: 
 
   return (
     <section>
-      <Link href="/admin/draws" className="text-sm text-muted underline">
+      <Link href="/admin/draws" className="text-sm text-muted">
         ← Quay số
       </Link>
       <h1 className="mt-2 text-2xl font-black">{draw.title}</h1>

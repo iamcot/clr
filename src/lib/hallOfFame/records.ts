@@ -78,12 +78,24 @@ export function buildClubRecords(results: RecordResult[], ageGroupKey: string | 
   )
 }
 
+export type RecordCheck = 'record' | 'result_missing' | 'no_gender' | 'unknown_distance' | 'not_faster'
+
 // Kết quả vừa xác minh là kỷ lục mới khi nhanh hơn mọi kết quả khác cùng cự ly và giới tính
-export function isNewClubRecord(results: RecordResult[], resultId: string): boolean {
+export function checkNewClubRecord(results: RecordResult[], resultId: string): RecordCheck {
   const target = results.find((result) => result.id === resultId)
-  if (!target) return false
+  if (!target) return 'result_missing'
   const distanceKey = classifyDistance(target.distanceMeters)
-  if (!distanceKey || !target.gender) return false
+  if (!distanceKey) return 'unknown_distance'
+  if (!target.gender || !RECORD_GENDERS.some((gender) => gender.key === target.gender)) return 'no_gender'
   const others = resultsOf(results, distanceKey, target.gender).filter((result) => result.id !== resultId)
-  return others.every((other) => target.chipTimeSeconds < other.chipTimeSeconds)
+  return others.every((other) => target.chipTimeSeconds < other.chipTimeSeconds) ? 'record' : 'not_faster'
+}
+
+export function isNewClubRecord(results: RecordResult[], resultId: string): boolean {
+  return checkNewClubRecord(results, resultId) === 'record'
+}
+
+// Người đang giữ hạng 1 của từng cự ly × giới tính (mọi lứa tuổi)
+export function listRecordHolders(results: RecordResult[]): RecordResult[] {
+  return buildClubRecords(results).flatMap((table) => (table.entries[0] ? [table.entries[0]] : []))
 }

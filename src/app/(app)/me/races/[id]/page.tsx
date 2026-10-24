@@ -37,7 +37,7 @@ export default async function EditRaceResultPage({ params }: { params: Promise<{
 
   return (
     <section>
-      <Link href="/me/races" className="text-sm text-muted underline">
+      <Link href="/me/races" className="text-sm text-muted">
         ← Giải đã chạy
       </Link>
       <h1 className="mt-2 mb-4 text-2xl font-black">Sửa kết quả giải</h1>
