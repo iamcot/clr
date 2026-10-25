@@ -6,9 +6,9 @@ import Markdown from '@/components/Markdown'
 import MemberOnlyAction from '@/components/MemberOnlyAction'
 import MarkPostRead from '@/components/MarkPostRead'
 import PostReactionBar from '@/components/PostReactionBar'
+import RelativeTime from '@/components/RelativeTime'
 import { POST_KIND_LABELS } from '@/config/posts'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
-import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadComments, loadPostDetail } from '@/lib/posts/loadPost'
 import { totalReactions } from '@/lib/posts/reaction'
 import { acknowledgePost } from '@/lib/posts/memberActions'
@@ -30,7 +30,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         <img src={post.coverUrl} alt="" className="mt-2 h-48 w-full rounded-lg object-cover" />
       )}
       <p className="mt-3 text-xs text-muted">
-        {POST_KIND_LABELS[post.kind]} · {formatDateTimeVi(post.publishedAt)}
+        {POST_KIND_LABELS[post.kind]} · <RelativeTime iso={post.publishedAt} className="" />
         {post.authorName && ` · ${post.authorName}`}
       </p>
       <h1 className="mt-1 text-2xl font-black">{post.title}</h1>

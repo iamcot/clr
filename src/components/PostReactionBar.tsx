@@ -17,7 +17,7 @@ export default function PostReactionBar({ postId, mine, count, commentCount }: P
   }
 
   return (
-    <div className="mt-4 flex items-center gap-5 border-t border-line pt-3 text-muted">
+    <div className="mt-4 flex items-center gap-5 text-muted">
       <ActionForm action={submit}>
         <input type="hidden" name="post_id" value={postId} />
         <button

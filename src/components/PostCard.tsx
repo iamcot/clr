@@ -3,9 +3,8 @@
 import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
 import { CommentIcon, HeartIcon } from '@/components/PostIcons'
+import RelativeTime from '@/components/RelativeTime'
 import { POST_KIND_LABELS, type PostKind } from '@/config/posts'
-import { formatDateVi } from '@/lib/format/dateTime'
-import { formatRelativeVi } from '@/lib/format/relativeTime'
 import { acknowledgePost } from '@/lib/posts/memberActions'
 import type { FeedPostView } from '@/lib/posts/loadFeed'
 
@@ -24,15 +23,6 @@ function PinIcon() {
   )
 }
 
-function PublishedAt({ iso }: { iso: string }) {
-  const text = formatRelativeVi(iso, new Date()) ?? formatDateVi(iso)
-  return (
-    <span className="text-xs text-muted" suppressHydrationWarning>
-      {text}
-    </span>
-  )
-}
-
 function PostHeading({ post }: { post: FeedPostView }) {
   if (post.pinned) {
     const label = post.requireAck ? 'Thông báo quan trọng' : POST_KIND_LABELS[post.kind]
@@ -48,7 +38,7 @@ function PostHeading({ post }: { post: FeedPostView }) {
       <span className={`rounded-full px-3 py-1 text-xs font-bold ${KIND_BADGE_STYLES[post.kind]}`}>
         {POST_KIND_LABELS[post.kind]}
       </span>
-      <PublishedAt iso={post.publishedAt} />
+      <RelativeTime iso={post.publishedAt} />
     </div>
   )
 }
