@@ -382,3 +382,6 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Bảng vàng: tab Chờ duyệt / Đã duyệt / Thêm đặc biệt, bảng có Duyệt/Ẩn/Xoá, hai nút hàng loạt ở header.
 > - Chi tiết thành viên: tab Thông tin (thẻ thông tin, thẻ vai trò và trạng thái, tài khoản admin) / Lịch sử (bảng, phân trang). Chi tiết bài viết: tab Soạn bài / Xác nhận đã đọc (thẻ số, bảng người chưa xác nhận), "Đăng ngay" và "Xem như thành viên" ở header, xoá bài trong "Vùng nguy hiểm"; `PostForm` chia 3 thẻ.
 > - Hết đợt 2: mọi trang admin đã dùng bộ component chung. Chưa xem trên trang thật có dữ liệu.
+
+### Vercel Analytics
+> - Thêm `@vercel/analytics` (bạn yêu cầu trực tiếp, ngoài danh sách thư viện trong `plans/00-overview.md`) và `<Analytics />` trong `src/app/layout.tsx`. Cần bật Web Analytics trong dashboard Vercel (tab Analytics, bấm Enable) thì mới có số liệu; chỉ gửi khi chạy trên Vercel, chạy local không gửi.
