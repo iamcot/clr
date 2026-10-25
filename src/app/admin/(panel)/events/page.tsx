@@ -2,7 +2,9 @@ import Link from 'next/link'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge, { type BadgeTone } from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import { adminButtonClass } from '@/components/admin/styles'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { EVENT_KIND_LABELS, EVENT_STATUS_LABELS } from '@/config/events'
 import { loadAdminEvents, type AdminEventRow } from '@/lib/events/loadAdminEvents'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
@@ -32,8 +34,9 @@ const EVENT_COLUMNS: DataTableColumn<AdminEventRow>[] = [
   },
 ]
 
-export default async function AdminEventsPage() {
-  const events = await loadAdminEvents()
+export default async function AdminEventsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const params = await searchParams
+  const { rows: events, window } = slicePage(await loadAdminEvents(), parsePage(params.page))
 
   return (
     <section>
@@ -58,6 +61,7 @@ export default async function AdminEventsPage() {
         rowHref={(event) => `/admin/events/${event.id}`}
         emptyText="Chưa có event nào."
       />
+      <Pagination window={window} hrefFor={(page) => hrefWithPage('/admin/events', params, page)} unit="event" />
     </section>
   )
 }

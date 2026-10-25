@@ -2,7 +2,9 @@ import Link from 'next/link'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import { adminButtonClass } from '@/components/admin/styles'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { POST_KIND_LABELS, type PostKind } from '@/config/posts'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadAdminPosts, type AdminPostRow } from '@/lib/posts/loadAdminPosts'
@@ -38,8 +40,9 @@ function postColumns(now: Date): DataTableColumn<AdminPostRow>[] {
   ]
 }
 
-export default async function AdminPostsPage() {
-  const posts = await loadAdminPosts()
+export default async function AdminPostsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const params = await searchParams
+  const { rows: posts, window } = slicePage(await loadAdminPosts(), parsePage(params.page))
 
   return (
     <section>
@@ -59,6 +62,7 @@ export default async function AdminPostsPage() {
         rowHref={(post) => `/admin/posts/${post.id}`}
         emptyText="Chưa có bài nào."
       />
+      <Pagination window={window} hrefFor={(page) => hrefWithPage('/admin/posts', params, page)} unit="bài viết" />
     </section>
   )
 }

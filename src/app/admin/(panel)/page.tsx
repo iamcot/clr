@@ -60,7 +60,7 @@ export default async function AdminHomePage() {
           label={`Hoạt động ${OVERVIEW_ACTIVITY_DAYS} ngày`}
           value={overview.recentActivities}
           hint="được tính cho CLB"
-          href="/admin/activities?show=counted"
+          href="/admin/activities"
         />
         <StatCard label="Challenge đang chạy" value={overview.runningChallenges} href="/admin/challenges" />
         <StatCard label="Quỹ CLB" value={formatVndCompact(overview.fundBalance)} href="/admin/fund" />

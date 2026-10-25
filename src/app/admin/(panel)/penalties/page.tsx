@@ -4,9 +4,11 @@ import AdminCard from '@/components/admin/AdminCard'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge, { type BadgeTone } from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import StatCard from '@/components/admin/StatCard'
 import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import { PAYMENT_METHOD_LABELS, PENALTY_STATUS_LABELS, PENALTY_TYPES, type PenaltyStatus } from '@/config/penalties'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { formatVndCompact } from '@/lib/format/money'
 import {
@@ -106,14 +108,15 @@ function UnmarkForm({ id }: { id: string }) {
   )
 }
 
-export default async function AdminPenaltiesPage({ searchParams }: { searchParams: Promise<PenaltyFilters> }) {
-  const filters = await searchParams
+export default async function AdminPenaltiesPage({ searchParams }: { searchParams: Promise<PenaltyFilters & { openPage?: string; closedPage?: string }> }) {
+  const rawParams = await searchParams
+  const { openPage, closedPage, ...filters } = rawParams
   const month = filters.month ?? currentMonthVn(new Date())
   const effective = { ...filters, month }
   const [rows, members, fund] = await Promise.all([loadPenalties(effective), loadActiveMembers(), loadFundSettings()])
   const totals = summarizePenalties(rows)
-  const open = rows.filter((row) => row.status === 'unpaid')
-  const closed = rows.filter((row) => row.status !== 'unpaid')
+  const open = slicePage(rows.filter((row) => row.status === 'unpaid'), parsePage(openPage))
+  const closed = slicePage(rows.filter((row) => row.status !== 'unpaid'), parsePage(closedPage))
   const csvQuery = new URLSearchParams({
     month,
     status: filters.status ?? '',
@@ -230,10 +233,15 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         </ActionForm>
       </details>
 
-      <h2 className="mt-6 mb-2 text-lg font-black">Chưa nộp ({open.length})</h2>
+      <h2 className="mt-6 mb-2 text-lg font-black">Chưa nộp ({open.window.total})</h2>
       <ActionForm action={applyPenaltySelection} className="flex flex-col gap-3">
-        <DataTable columns={OPEN_COLUMNS} rows={open} rowKey={(row) => row.id} emptyText="Không có khoản nào chưa nộp." />
-        {open.length > 0 && (
+        <DataTable columns={OPEN_COLUMNS} rows={open.rows} rowKey={(row) => row.id} emptyText="Không có khoản nào chưa nộp." />
+        <Pagination
+          window={open.window}
+          hrefFor={(page) => hrefWithPage('/admin/penalties', { ...rawParams, openPage: undefined, ...(page > 1 ? { openPage: String(page) } : {}) }, 1)}
+          unit="khoản"
+        />
+        {open.window.total > 0 && (
           <AdminCard title="Áp dụng cho các khoản đã chọn">
             <div className="grid gap-2 md:grid-cols-3">
               <select name="method" className={INPUT_CLASS} defaultValue="cash">
@@ -258,8 +266,13 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
         )}
       </ActionForm>
 
-      <h2 className="mt-6 mb-2 text-lg font-black">Đã xử lý ({closed.length})</h2>
-      <DataTable columns={CLOSED_COLUMNS} rows={closed} rowKey={(row) => row.id} emptyText="Chưa có khoản nào." />
+      <h2 className="mt-6 mb-2 text-lg font-black">Đã xử lý ({closed.window.total})</h2>
+      <DataTable columns={CLOSED_COLUMNS} rows={closed.rows} rowKey={(row) => row.id} emptyText="Chưa có khoản nào." />
+      <Pagination
+        window={closed.window}
+        hrefFor={(page) => hrefWithPage('/admin/penalties', { ...rawParams, closedPage: undefined, ...(page > 1 ? { closedPage: String(page) } : {}) }, 1)}
+        unit="khoản"
+      />
     </section>
   )
 }

@@ -34,7 +34,7 @@ export default function DataTable<Row>({ columns, rows, rowKey, rowHref, emptyTe
         <thead>
           <tr className="bg-surface/70 text-xs font-bold text-muted">
             {columns.map((column) => (
-              <th key={column.key} scope="col" className={cellClass(column, 'font-bold')}>
+              <th key={column.key} scope="col" className={cellClass(column, 'font-bold whitespace-nowrap')}>
                 {column.header}
               </th>
             ))}

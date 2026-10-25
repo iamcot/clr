@@ -1,11 +1,19 @@
 import Link from 'next/link'
-import BackLink from '@/components/BackLink'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
+import StatCard from '@/components/admin/StatCard'
+import { adminButtonClass } from '@/components/admin/styles'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { parsePeriodValue, periodRange, shiftPeriod, summarizeEvents, type StatsPeriod } from '@/lib/events/eventStats'
 import { loadEventStatsRows, loadTopAttendees } from '@/lib/events/loadEventStats'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { formatKm } from '@/lib/stats/format'
 
-type SearchParams = { period?: string; value?: string }
+type SearchParams = { period?: string; value?: string; page?: string }
+type EventRow = Awaited<ReturnType<typeof loadEventStatsRows>>[number]
+type TopRow = Awaited<ReturnType<typeof loadTopAttendees>>[number]
 
 function periodHref(period: StatsPeriod, value: string): string {
   return `/admin/events/stats?period=${period}&value=${value}`
@@ -17,14 +25,18 @@ function periodLabel(period: StatsPeriod, value: string): string {
   return `Tháng ${Number(month)}/${year}`
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white p-3">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="text-xl font-black">{value}</p>
-    </div>
-  )
-}
+const EVENT_COLUMNS: DataTableColumn<EventRow>[] = [
+  { key: 'title', header: 'Event', cell: (row) => <b>{row.title}</b> },
+  { key: 'date', header: 'Ngày', hideBelowMd: true, cell: (row) => formatDateVi(row.startsAt) },
+  { key: 'registered', header: 'Đăng ký', align: 'right', cell: (row) => row.registeredCount },
+  { key: 'attended', header: 'Đến', align: 'right', cell: (row) => row.attendedCount },
+  { key: 'km', header: 'Tổng km', align: 'right', hideBelowMd: true, cell: (row) => formatKm(row.totalDistanceM) },
+]
+
+const TOP_COLUMNS: DataTableColumn<TopRow>[] = [
+  { key: 'name', header: 'Thành viên', cell: (row) => <b>{row.displayName ?? 'Thành viên'}</b> },
+  { key: 'count', header: 'Số event', align: 'right', cell: (row) => row.eventCount },
+]
 
 export default async function EventStatsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams
@@ -34,64 +46,44 @@ export default async function EventStatsPage({ searchParams }: { searchParams: P
   const [rows, top] = await Promise.all([loadEventStatsRows(from, to), loadTopAttendees(from, to)])
   const summary = summarizeEvents(rows)
   const rate = summary.attendanceRate === null ? '--' : `${Math.round(summary.attendanceRate * 100)}%`
+  const pagedRows = slicePage(rows, parsePage(params.page))
 
   return (
     <section>
-      <BackLink href="/admin/events">Event</BackLink>
-      <h1 className="mt-2 text-2xl font-black">Thống kê event</h1>
-      <div className="mt-3 flex gap-2">
-        {(['month', 'year'] as const).map((item) => (
-          <Link
-            key={item}
-            href={periodHref(item, parsePeriodValue(item, undefined, new Date()))}
-            className={`flex min-h-11 flex-1 items-center justify-center rounded-lg text-sm font-bold ${
-              item === period ? 'bg-brand text-white' : 'bg-white'
-            }`}
-          >
-            {item === 'month' ? 'Theo tháng' : 'Theo năm'}
+      <AdminPageHeader title="Thống kê event" backHref="/admin/events" backLabel="Event" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <AdminTabs
+          items={(['month', 'year'] as const).map((item) => ({
+            href: periodHref(item, parsePeriodValue(item, undefined, new Date())),
+            label: item === 'month' ? 'Theo tháng' : 'Theo năm',
+            active: item === period,
+          }))}
+        />
+        <div className="flex items-center gap-2">
+          <Link href={periodHref(period, shiftPeriod(period, value, -1))} className={adminButtonClass('secondary')} aria-label="Kỳ trước">
+            ←
           </Link>
-        ))}
+          <span className="min-w-28 text-center font-black">{periodLabel(period, value)}</span>
+          <Link href={periodHref(period, shiftPeriod(period, value, 1))} className={adminButtonClass('secondary')} aria-label="Kỳ sau">
+            →
+          </Link>
+        </div>
       </div>
-      <div className="mt-3 flex items-center justify-between">
-        <Link href={periodHref(period, shiftPeriod(period, value, -1))} className="min-h-11 px-3 py-2 font-bold">
-          ←
-        </Link>
-        <p className="font-black">{periodLabel(period, value)}</p>
-        <Link href={periodHref(period, shiftPeriod(period, value, 1))} className="min-h-11 px-3 py-2 font-bold">
-          →
-        </Link>
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="Số event" value={summary.eventCount} />
+        <StatCard label="Lượt đăng ký" value={summary.registrations} />
+        <StatCard label="Tỉ lệ đến thực tế" value={rate} />
+        <StatCard label="Tổng km tại event" value={formatKm(summary.totalDistanceM)} />
       </div>
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <Metric label="Số event" value={String(summary.eventCount)} />
-        <Metric label="Lượt đăng ký" value={String(summary.registrations)} />
-        <Metric label="Tỉ lệ đến thực tế" value={rate} />
-        <Metric label="Tổng km tại event" value={formatKm(summary.totalDistanceM)} />
-      </div>
-      <h2 className="mt-6 text-lg font-black">Từng event</h2>
-      <ul className="mt-2 flex flex-col gap-1">
-        {rows.map((row) => (
-          <li key={row.eventId} className="rounded-lg bg-white p-3 text-sm">
-            <p className="font-bold">{row.title}</p>
-            <p className="text-muted">
-              {formatDateVi(row.startsAt)} · đăng ký {row.registeredCount} · đến {row.attendedCount} ·{' '}
-              {formatKm(row.totalDistanceM)}
-            </p>
-          </li>
-        ))}
-      </ul>
-      {rows.length === 0 && <p className="mt-2 text-muted">Chưa có event trong kỳ này.</p>}
-      <h2 className="mt-6 text-lg font-black">Đi event nhiều nhất</h2>
-      <ol className="mt-2 flex flex-col gap-1">
-        {top.map((person, index) => (
-          <li key={person.memberId} className="flex justify-between rounded-lg bg-white p-3 text-sm">
-            <span>
-              {index + 1}. {person.displayName ?? 'Thành viên'}
-            </span>
-            <span className="font-bold">{person.eventCount} event</span>
-          </li>
-        ))}
-      </ol>
-      {top.length === 0 && <p className="mt-2 text-muted">Chưa có ai điểm danh trong kỳ này.</p>}
+      <h2 className="mt-6 mb-2 text-lg font-black">Từng event</h2>
+      <DataTable columns={EVENT_COLUMNS} rows={pagedRows.rows} rowKey={(row) => row.eventId} emptyText="Chưa có event trong kỳ này." />
+      <Pagination
+        window={pagedRows.window}
+        hrefFor={(page) => hrefWithPage('/admin/events/stats', params, page)}
+        unit="event"
+      />
+      <h2 className="mt-6 mb-2 text-lg font-black">Đi event nhiều nhất</h2>
+      <DataTable columns={TOP_COLUMNS} rows={top} rowKey={(row) => row.memberId} emptyText="Chưa có ai điểm danh trong kỳ này." />
     </section>
   )
 }

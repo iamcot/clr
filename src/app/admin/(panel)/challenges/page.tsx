@@ -3,7 +3,9 @@ import ActionForm from '@/components/ActionForm'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge, { type BadgeTone } from '@/components/admin/Badge'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import { adminButtonClass } from '@/components/admin/styles'
+import { hrefWithPage, parsePage, slicePage } from '@/lib/admin/pagination'
 import { STATUS_LABELS, type ChallengeStatus } from '@/config/challenges'
 import { createFromTemplate } from '@/lib/challenges/adminActions'
 import { loadChallenges, loadTemplateChallengeId, type ChallengeRow } from '@/lib/challenges/loadChallenges'
@@ -50,8 +52,10 @@ function challengeColumns(templateId: string | null): DataTableColumn<ChallengeR
   ]
 }
 
-export default async function AdminChallengesPage() {
+export default async function AdminChallengesPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const params = await searchParams
   const [challenges, templateId] = await Promise.all([loadChallenges(), loadTemplateChallengeId()])
+  const { rows, window } = slicePage(sortByStatus(challenges), parsePage(params.page))
 
   return (
     <section>
@@ -78,11 +82,12 @@ export default async function AdminChallengesPage() {
       />
       <DataTable
         columns={challengeColumns(templateId)}
-        rows={sortByStatus(challenges)}
+        rows={rows}
         rowKey={(challenge) => challenge.id}
         rowHref={(challenge) => `/admin/challenges/${challenge.id}`}
         emptyText="Chưa có challenge nào."
       />
+      <Pagination window={window} hrefFor={(page) => hrefWithPage('/admin/challenges', params, page)} unit="challenge" />
     </section>
   )
 }

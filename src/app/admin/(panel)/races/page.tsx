@@ -2,22 +2,27 @@ import ActionForm from '@/components/ActionForm'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminTabs from '@/components/admin/AdminTabs'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import Pagination from '@/components/admin/Pagination'
 import { adminButtonClass } from '@/components/admin/styles'
+import { describePage, hrefWithPage, pageRange, parsePage } from '@/lib/admin/pagination'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { verifyRaceResult } from '@/lib/races/adminRaceActions'
 import { formatDuration } from '@/lib/stats/format'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const PAGE_SIZE = 100
-
-async function loadResults(showVerified: boolean) {
+async function loadResults(showVerified: boolean, page: number) {
   const supabase = await createSupabaseServerClient()
-  const query = supabase.from('race_results_review').select('*').order('race_date', { ascending: false }).limit(PAGE_SIZE)
-  const { data } = await (showVerified ? query.not('verified_at', 'is', null) : query.is('verified_at', null))
-  return data ?? []
+  const { from, to } = pageRange(page)
+  const query = supabase
+    .from('race_results_review')
+    .select('*', { count: 'exact' })
+    .order('race_date', { ascending: false })
+    .range(from, to)
+  const { data, count } = await (showVerified ? query.not('verified_at', 'is', null) : query.is('verified_at', null))
+  return { rows: data ?? [], total: count ?? 0 }
 }
 
-type ResultRow = Awaited<ReturnType<typeof loadResults>>[number]
+type ResultRow = Awaited<ReturnType<typeof loadResults>>['rows'][number]
 
 function resultColumns(showVerified: boolean): DataTableColumn<ResultRow>[] {
   return [
@@ -73,9 +78,11 @@ function resultColumns(showVerified: boolean): DataTableColumn<ResultRow>[] {
   ]
 }
 
-export default async function AdminRacesPage({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
-  const showVerified = (await searchParams).show === 'verified'
-  const results = await loadResults(showVerified)
+export default async function AdminRacesPage({ searchParams }: { searchParams: Promise<{ show?: string; page?: string }> }) {
+  const params = await searchParams
+  const showVerified = params.show === 'verified'
+  const { rows: results, total } = await loadResults(showVerified, parsePage(params.page))
+  const window = describePage(parsePage(params.page), total)
 
   return (
     <section>
@@ -96,6 +103,7 @@ export default async function AdminRacesPage({ searchParams }: { searchParams: P
           rowKey={(result) => String(result.id)}
           emptyText="Không có kết quả nào."
         />
+        <Pagination window={window} hrefFor={(page) => hrefWithPage('/admin/races', params, page)} unit="kết quả" />
       </div>
     </section>
   )
