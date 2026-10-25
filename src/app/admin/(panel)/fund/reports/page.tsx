@@ -1,6 +1,11 @@
 import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
-import BackLink from '@/components/BackLink'
+import AdminCard from '@/components/admin/AdminCard'
+import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import AdminTabs from '@/components/admin/AdminTabs'
+import Badge from '@/components/admin/Badge'
+import StatCard from '@/components/admin/StatCard'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import FundReportTable from '@/components/FundReportTable'
 import { requireBcn } from '@/lib/auth/requireBcn'
 import {
@@ -26,42 +31,47 @@ const TYPE_TABS: { type: ReportPeriodType; label: string }[] = [
   { type: 'year', label: 'Năm' },
 ]
 
-const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
-
-function tabClass(active: boolean): string {
-  return `flex min-h-11 flex-1 items-center justify-center rounded-lg text-sm font-bold ${active ? 'bg-brand text-white' : 'border border-hairline bg-white'}`
-}
-
-function LockSection({ monthKey, lock, closable }: { monthKey: string; lock: Awaited<ReturnType<typeof loadMonthLock>>; closable: boolean }) {
+function LockSection({
+  monthKey,
+  lock,
+  closable,
+}: {
+  monthKey: string
+  lock: Awaited<ReturnType<typeof loadMonthLock>>
+  closable: boolean
+}) {
   if (lock) {
     return (
-      <div className="mt-6 rounded-lg bg-white p-3">
-        <p className="font-bold text-brand-dark">Đã chốt sổ lúc {formatDateTimeVi(lock.lockedAt)}</p>
-        {lock.note && <p className="text-sm text-muted">{lock.note}</p>}
+      <div>
+        <p className="flex items-center gap-2 font-bold">
+          <Badge tone="success">Đã chốt sổ</Badge>
+          <span className="text-sm font-normal text-muted">{formatDateTimeVi(lock.lockedAt)}</span>
+        </p>
+        {lock.note && <p className="mt-1 text-sm text-muted">{lock.note}</p>}
         <p className="mt-1 text-sm text-muted">Không thêm hay huỷ giao dịch trong tháng này được nữa.</p>
-        <ActionForm action={unlockFundMonth} className="mt-2 flex gap-2">
+        <ActionForm action={unlockFundMonth} className="mt-3 flex flex-col gap-2 md:flex-row">
           <input type="hidden" name="month" value={monthKey} />
-          <input name="reason" required placeholder="Lý do mở khoá" className={INPUT_CLASS} />
-          <button type="submit" className={`${BUTTON_CLASS} text-danger`}>
+          <input name="reason" required placeholder="Lý do mở khoá" className={ADMIN_INPUT_CLASS} />
+          <button type="submit" className={adminButtonClass('danger')}>
             Mở khoá
           </button>
         </ActionForm>
       </div>
     )
   }
-  if (!closable) {
-    return <p className="mt-6 text-sm text-muted">Chỉ chốt sổ được các tháng đã qua.</p>
-  }
+  if (!closable) return <p className="text-sm text-muted">Chỉ chốt sổ được các tháng đã qua.</p>
   return (
-    <ActionForm action={lockFundMonth} className="mt-6 flex flex-col gap-2 rounded-lg bg-white p-3">
+    <ActionForm action={lockFundMonth} className="flex flex-col gap-2">
       <input type="hidden" name="month" value={monthKey} />
-      <p className="font-bold">Chốt sổ tháng này</p>
-      <p className="text-sm text-muted">Sau khi chốt, không thêm hay huỷ giao dịch của tháng này được nữa (trừ khi mở khoá có lý do).</p>
-      <input name="note" placeholder="Ghi chú (không bắt buộc)" className={INPUT_CLASS} />
-      <button type="submit" className="min-h-12 rounded-full bg-brand font-bold text-white">
-        Chốt sổ
-      </button>
+      <p className="text-sm text-muted">
+        Sau khi chốt, không thêm hay huỷ giao dịch của tháng này được nữa (trừ khi mở khoá có lý do).
+      </p>
+      <div className="flex flex-col gap-2 md:flex-row">
+        <input name="note" placeholder="Ghi chú (không bắt buộc)" className={ADMIN_INPUT_CLASS} />
+        <button type="submit" className={adminButtonClass('primary')}>
+          Chốt sổ tháng này
+        </button>
+      </div>
     </ActionForm>
   )
 }
@@ -85,66 +95,83 @@ export default async function FundReportsPage({ searchParams }: { searchParams: 
 
   return (
     <section>
-      <BackLink href="/admin/fund">Quỹ</BackLink>
-      <h1 className="text-2xl font-black">Báo cáo quỹ</h1>
-      <div className="mt-3 flex gap-2">
-        {TYPE_TABS.map((tab) => (
-          <Link
-            key={tab.type}
-            href={`/admin/fund/reports?period=${currentPeriodKey(tab.type, now)}`}
-            className={tabClass(tab.type === period.type)}
-          >
-            {tab.label}
+      <AdminPageHeader
+        title="Báo cáo quỹ"
+        backHref="/admin/fund"
+        backLabel="Quỹ"
+        actions={
+          <>
+            <a href={`/admin/fund/reports/csv?period=${period.key}`} className={adminButtonClass('secondary')}>
+              Xuất CSV
+            </a>
+            <Link href={`/admin/fund/reports/print?period=${period.key}`} className={adminButtonClass('secondary')}>
+              Bản in
+            </Link>
+          </>
+        }
+      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <AdminTabs
+          items={TYPE_TABS.map((tab) => ({
+            href: `/admin/fund/reports?period=${currentPeriodKey(tab.type, now)}`,
+            label: tab.label,
+            active: tab.type === period.type,
+          }))}
+        />
+        <div className="flex items-center gap-2">
+          <Link href={`/admin/fund/reports?period=${previousKey}`} className={adminButtonClass('secondary')} aria-label="Kỳ trước">
+            ←
           </Link>
-        ))}
-      </div>
-      <div className="mt-3 flex items-center justify-between">
-        <Link href={`/admin/fund/reports?period=${previousKey}`} className="flex min-h-11 items-center px-3 font-bold">
-          ←
-        </Link>
-        <h2 className="text-lg font-black">{period.label}</h2>
-        <Link href={`/admin/fund/reports?period=${nextKey}`} className="flex min-h-11 items-center px-3 font-bold">
-          →
-        </Link>
-      </div>
-      <div className="mt-2">
-        <FundReportTable report={report} />
+          <span className="min-w-32 text-center font-black">{period.label}</span>
+          <Link href={`/admin/fund/reports?period=${nextKey}`} className={adminButtonClass('secondary')} aria-label="Kỳ sau">
+            →
+          </Link>
+        </div>
       </div>
 
-      <h2 className="mt-6 text-lg font-black">Khoản phạt phát sinh trong kỳ</h2>
-      <ul className="mt-2 grid grid-cols-2 gap-2 text-sm">
-        {[
-          ['Số khoản', String(penalties.issuedCount)],
-          ['Tổng phát sinh', formatVnd(penalties.issuedAmount)],
-          ['Đã thu', formatVnd(penalties.collectedAmount)],
-          ['Còn nợ', formatVnd(penalties.outstandingAmount)],
-          ['Đã miễn', formatVnd(penalties.waivedAmount)],
-        ].map(([label, value]) => (
-          <li key={label} className="rounded-lg bg-white p-3">
-            <p className="text-xs text-muted">{label}</p>
-            <p className="font-black">{value}</p>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-4 flex gap-2">
-        <a href={`/admin/fund/reports/csv?period=${period.key}`} className={`${BUTTON_CLASS} flex flex-1 items-center justify-center`}>
-          Xuất CSV
-        </a>
-        <Link href={`/admin/fund/reports/print?period=${period.key}`} className={`${BUTTON_CLASS} flex flex-1 items-center justify-center`}>
-          Bản in
-        </Link>
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="Số dư đầu kỳ" value={formatVnd(report.opening)} />
+        <StatCard label="Tổng thu" value={formatVnd(report.income.total)} />
+        <StatCard label="Tổng chi" value={formatVnd(report.expense.total)} />
+        <StatCard label="Số dư cuối kỳ" value={formatVnd(report.closing)} />
       </div>
 
-      {monthStart && <LockSection monthKey={period.key} lock={lock} closable={closable} />}
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <AdminCard title="Chi tiết thu chi">
+          <FundReportTable report={report} bare />
+        </AdminCard>
+        <AdminCard title="Khoản phạt phát sinh trong kỳ">
+          <ul className="divide-y divide-hairline text-sm">
+            {[
+              ['Số khoản', String(penalties.issuedCount)],
+              ['Tổng phát sinh', formatVnd(penalties.issuedAmount)],
+              ['Đã thu', formatVnd(penalties.collectedAmount)],
+              ['Còn nợ', formatVnd(penalties.outstandingAmount)],
+              ['Đã miễn', formatVnd(penalties.waivedAmount)],
+            ].map(([label, value]) => (
+              <li key={label} className="flex justify-between py-2">
+                <span className="text-muted">{label}</span>
+                <b>{value}</b>
+              </li>
+            ))}
+          </ul>
+        </AdminCard>
+      </div>
 
-      <ActionForm action={setFundCloseAutopost} className="mt-6 flex items-center gap-3 rounded-lg bg-white p-3">
-        <input type="checkbox" name="enabled" defaultChecked={autopost} className="size-5 accent-brand" />
-        <span className="flex-1 text-sm">Khi chốt sổ tự đăng bài tóm tắt quỹ lên bảng tin</span>
-        <button type="submit" className={BUTTON_CLASS}>
-          Lưu
-        </button>
-      </ActionForm>
+      <AdminCard title="Chốt sổ" className="mt-4">
+        {monthStart ? (
+          <LockSection monthKey={period.key} lock={lock} closable={closable} />
+        ) : (
+          <p className="text-sm text-muted">Chọn xem theo tháng để chốt sổ.</p>
+        )}
+        <ActionForm action={setFundCloseAutopost} className="mt-4 flex items-center gap-3 border-t border-hairline pt-4">
+          <input type="checkbox" name="enabled" defaultChecked={autopost} className="size-5 accent-brand" />
+          <span className="flex-1 text-sm">Khi chốt sổ tự đăng bài tóm tắt quỹ lên bảng tin</span>
+          <button type="submit" className={adminButtonClass('secondary')}>
+            Lưu
+          </button>
+        </ActionForm>
+      </AdminCard>
     </section>
   )
 }

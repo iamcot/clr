@@ -1,4 +1,9 @@
 import ActionForm from '@/components/ActionForm'
+import AdminFormSection from '@/components/admin/AdminFormSection'
+import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
+import FormField from '@/components/admin/FormField'
+import StickyActionBar from '@/components/admin/StickyActionBar'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import ImageField from '@/components/ImageField'
 import { BANKS, FUND_DIRECTION_LABELS } from '@/config/fund'
 import { formatDateVi } from '@/lib/format/dateTime'
@@ -6,24 +11,13 @@ import { formatVndCompact } from '@/lib/format/money'
 import { addFundTransaction, recordFundReconciliation, saveFundAccount } from '@/lib/fund/adminActions'
 import type { FundAccount, FundCategory, ReconciliationRow } from '@/lib/fund/loadAdminFund'
 
-const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
-const SUBMIT_CLASS = 'min-h-12 rounded-full bg-brand font-bold text-white'
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-sm font-bold">{label}</span>
-      {children}
-    </label>
-  )
-}
+const INPUT_CLASS = ADMIN_INPUT_CLASS
 
 export function BankAccountForm({ account }: { account: FundAccount | undefined }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3" open={!account?.accountNo}>
-      <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Tài khoản nhận tiền của quỹ</summary>
-      <ActionForm action={saveFundAccount} className="flex flex-col gap-3">
-        <Field label="Ngân hàng">
+    <ActionForm action={saveFundAccount} className="flex flex-col gap-4">
+      <AdminFormSection columns={2} title="Tài khoản nhận tiền của quỹ" description="Dùng để tạo mã VietQR cho thành viên nộp quỹ.">
+        <FormField label="Ngân hàng">
           <select name="bank_bin" defaultValue={account?.bankBin ?? ''} required className={INPUT_CLASS}>
             <option value="" disabled>
               Chọn ngân hàng
@@ -34,27 +28,28 @@ export function BankAccountForm({ account }: { account: FundAccount | undefined 
               </option>
             ))}
           </select>
-        </Field>
-        <Field label="Số tài khoản">
+        </FormField>
+        <FormField label="Số tài khoản">
           <input name="account_no" defaultValue={account?.accountNo ?? ''} required inputMode="numeric" className={INPUT_CLASS} />
-        </Field>
-        <Field label="Tên chủ tài khoản">
+        </FormField>
+        <FormField label="Tên chủ tài khoản">
           <input name="account_name" defaultValue={account?.accountName ?? ''} required className={INPUT_CLASS} />
-        </Field>
-        <button type="submit" className={SUBMIT_CLASS}>
+        </FormField>
+      </AdminFormSection>
+      <StickyActionBar>
+        <button type="submit" className={adminButtonClass('primary')}>
           Lưu tài khoản
         </button>
-      </ActionForm>
-    </details>
+      </StickyActionBar>
+    </ActionForm>
   )
 }
 
 export function ManualTransactionForm({ accounts, categories }: { accounts: FundAccount[]; categories: FundCategory[] }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3">
-      <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Thêm thu, chi thủ công</summary>
-      <ActionForm action={addFundTransaction} className="flex flex-col gap-3">
-        <Field label="Tài khoản">
+    <ActionForm action={addFundTransaction} className="flex flex-col gap-4">
+      <AdminFormSection columns={2} title="Thêm thu, chi thủ công">
+        <FormField label="Tài khoản">
           <select name="account_id" defaultValue={accounts[0]?.id ?? ''} required className={INPUT_CLASS}>
             {accounts.map((account) => (
               <option key={account.id} value={account.id}>
@@ -62,8 +57,8 @@ export function ManualTransactionForm({ accounts, categories }: { accounts: Fund
               </option>
             ))}
           </select>
-        </Field>
-        <Field label="Danh mục">
+        </FormField>
+        <FormField label="Danh mục">
           <select name="category_id" defaultValue="" required className={INPUT_CLASS}>
             <option value="" disabled>
               Chọn danh mục
@@ -80,38 +75,55 @@ export function ManualTransactionForm({ accounts, categories }: { accounts: Fund
               </optgroup>
             ))}
           </select>
-        </Field>
-        <Field label="Số tiền (đ)">
+        </FormField>
+        <FormField label="Số tiền (đ)">
           <input name="amount" required inputMode="numeric" placeholder="1.500.000" className={INPUT_CLASS} />
-        </Field>
-        <Field label="Thời điểm (để trống là bây giờ)">
+        </FormField>
+        <FormField label="Thời điểm (để trống là bây giờ)">
           <input name="occurred_at" type="datetime-local" className={INPUT_CLASS} />
-        </Field>
-        <Field label="Nội dung">
+        </FormField>
+        <FormField label="Nội dung">
           <input name="description" maxLength={300} className={INPUT_CLASS} />
-        </Field>
-        <div>
+        </FormField>
+        <div className="md:col-span-2">
           <p className="text-sm font-bold">Ảnh hoá đơn</p>
           <ImageField name="receipt_url" purpose="receipt" />
-          <label className="mt-2 flex min-h-11 items-center gap-3">
+          <label className="mt-2 flex min-h-10 items-center gap-3">
             <input type="checkbox" name="receipt_public" className="size-5 accent-brand" />
             <span className="text-sm">Cho thành viên xem ảnh hoá đơn này</span>
           </label>
         </div>
-        <button type="submit" className={SUBMIT_CLASS}>
+      </AdminFormSection>
+      <StickyActionBar>
+        <button type="submit" className={adminButtonClass('primary')}>
           Ghi giao dịch
         </button>
-      </ActionForm>
-    </details>
+      </StickyActionBar>
+    </ActionForm>
   )
 }
 
+const RECONCILIATION_COLUMNS: DataTableColumn<ReconciliationRow>[] = [
+  { key: 'date', header: 'Ngày', cell: (row) => formatDateVi(`${row.asOf}T00:00:00+07:00`) },
+  { key: 'account', header: 'Tài khoản', hideBelowMd: true, cell: (row) => row.accountName },
+  {
+    key: 'diff',
+    header: 'Kết quả',
+    align: 'right',
+    cell: (row) => (
+      <b className={row.difference === 0 ? 'text-brand-dark' : 'text-danger'}>
+        {row.difference === 0 ? 'Khớp' : `Lệch ${formatVndCompact(Math.abs(row.difference))}`}
+      </b>
+    ),
+  },
+]
+
 export function ReconciliationForm({ accounts, history }: { accounts: FundAccount[]; history: ReconciliationRow[] }) {
   return (
-    <details className="mt-6 rounded-lg bg-white p-3">
-      <summary className="min-h-11 cursor-pointer py-3 text-lg font-black">Đối chiếu với sao kê</summary>
-      <ActionForm action={recordFundReconciliation} className="flex flex-col gap-3">
-        <Field label="Tài khoản">
+    <div className="flex flex-col gap-4">
+      <ActionForm action={recordFundReconciliation} className="flex flex-col gap-4">
+        <AdminFormSection columns={2} title="Đối chiếu với sao kê">
+        <FormField label="Tài khoản">
           <select name="account_id" defaultValue={accounts[0]?.id ?? ''} required className={INPUT_CLASS}>
             {accounts.map((account) => (
               <option key={account.id} value={account.id}>
@@ -119,34 +131,29 @@ export function ReconciliationForm({ accounts, history }: { accounts: FundAccoun
               </option>
             ))}
           </select>
-        </Field>
-        <Field label="Số dư theo sao kê vào cuối ngày">
+        </FormField>
+        <FormField label="Số dư theo sao kê vào cuối ngày">
           <input name="as_of" type="date" required className={INPUT_CLASS} />
-        </Field>
-        <Field label="Số dư theo sao kê (đ)">
+        </FormField>
+        <FormField label="Số dư theo sao kê (đ)">
           <input name="statement_balance" required inputMode="numeric" className={INPUT_CLASS} />
-        </Field>
-        <Field label="Ghi chú">
+        </FormField>
+        <FormField label="Ghi chú">
           <input name="note" maxLength={200} className={INPUT_CLASS} />
-        </Field>
-        <button type="submit" className={SUBMIT_CLASS}>
-          Đối chiếu
-        </button>
+        </FormField>
+        </AdminFormSection>
+        <StickyActionBar>
+          <button type="submit" className={adminButtonClass('primary')}>
+            Đối chiếu
+          </button>
+        </StickyActionBar>
       </ActionForm>
-      {history.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1 text-sm">
-          {history.map((row) => (
-            <li key={row.id} className="flex justify-between gap-2 border-t border-hairline pt-1">
-              <span>
-                {formatDateVi(`${row.asOf}T00:00:00+07:00`)} · {row.accountName}
-              </span>
-              <span className={row.difference === 0 ? 'font-bold text-brand-dark' : 'font-bold text-danger'}>
-                {row.difference === 0 ? 'Khớp' : `Lệch ${formatVndCompact(Math.abs(row.difference))}`}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </details>
+      <DataTable
+        columns={RECONCILIATION_COLUMNS}
+        rows={history}
+        rowKey={(row) => row.id}
+        emptyText="Chưa có lần đối chiếu nào."
+      />
+    </div>
   )
 }

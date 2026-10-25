@@ -1,12 +1,12 @@
 import ActionForm from '@/components/ActionForm'
+import AdminCard from '@/components/admin/AdminCard'
+import Badge from '@/components/admin/Badge'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import { BANK_EVENT_STATUS_LABELS } from '@/config/fund'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { formatVndCompact } from '@/lib/format/money'
 import { classifyFundTransaction, confirmCashPayment, resolveBankEvent } from '@/lib/fund/adminActions'
 import type { CashRequest, FundCategory, OpenIntent, QueuedEvent } from '@/lib/fund/loadAdminFund'
-
-const INPUT_CLASS = 'min-h-10 w-full rounded-lg border border-hairline bg-white px-2.5 text-sm md:min-h-8'
-const BUTTON_CLASS = 'min-h-11 rounded-lg border border-hairline bg-white px-4 font-bold'
 
 type QueueProps = { queue: QueuedEvent[]; openIntents: OpenIntent[]; cashRequests: CashRequest[]; categories: FundCategory[] }
 
@@ -16,7 +16,7 @@ function MatchForm({ event, openIntents }: { event: QueuedEvent; openIntents: Op
   return (
     <ActionForm action={resolveBankEvent} className="mt-2 flex gap-2">
       <input type="hidden" name="event_id" value={event.id} />
-      <select name="intent_id" defaultValue="" required className={INPUT_CLASS}>
+      <select name="intent_id" defaultValue="" required className={ADMIN_INPUT_CLASS}>
         <option value="" disabled>
           Ghép với lần nộp
         </option>
@@ -26,7 +26,7 @@ function MatchForm({ event, openIntents }: { event: QueuedEvent; openIntents: Op
           </option>
         ))}
       </select>
-      <button type="submit" className={BUTTON_CLASS}>
+      <button type="submit" className={adminButtonClass('secondary')}>
         Ghép
       </button>
     </ActionForm>
@@ -38,7 +38,7 @@ function ClassifyForm({ event, categories }: { event: QueuedEvent; categories: F
   return (
     <ActionForm action={classifyFundTransaction} className="mt-2 flex gap-2">
       <input type="hidden" name="id" value={event.transactionId} />
-      <select name="category_id" defaultValue="" required className={INPUT_CLASS}>
+      <select name="category_id" defaultValue="" required className={ADMIN_INPUT_CLASS}>
         <option value="" disabled>
           Phân loại khoản thu
         </option>
@@ -50,7 +50,7 @@ function ClassifyForm({ event, categories }: { event: QueuedEvent; categories: F
             </option>
           ))}
       </select>
-      <button type="submit" className={BUTTON_CLASS}>
+      <button type="submit" className={adminButtonClass('secondary')}>
         Lưu
       </button>
     </ActionForm>
@@ -59,12 +59,12 @@ function ClassifyForm({ event, categories }: { event: QueuedEvent; categories: F
 
 function QueueItem({ event, openIntents, categories }: { event: QueuedEvent; openIntents: OpenIntent[]; categories: FundCategory[] }) {
   return (
-    <li className="rounded-lg bg-white p-3">
-      <div className="flex justify-between gap-2">
+    <li className="py-3">
+      <div className="flex items-center justify-between gap-2">
         <p className="font-black">{formatVndCompact(event.amount)}</p>
-        <p className="text-sm font-bold text-danger">{BANK_EVENT_STATUS_LABELS[event.status]}</p>
+        <Badge tone="danger">{BANK_EVENT_STATUS_LABELS[event.status]}</Badge>
       </div>
-      <p className="text-sm break-words">{event.content || '(không có nội dung)'}</p>
+      <p className="mt-1 text-sm break-words">{event.content || '(không có nội dung)'}</p>
       <p className="text-xs text-muted">
         {formatDateTimeVi(event.transferredAt)}
         {event.matchedRef && ` · mã ${event.matchedRef}`}
@@ -77,21 +77,20 @@ function QueueItem({ event, openIntents, categories }: { event: QueuedEvent; ope
 }
 
 export default function FundQueue({ queue, openIntents, cashRequests, categories }: QueueProps) {
-  const empty = queue.length === 0 && cashRequests.length === 0
+  const count = queue.length + cashRequests.length
   return (
-    <section className="mt-6">
-      <h2 className="text-lg font-black">Cần xử lý</h2>
-      {empty && <p className="mt-2 text-sm text-muted">Không có giao dịch nào cần xử lý.</p>}
-      <ul className="mt-2 flex flex-col gap-2">
+    <AdminCard title={`Cần xử lý (${count})`}>
+      {count === 0 && <p className="text-sm text-muted">Không có giao dịch nào cần xử lý.</p>}
+      <ul className="divide-y divide-hairline">
         {cashRequests.map((request) => (
-          <li key={request.id} className="rounded-lg bg-white p-3">
+          <li key={request.id} className="py-3">
             <p className="font-bold">
               {request.memberName} báo đã nộp tiền mặt {formatVndCompact(request.amount)}
             </p>
             <p className="text-xs text-muted">{formatDateTimeVi(request.createdAt)}</p>
             <ActionForm action={confirmCashPayment} className="mt-2">
               <input type="hidden" name="intent_id" value={request.id} />
-              <button type="submit" className={BUTTON_CLASS}>
+              <button type="submit" className={adminButtonClass('primary')}>
                 Xác nhận đã nhận tiền mặt
               </button>
             </ActionForm>
@@ -101,6 +100,6 @@ export default function FundQueue({ queue, openIntents, cashRequests, categories
           <QueueItem key={event.id} event={event} openIntents={openIntents} categories={categories} />
         ))}
       </ul>
-    </section>
+    </AdminCard>
   )
 }

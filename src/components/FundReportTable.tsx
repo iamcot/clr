@@ -27,9 +27,10 @@ function Group({ title, total, categories }: { title: string; total: number; cat
   )
 }
 
-export default function FundReportTable({ report }: { report: FundReport }) {
+export default function FundReportTable({ report, bare = false }: { report: FundReport; bare?: boolean }) {
+  const card = bare ? '' : 'rounded-lg bg-white p-3 shadow-sm'
   return (
-    <div className="flex flex-col gap-2 rounded-lg bg-white p-3 shadow-sm print:gap-1 print:p-0 print:shadow-none">
+    <div className={`flex flex-col gap-2 ${card} print:gap-1 print:p-0 print:shadow-none`}>
       <ul>
         <Line label="Số dư đầu kỳ" amount={report.opening} />
       </ul>
