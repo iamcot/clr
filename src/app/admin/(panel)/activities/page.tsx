@@ -1,4 +1,5 @@
 import ActionForm from '@/components/ActionForm'
+import DateInput from '@/components/admin/DateInput'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminTabs from '@/components/admin/AdminTabs'
 import Badge from '@/components/admin/Badge'
@@ -86,7 +87,7 @@ function FlagForm({ activity }: { activity: ReviewRow }) {
   if (flagged) return fields
   return (
     <details className="min-w-44">
-      <summary className="flex min-h-8 cursor-pointer items-center text-sm font-bold text-brand-dark">Loại khỏi CLB</summary>
+      <summary className="flex min-h-8 cursor-pointer items-center text-sm font-bold text-brand-dark">Loại</summary>
       {fields}
     </details>
   )
@@ -128,8 +129,8 @@ function FilterForm({
   return (
     <form method="get" className="mt-3 grid gap-2 md:grid-cols-6">
       <input type="hidden" name="show" value={filter.tab} />
-      <input type="date" name="from" defaultValue={filter.from ?? ''} aria-label="Từ ngày" className={ADMIN_INPUT_CLASS} />
-      <input type="date" name="to" defaultValue={filter.to ?? ''} aria-label="Đến ngày" className={ADMIN_INPUT_CLASS} />
+      <DateInput type="date" name="from" defaultValue={filter.from ?? ''} aria-label="Từ ngày" />
+      <DateInput type="date" name="to" defaultValue={filter.to ?? ''} aria-label="Đến ngày" />
       <div className="md:col-span-2">
         <MultiSelectDropdown name="member" options={members} placeholder="Mọi thành viên" defaultSelected={filter.memberIds} />
       </div>

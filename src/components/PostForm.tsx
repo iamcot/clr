@@ -6,6 +6,7 @@ import Markdown from '@/components/Markdown'
 import { useToast } from '@/components/ToastProvider'
 import { POST_KIND_LABELS, POST_KINDS } from '@/config/posts'
 import { savePost, type PostFormState } from '@/lib/posts/adminActions'
+import DateInput from '@/components/admin/DateInput'
 import AdminFormSection from '@/components/admin/AdminFormSection'
 import FormField from '@/components/admin/FormField'
 import StickyActionBar from '@/components/admin/StickyActionBar'
@@ -85,7 +86,7 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
         </label>
         {state.errors.pinned && <span className={`text-sm text-danger ${WIDE}`}>{state.errors.pinned}</span>}
         <FormField label="Ghim đến" hint="Bỏ trống là ghim mãi" error={state.errors.pinned_until}>
-          <input name="pinned_until" type="datetime-local" defaultValue={value('pinned_until')} className={INPUT_CLASS} />
+          <DateInput name="pinned_until" type="datetime-local" defaultValue={value('pinned_until')} />
         </FormField>
       </AdminFormSection>
 
@@ -98,7 +99,7 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
           </select>
         </FormField>
         <FormField label="Giờ đăng (nếu hẹn giờ, giờ Việt Nam)">
-          <input name="scheduled_at" type="datetime-local" defaultValue={value('scheduled_at')} className={INPUT_CLASS} />
+          <DateInput name="scheduled_at" type="datetime-local" defaultValue={value('scheduled_at')} />
         </FormField>
       </AdminFormSection>
 

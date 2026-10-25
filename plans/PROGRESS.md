@@ -382,3 +382,6 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Bảng vàng: tab Chờ duyệt / Đã duyệt / Thêm đặc biệt, bảng có Duyệt/Ẩn/Xoá, hai nút hàng loạt ở header.
 > - Chi tiết thành viên: tab Thông tin (thẻ thông tin, thẻ vai trò và trạng thái, tài khoản admin) / Lịch sử (bảng, phân trang). Chi tiết bài viết: tab Soạn bài / Xác nhận đã đọc (thẻ số, bảng người chưa xác nhận), "Đăng ngay" và "Xem như thành viên" ở header, xoá bài trong "Vùng nguy hiểm"; `PostForm` chia 3 thẻ.
 > - Hết đợt 2: mọi trang admin đã dùng bộ component chung. Chưa xem trên trang thật có dữ liệu.
+
+### Sửa nhanh ô ngày tháng trong admin
+> - Component `DateInput` (`src/components/admin/DateInput.tsx`): ô ngày/tháng/ngày giờ có icon lịch bên trái, cao và rộng bằng ô thường, bỏ kiểu riêng của Safari trên iPhone (trước đây ô trống và tràn khung); bấm vào đâu trong ô cũng mở bộ chọn. Dùng cho các ô ngày của Hoạt động, Thưởng phạt, Bảng vàng, form Quỹ, Event, Bài viết, Challenge. Nút "Loại khỏi CLB" ở Hoạt động đổi thành "Loại". Chưa thử trên iPhone thật (Chromium không tái hiện hết kiểu của Safari).

@@ -6,6 +6,7 @@ import { useToast } from '@/components/ToastProvider'
 import { EVENT_KIND_LABELS, EVENT_KINDS, EVENT_STATUS_LABELS } from '@/config/events'
 import { saveEvent, type EventFormState } from '@/lib/events/adminActions'
 import type { EventStatus } from '@/lib/types/database'
+import DateInput from '@/components/admin/DateInput'
 import AdminFormSection from '@/components/admin/AdminFormSection'
 import FormField from '@/components/admin/FormField'
 import StickyActionBar from '@/components/admin/StickyActionBar'
@@ -59,18 +60,16 @@ export default function EventForm({ defaults }: { defaults: Record<string, strin
 
       <AdminFormSection columns={2} title="Thời gian">
         <FormField label="Bắt đầu (giờ Việt Nam)" error={state.errors.starts_at}>
-          <input name="starts_at" type="datetime-local" defaultValue={value('starts_at')} required className={INPUT_CLASS} />
+          <DateInput name="starts_at" type="datetime-local" defaultValue={value('starts_at')} required />
         </FormField>
         <FormField label="Kết thúc (giờ Việt Nam)" error={state.errors.ends_at}>
-          <input name="ends_at" type="datetime-local" defaultValue={value('ends_at')} required className={INPUT_CLASS} />
+          <DateInput name="ends_at" type="datetime-local" defaultValue={value('ends_at')} required />
         </FormField>
         <FormField label="Hạn đăng ký" hint="Bỏ trống là tới giờ bắt đầu" error={state.errors.registration_closes_at}>
-          <input
+          <DateInput
             name="registration_closes_at"
             type="datetime-local"
-            defaultValue={value('registration_closes_at')}
-            className={INPUT_CLASS}
-          />
+            defaultValue={value('registration_closes_at')} />
         </FormField>
       </AdminFormSection>
 
