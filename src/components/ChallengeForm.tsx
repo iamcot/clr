@@ -14,6 +14,7 @@ import {
   RANKING_MODES,
 } from '@/config/challenges'
 import { saveChallenge, type ChallengeFormState } from '@/lib/challenges/adminActions'
+import DateInput from '@/components/admin/DateInput'
 import AdminFormSection from '@/components/admin/AdminFormSection'
 import FormField from '@/components/admin/FormField'
 import StickyActionBar from '@/components/admin/StickyActionBar'
@@ -55,22 +56,18 @@ export default function ChallengeForm({ defaults }: { defaults: Record<string, s
           <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
         </FormField>
         <FormField label="Bắt đầu (giờ VN)" error={error('starts_at')}>
-          <input
+          <DateInput
             name="starts_at"
             type="datetime-local"
             defaultValue={value('starts_at')}
-            required
-            className={INPUT_CLASS}
-          />
+            required />
         </FormField>
         <FormField label="Kết thúc (giờ VN)" error={error('ends_at')}>
-          <input
+          <DateInput
             name="ends_at"
             type="datetime-local"
             defaultValue={value('ends_at')}
-            required
-            className={INPUT_CLASS}
-          />
+            required />
         </FormField>
       </AdminFormSection>
 
@@ -180,12 +177,10 @@ export default function ChallengeForm({ defaults }: { defaults: Record<string, s
           </select>
         </FormField>
         <FormField label="Hạn đăng ký (giờ VN)" hint="trống = tới khi kết thúc" error={error('registration_closes_at')}>
-          <input
+          <DateInput
             name="registration_closes_at"
             type="datetime-local"
-            defaultValue={value('registration_closes_at')}
-            className={INPUT_CLASS}
-          />
+            defaultValue={value('registration_closes_at')} />
         </FormField>
         <FormField label="Xếp hạng">
           <select name="ranking" defaultValue={value('ranking')} className={INPUT_CLASS}>

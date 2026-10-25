@@ -1,4 +1,5 @@
 import ActionForm from '@/components/ActionForm'
+import DateInput from '@/components/admin/DateInput'
 import AdminFormSection from '@/components/admin/AdminFormSection'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminTabs from '@/components/admin/AdminTabs'
@@ -138,7 +139,7 @@ export default async function AdminHonorsPage({ searchParams }: { searchParams: 
                 </select>
               </FormField>
               <FormField label="Ngày">
-                <input name="honor_date" type="date" required className={ADMIN_INPUT_CLASS} />
+                <DateInput name="honor_date" type="date" required />
               </FormField>
               <FormField label="Tên danh hiệu">
                 <input name="title" required className={ADMIN_INPUT_CLASS} />

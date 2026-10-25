@@ -1,4 +1,5 @@
 import ActionForm from '@/components/ActionForm'
+import DateInput from '@/components/admin/DateInput'
 import AdminFormSection from '@/components/admin/AdminFormSection'
 import DataTable, { type DataTableColumn } from '@/components/admin/DataTable'
 import FormField from '@/components/admin/FormField'
@@ -80,7 +81,7 @@ export function ManualTransactionForm({ accounts, categories }: { accounts: Fund
           <input name="amount" required inputMode="numeric" placeholder="1.500.000" className={INPUT_CLASS} />
         </FormField>
         <FormField label="Thời điểm (để trống là bây giờ)">
-          <input name="occurred_at" type="datetime-local" className={INPUT_CLASS} />
+          <DateInput name="occurred_at" type="datetime-local" />
         </FormField>
         <FormField label="Nội dung">
           <input name="description" maxLength={300} className={INPUT_CLASS} />
@@ -133,7 +134,7 @@ export function ReconciliationForm({ accounts, history }: { accounts: FundAccoun
           </select>
         </FormField>
         <FormField label="Số dư theo sao kê vào cuối ngày">
-          <input name="as_of" type="date" required className={INPUT_CLASS} />
+          <DateInput name="as_of" type="date" required />
         </FormField>
         <FormField label="Số dư theo sao kê (đ)">
           <input name="statement_balance" required inputMode="numeric" className={INPUT_CLASS} />
