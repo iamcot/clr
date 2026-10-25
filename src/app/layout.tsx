@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Be_Vietnam_Pro } from 'next/font/google'
 import { Suspense } from 'react'
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <BusyProvider>
           <ToastProvider>{children}</ToastProvider>
         </BusyProvider>
+        <Analytics />
       </body>
     </html>
   )

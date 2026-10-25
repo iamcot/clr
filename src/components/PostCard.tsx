@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
+import { CommentIcon, HeartIcon } from '@/components/PostIcons'
 import { POST_KIND_LABELS, type PostKind } from '@/config/posts'
 import { formatDateVi } from '@/lib/format/dateTime'
 import { formatRelativeVi } from '@/lib/format/relativeTime'
@@ -19,26 +20,6 @@ function PinIcon() {
   return (
     <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function HeartIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path
-        d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function CommentIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M4 5h16v11H9l-5 4z" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

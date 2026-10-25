@@ -30,6 +30,7 @@ export function formatPace(distanceMeters: number, timeSeconds: number): string 
 
 export function formatKm(distanceMeters: number): string {
   const km = Math.round(distanceMeters / 100) / 10
+  if (km === 0) return '0 km'
   return `${formatFixed(km, 1)} km`
 }
 

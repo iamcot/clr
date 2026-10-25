@@ -20,6 +20,7 @@ export type CommentView = {
   id: string
   memberId: string
   authorName: string
+  avatarUrl: string | null
   body: string
   parentId: string | null
   createdAt: string
@@ -84,15 +85,18 @@ export async function loadComments(postId: string): Promise<CommentView[]> {
     .limit(COMMENT_LIST_LIMIT)
   const rows = data ?? []
   const ids = [...new Set(rows.map((row) => row.member_id))]
-  const names = new Map<string, string>()
+  const names = new Map<string, { name: string; avatarUrl: string | null }>()
   if (ids.length > 0) {
-    const { data: people } = await supabase.from('members_public').select('id, display_name').in('id', ids)
-    for (const person of people ?? []) names.set(person.id, person.display_name ?? 'Thành viên')
+    const { data: people } = await supabase.from('members_public').select('id, display_name, avatar_url').in('id', ids)
+    for (const person of people ?? []) {
+      names.set(person.id, { name: person.display_name ?? 'Thành viên', avatarUrl: person.avatar_url })
+    }
   }
   return rows.map((row) => ({
     id: row.id,
     memberId: row.member_id,
-    authorName: names.get(row.member_id) ?? 'Thành viên',
+    authorName: names.get(row.member_id)?.name ?? 'Thành viên',
+    avatarUrl: names.get(row.member_id)?.avatarUrl ?? null,
     body: row.body,
     parentId: row.parent_id,
     createdAt: row.created_at,
