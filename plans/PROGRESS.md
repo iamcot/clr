@@ -375,3 +375,10 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Component dùng chung mới: `FormField`, `AdminFormSection`, `StickyActionBar` (nút Lưu dính đáy), `pickTab` (tab theo `?tab=`).
 > - Challenge chi tiết: nút ở header (Sửa, Tính lại, Công bố, Kết quả), tab Người tham gia / Thông tin (có nhân bản, đặt làm mẫu) / Thêm người; người tham gia là bảng, quản lý từng người gọn trong ô. `ChallengeForm` và `EventForm` chia thẻ 2 cột. Event chi tiết có tab Chỉnh sửa / Người đăng ký / Điểm danh (Quản lý ảnh vẫn là trang riêng, link ở header). Quay số chi tiết có tab Quay số / Người tham gia, nút trạng thái ở header, huỷ trong thẻ riêng; tạo đợt quay chia 3 thẻ. Kết quả challenge, tổng hợp nhiều kỳ, thống kê event dùng thẻ số và bảng.
 > - Chưa xem trên trang thật có dữ liệu (cần phiên BCN).
+
+### Admin đợt 2, PR C: Quỹ, Bảng vàng, chi tiết thành viên, chi tiết bài viết
+> - Báo cáo quỹ (`/admin/fund/reports`): nút CSV/Bản in ở header, tab Tháng/Quý/Năm + chuyển kỳ, 4 thẻ số (đầu kỳ, thu, chi, cuối kỳ), chi tiết thu chi cạnh khoản phạt trong kỳ, thẻ "Chốt sổ" gom chốt/mở khoá và đăng bài tự động. Số tiền ở trang này giữ nguyên đủ (không rút gọn). `FundReportTable` thêm prop `bare` để đặt trong thẻ; bản in và trang thành viên không đổi.
+> - Quỹ (`/admin/fund`): tab Tổng quan (hàng đợi + bảng giao dịch có phân trang) / Thu chi thủ công / Đối soát sao kê / Tài khoản nhận tiền; `FundQueue`, `FundTransactionsList` (bảng), `FundForms` (thẻ form, nút lưu dính đáy).
+> - Bảng vàng: tab Chờ duyệt / Đã duyệt / Thêm đặc biệt, bảng có Duyệt/Ẩn/Xoá, hai nút hàng loạt ở header.
+> - Chi tiết thành viên: tab Thông tin (thẻ thông tin, thẻ vai trò và trạng thái, tài khoản admin) / Lịch sử (bảng, phân trang). Chi tiết bài viết: tab Soạn bài / Xác nhận đã đọc (thẻ số, bảng người chưa xác nhận), "Đăng ngay" và "Xem như thành viên" ở header, xoá bài trong "Vùng nguy hiểm"; `PostForm` chia 3 thẻ.
+> - Hết đợt 2: mọi trang admin đã dùng bộ component chung. Chưa xem trên trang thật có dữ liệu.

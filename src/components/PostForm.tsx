@@ -6,31 +6,15 @@ import Markdown from '@/components/Markdown'
 import { useToast } from '@/components/ToastProvider'
 import { POST_KIND_LABELS, POST_KINDS } from '@/config/posts'
 import { savePost, type PostFormState } from '@/lib/posts/adminActions'
+import AdminFormSection from '@/components/admin/AdminFormSection'
+import FormField from '@/components/admin/FormField'
+import StickyActionBar from '@/components/admin/StickyActionBar'
+import { ADMIN_INPUT_CLASS, adminButtonClass } from '@/components/admin/styles'
 import ImageField from '@/components/ImageField'
 
-const INPUT_CLASS = 'min-h-11 w-full rounded-lg border border-line bg-white px-3'
+const INPUT_CLASS = ADMIN_INPUT_CLASS
 const EMPTY_STATE: PostFormState = { errors: {}, values: {} }
-
-function Field({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: string
-  hint?: string
-  error?: string
-  children: React.ReactNode
-}) {
-  return (
-    <label className="block text-left">
-      <span className="text-sm font-bold">{label}</span>
-      {hint && <span className="ml-1 text-xs text-muted">{hint}</span>}
-      <div className="mt-1">{children}</div>
-      {error && <span className="mt-1 block text-sm text-danger">{error}</span>}
-    </label>
-  )
-}
+const WIDE = 'md:col-span-2'
 
 export default function PostForm({ defaults }: { defaults: Record<string, string> }) {
   const [state, formAction, pending] = useActionState(savePost, EMPTY_STATE)
@@ -46,77 +30,83 @@ export default function PostForm({ defaults }: { defaults: Record<string, string
   }, [state, toast])
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="id" value={value('id')} />
-      <Field label="Tiêu đề" error={state.errors.title}>
-        <input name="title" defaultValue={value('title')} maxLength={200} required className={INPUT_CLASS} />
-      </Field>
-      <Field label="Loại bài" error={state.errors.kind}>
-        <select name="kind" defaultValue={value('kind') || 'announcement'} className={INPUT_CLASS}>
-          {POST_KINDS.map((kind) => (
-            <option key={kind} value={kind}>
-              {POST_KIND_LABELS[kind]}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field
-        label="Nội dung"
-        hint="Markdown: # tiêu đề, **đậm**, *nghiêng*, - danh sách, [chữ](https://link)"
-        error={state.errors.body_md}
-      >
-        <textarea
-          name="body_md"
-          value={body}
-          onChange={(event) => setBody(event.target.value)}
-          rows={10}
-          className="w-full rounded-lg border border-line bg-white shadow-sm p-3"
-        />
-      </Field>
-      <button
-        type="button"
-        onClick={() => setPreviewing((current) => !current)}
-        className="min-h-11 rounded-lg border border-line bg-white font-bold"
-      >
-        {previewing ? 'Ẩn xem trước' : 'Xem trước'}
-      </button>
-      {previewing && (
-        <div className="rounded-lg bg-white shadow-sm p-3">
-          <Markdown source={body} />
+      <AdminFormSection columns={2} title="Nội dung">
+        <FormField label="Tiêu đề" error={state.errors.title} className={WIDE}>
+          <input name="title" defaultValue={value('title')} maxLength={200} required className={INPUT_CLASS} />
+        </FormField>
+        <FormField label="Loại bài" error={state.errors.kind}>
+          <select name="kind" defaultValue={value('kind') || 'announcement'} className={INPUT_CLASS}>
+            {POST_KINDS.map((kind) => (
+              <option key={kind} value={kind}>
+                {POST_KIND_LABELS[kind]}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        <FormField label="Ảnh bìa" error={state.errors.cover_url}>
+          <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
+        </FormField>
+        <FormField
+          label="Nội dung"
+          hint="Markdown: # tiêu đề, **đậm**, *nghiêng*, - danh sách, [chữ](https://link)"
+          error={state.errors.body_md}
+          className={WIDE}
+        >
+          <textarea
+            name="body_md"
+            value={body}
+            onChange={(event) => setBody(event.target.value)}
+            rows={10}
+            className="w-full rounded-lg border border-hairline bg-white p-3 text-sm shadow-sm"
+          />
+        </FormField>
+        <div className={WIDE}>
+          <button type="button" onClick={() => setPreviewing((current) => !current)} className={adminButtonClass('secondary')}>
+            {previewing ? 'Ẩn xem trước' : 'Xem trước'}
+          </button>
+          {previewing && (
+            <div className="mt-3 rounded-lg border border-hairline bg-white p-3">
+              <Markdown source={body} />
+            </div>
+          )}
         </div>
-      )}
-      <Field label="Ảnh bìa" error={state.errors.cover_url}>
-        <ImageField name="cover_url" purpose="cover" defaultValue={value('cover_url')} />
-      </Field>
-      <label className="flex min-h-11 items-center gap-2">
-        <input type="checkbox" name="require_ack" defaultChecked={value('require_ack') === 'on'} className="size-5" />
-        Cần thành viên bấm “Đã đọc và đồng ý”
-      </label>
-      <label className="flex min-h-11 items-center gap-2">
-        <input type="checkbox" name="pinned" defaultChecked={value('pinned') === 'on'} className="size-5" />
-        Ghim lên đầu trang chủ
-      </label>
-      {state.errors.pinned && <span className="text-sm text-danger">{state.errors.pinned}</span>}
-      <Field label="Ghim đến" hint="Bỏ trống là ghim mãi" error={state.errors.pinned_until}>
-        <input name="pinned_until" type="datetime-local" defaultValue={value('pinned_until')} className={INPUT_CLASS} />
-      </Field>
-      <Field label="Đăng bài" error={state.errors.scheduled_at}>
-        <select name="publish_mode" defaultValue={publishMode} className={INPUT_CLASS}>
-          <option value="now">Đăng ngay</option>
-          <option value="schedule">Hẹn giờ</option>
-          <option value="draft">Lưu nháp</option>
-        </select>
-      </Field>
-      <Field label="Giờ đăng (nếu hẹn giờ, giờ Việt Nam)">
-        <input name="scheduled_at" type="datetime-local" defaultValue={value('scheduled_at')} className={INPUT_CLASS} />
-      </Field>
-      <button
-        type="submit"
-        disabled={pending}
-        className="min-h-12 rounded-lg bg-brand font-bold text-white active:bg-brand-dark disabled:opacity-60"
-      >
-        Lưu bài
-      </button>
+      </AdminFormSection>
+
+      <AdminFormSection columns={2} title="Hiển thị">
+        <label className="flex min-h-10 items-center gap-2">
+          <input type="checkbox" name="require_ack" defaultChecked={value('require_ack') === 'on'} className="size-5" />
+          Cần thành viên bấm “Đã đọc và đồng ý”
+        </label>
+        <label className="flex min-h-10 items-center gap-2">
+          <input type="checkbox" name="pinned" defaultChecked={value('pinned') === 'on'} className="size-5" />
+          Ghim lên đầu trang chủ
+        </label>
+        {state.errors.pinned && <span className={`text-sm text-danger ${WIDE}`}>{state.errors.pinned}</span>}
+        <FormField label="Ghim đến" hint="Bỏ trống là ghim mãi" error={state.errors.pinned_until}>
+          <input name="pinned_until" type="datetime-local" defaultValue={value('pinned_until')} className={INPUT_CLASS} />
+        </FormField>
+      </AdminFormSection>
+
+      <AdminFormSection columns={2} title="Đăng bài">
+        <FormField label="Cách đăng" error={state.errors.scheduled_at}>
+          <select name="publish_mode" defaultValue={publishMode} className={INPUT_CLASS}>
+            <option value="now">Đăng ngay</option>
+            <option value="schedule">Hẹn giờ</option>
+            <option value="draft">Lưu nháp</option>
+          </select>
+        </FormField>
+        <FormField label="Giờ đăng (nếu hẹn giờ, giờ Việt Nam)">
+          <input name="scheduled_at" type="datetime-local" defaultValue={value('scheduled_at')} className={INPUT_CLASS} />
+        </FormField>
+      </AdminFormSection>
+
+      <StickyActionBar>
+        <button type="submit" disabled={pending} className={`${adminButtonClass('primary')} disabled:opacity-60`}>
+          {pending ? 'Đang lưu…' : 'Lưu bài'}
+        </button>
+      </StickyActionBar>
     </form>
   )
 }
