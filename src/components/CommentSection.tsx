@@ -4,10 +4,9 @@ import { useState } from 'react'
 import ActionForm from '@/components/ActionForm'
 import Avatar from '@/components/Avatar'
 import { SendIcon } from '@/components/PostIcons'
+import RelativeTime from '@/components/RelativeTime'
 import { useRealtimeRefresh } from '@/components/useRealtimeRefresh'
 import { COMMENT_MAX_LENGTH } from '@/config/posts'
-import { formatDateVi } from '@/lib/format/dateTime'
-import { formatRelativeVi } from '@/lib/format/relativeTime'
 import { addComment, deleteComment } from '@/lib/posts/memberActions'
 import type { CommentView } from '@/lib/posts/loadPost'
 
@@ -20,14 +19,6 @@ type CommentSectionProps = {
 }
 
 type ReplyTarget = { id: string; name: string }
-
-function CommentTime({ iso }: { iso: string }) {
-  return (
-    <span className="text-xs text-muted" suppressHydrationWarning>
-      {formatRelativeVi(iso, new Date()) ?? formatDateVi(iso)}
-    </span>
-  )
-}
 
 function CommentLine({
   comment,
@@ -46,7 +37,7 @@ function CommentLine({
       <div className="min-w-0 flex-1">
         <p className="text-sm">
           <span className="font-bold">{comment.authorName}</span> <span className="text-muted">·</span>{' '}
-          <CommentTime iso={comment.createdAt} />
+          <RelativeTime iso={comment.createdAt} />
         </p>
         <p className="whitespace-pre-line break-words">{comment.body}</p>
         <div className="flex gap-4">
@@ -91,7 +82,7 @@ function Composer({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-10 border-t border-line bg-white/95 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-10 bg-white/95 backdrop-blur">
       <div className="mx-auto max-w-[480px] px-3 pt-2 pb-2">
         {replyTo && (
           <p className="mb-1 flex items-center justify-between px-3 text-xs text-muted">

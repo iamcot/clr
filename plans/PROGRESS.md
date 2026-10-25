@@ -393,3 +393,6 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Bài viết: bỏ thanh 4 cảm xúc, chỉ còn tim rỗng + số đếm và icon bình luận + số đếm (`PostReactionBar`, `PostIcons` dùng chung với `PostCard`). Bấm tim đổi đỏ và +1 ngay (`useOptimistic`), bấm lại bỏ tim; `reactToPost` thành bật/tắt tim (đã có cảm xúc cũ loại khác thì bấm vào là bỏ), số đếm là tổng mọi cảm xúc.
 > - Bình luận dạng phẳng như Facebook: avatar nhỏ, tên + thời gian tương đối, nội dung, "Trả lời"/"Xoá" chữ nhỏ, không còn tiêu đề "Bình luận" và thẻ nền. Ô nhập dính ngay trên thanh menu dưới, placeholder "Bình luận dưới tên {tên}", nút gửi hình máy bay chỉ hiện khi có chữ; bấm "Trả lời" thì ô nhập hiện "Đang trả lời {tên}" kèm nút huỷ. Gửi xong ô xoá sạch, danh sách và số đếm cập nhật (revalidate có sẵn).
 > - Không có migration. Chưa thử luồng thật (cần đăng nhập thành viên), mới chụp bản xem trước ở 390px.
+
+### Chỉnh nhỏ trang bài viết và nút quay lại
+> - Bỏ đường kẻ trên hàng tim/bình luận và viền trên của thanh nhập bình luận. `BackLink` dùng icon chevron trái (áp dụng cho mọi trang có nút quay lại, kể cả admin). Component `RelativeTime` dùng chung cho giờ bài viết (trang bài viết, thẻ feed, bình luận) hiện tương đối. Nhãn bài tự động đổi thành "Tin nhanh". Chưa chụp ảnh kiểm tra sau chỉnh sửa này.

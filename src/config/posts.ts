@@ -5,7 +5,7 @@ export const POST_KIND_LABELS: Record<PostKind, string> = {
   announcement: 'Thông báo',
   result: 'Kết quả',
   event: 'Event',
-  system: 'Tự động',
+  system: 'Tin nhanh',
 }
 
 export const REACTIONS = [
