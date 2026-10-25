@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import ActionForm from '@/components/ActionForm'
+import DateInput from '@/components/admin/DateInput'
 import AdminCard from '@/components/admin/AdminCard'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import Badge, { type BadgeTone } from '@/components/admin/Badge'
@@ -145,7 +146,7 @@ export default async function AdminPenaltiesPage({ searchParams }: { searchParam
       />
 
       <form method="get" className="grid grid-cols-2 gap-2 md:grid-cols-5">
-        <input name="month" type="month" defaultValue={month} className={INPUT_CLASS} />
+        <DateInput name="month" type="month" defaultValue={month} />
         <select name="status" defaultValue={filters.status ?? ''} className={INPUT_CLASS}>
           <option value="">Mọi trạng thái</option>
           {(Object.keys(PENALTY_STATUS_LABELS) as PenaltyStatus[]).map((status) => (
