@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { COMMENT_MAX_LENGTH, REACTIONS } from '@/config/posts'
+import { COMMENT_MAX_LENGTH, HEART_REACTION } from '@/config/posts'
 import { requireActiveMember } from '@/lib/auth/currentMember'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { loadHomeFeedPage } from '@/lib/feed/loadHomeFeed'
@@ -43,11 +43,10 @@ export async function acknowledgePost(formData: FormData): Promise<ActionResult>
 }
 
 // Chọn lại đúng cảm xúc đang có thì bỏ cảm xúc
+// Chỉ còn một thao tác thả tim: đã có cảm xúc (kể cả loại cũ) thì bỏ, chưa có thì thả tim
 export async function reactToPost(formData: FormData): Promise<ActionResult | void> {
   const member = await requireActiveMember()
   const postId = readText(formData, 'post_id')
-  const emoji = REACTIONS.find((item) => item.code === readText(formData, 'emoji'))?.code
-  if (!emoji) return actionError('Cảm xúc không hợp lệ')
 
   const supabase = await createSupabaseServerClient()
   const current = await supabase
@@ -56,12 +55,9 @@ export async function reactToPost(formData: FormData): Promise<ActionResult | vo
     .eq('post_id', postId)
     .eq('member_id', member.id)
     .maybeSingle()
-  const sameAsCurrent = current.data?.emoji === emoji
-  const { error } = sameAsCurrent
+  const { error } = current.data
     ? await supabase.from('post_reactions').delete().eq('post_id', postId).eq('member_id', member.id)
-    : await supabase
-        .from('post_reactions')
-        .upsert({ post_id: postId, member_id: member.id, emoji }, { onConflict: 'post_id,member_id' })
+    : await supabase.from('post_reactions').insert({ post_id: postId, member_id: member.id, emoji: HEART_REACTION })
   if (error) return actionError('Không lưu được cảm xúc')
   revalidatePost(postId)
 }

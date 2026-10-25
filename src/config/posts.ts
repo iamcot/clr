@@ -15,6 +15,7 @@ export const REACTIONS = [
   { code: 'heart', symbol: '❤️', label: 'Yêu thích' },
 ] as const
 export type ReactionCode = (typeof REACTIONS)[number]['code']
+export const HEART_REACTION: ReactionCode = 'heart'
 
 export const FEED_PAGE_SIZE = 20
 export const MAX_PINNED_POSTS = 3

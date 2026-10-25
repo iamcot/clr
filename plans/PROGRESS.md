@@ -387,3 +387,9 @@ Cách ghi: thêm một mục mới ở **trên cùng**, ghi ngày, người góp
 > - Thêm `@vercel/analytics` (bạn yêu cầu trực tiếp, ngoài danh sách thư viện trong `plans/00-overview.md`) và `<Analytics />` trong `src/app/layout.tsx`. Cần bật Web Analytics trong dashboard Vercel (tab Analytics, bấm Enable) thì mới có số liệu; chỉ gửi khi chạy trên Vercel, chạy local không gửi.
 ### Sửa nhanh ô ngày tháng trong admin
 > - Component `DateInput` (`src/components/admin/DateInput.tsx`): ô ngày/tháng/ngày giờ có icon lịch bên trái, cao và rộng bằng ô thường, bỏ kiểu riêng của Safari trên iPhone (trước đây ô trống và tràn khung); bấm vào đâu trong ô cũng mở bộ chọn. Dùng cho các ô ngày của Hoạt động, Thưởng phạt, Bảng vàng, form Quỹ, Event, Bài viết, Challenge. Nút "Loại khỏi CLB" ở Hoạt động đổi thành "Loại". Chưa thử trên iPhone thật (Chromium không tái hiện hết kiểu của Safari).
+
+### Chỉnh giao diện thành viên: km, tim và bình luận
+> - `formatKm`: chưa chạy km nào thì hiện `0 km` thay vì `0,0 km` (có test).
+> - Bài viết: bỏ thanh 4 cảm xúc, chỉ còn tim rỗng + số đếm và icon bình luận + số đếm (`PostReactionBar`, `PostIcons` dùng chung với `PostCard`). Bấm tim đổi đỏ và +1 ngay (`useOptimistic`), bấm lại bỏ tim; `reactToPost` thành bật/tắt tim (đã có cảm xúc cũ loại khác thì bấm vào là bỏ), số đếm là tổng mọi cảm xúc.
+> - Bình luận dạng phẳng như Facebook: avatar nhỏ, tên + thời gian tương đối, nội dung, "Trả lời"/"Xoá" chữ nhỏ, không còn tiêu đề "Bình luận" và thẻ nền. Ô nhập dính ngay trên thanh menu dưới, placeholder "Bình luận dưới tên {tên}", nút gửi hình máy bay chỉ hiện khi có chữ; bấm "Trả lời" thì ô nhập hiện "Đang trả lời {tên}" kèm nút huỷ. Gửi xong ô xoá sạch, danh sách và số đếm cập nhật (revalidate có sẵn).
+> - Không có migration. Chưa thử luồng thật (cần đăng nhập thành viên), mới chụp bản xem trước ở 390px.

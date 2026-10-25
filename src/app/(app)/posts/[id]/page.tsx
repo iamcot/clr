@@ -5,11 +5,12 @@ import CommentSection from '@/components/CommentSection'
 import Markdown from '@/components/Markdown'
 import MemberOnlyAction from '@/components/MemberOnlyAction'
 import MarkPostRead from '@/components/MarkPostRead'
-import ReactionBar from '@/components/ReactionBar'
+import PostReactionBar from '@/components/PostReactionBar'
 import { POST_KIND_LABELS } from '@/config/posts'
 import { activeMemberOf, getViewer } from '@/lib/auth/viewer'
 import { formatDateTimeVi } from '@/lib/format/dateTime'
 import { loadComments, loadPostDetail } from '@/lib/posts/loadPost'
+import { totalReactions } from '@/lib/posts/reaction'
 import { acknowledgePost } from '@/lib/posts/memberActions'
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
@@ -55,8 +56,19 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
       {member ? (
         <>
-          <ReactionBar postId={id} mine={post.myReaction} counts={post.reactionCounts} />
-          <CommentSection postId={id} comments={comments} myMemberId={member.id} isBcn={member.role === 'bcn'} />
+          <PostReactionBar
+            postId={id}
+            mine={post.myReaction !== null}
+            count={totalReactions(post.reactionCounts)}
+            commentCount={comments.length}
+          />
+          <CommentSection
+            postId={id}
+            comments={comments}
+            myMemberId={member.id}
+            myName={member.display_name ?? 'bạn'}
+            isBcn={member.role === 'bcn'}
+          />
         </>
       ) : (
         <div className="mt-6">

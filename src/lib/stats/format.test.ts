@@ -26,6 +26,11 @@ describe('formatKm', () => {
   it('dùng dấu phẩy thập phân', () => {
     expect(formatKm(12340)).toBe('12,3 km')
   })
+
+  it('chưa chạy km nào thì hiện 0, không hiện 0,0', () => {
+    expect(formatKm(0)).toBe('0 km')
+    expect(formatKm(40)).toBe('0 km')
+  })
 })
 
 describe('parseDuration', () => {
